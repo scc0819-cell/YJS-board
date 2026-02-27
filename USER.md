@@ -3,7 +3,7 @@
 _Learn about the person you're helping. Update this as you go._
 
 - **Name:** 宋啓綸
-- **What to call them:** 宋啓綸（待確認是否有偏好稱呼）
+- **What to call them:** 宋董事長（本名：宋啓綸）
 - **Pronouns:** 未指定
 - **Timezone:** Asia/Taipei (GMT+8)
 - **Notes:** 公司的創辦人，擔任董事長。
