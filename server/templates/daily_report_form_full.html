@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>填寫日報 - {{ employee.name }}</title>
+    <style>
+        :root { --primary: #2c5282; --secondary: #4299e1; --success: #48bb78; --danger: #f56565; --bg: #f7fafc; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { color: var(--primary); font-size: 24px; }
+        .section { margin-bottom: 30px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; }
+        .section-title { color: var(--primary); font-size: 18px; margin-bottom: 15px; font-weight: bold; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #4a5568; font-weight: bold; }
+        input[type="text"], input[type="number"], input[type="date"], textarea, select { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; }
+        textarea { min-height: 80px; resize: vertical; }
+        .item-card { background: #f7fafc; padding: 15px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid var(--secondary); }
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-secondary { background: #cbd5e0; color: #4a5568; }
+        .btn:hover { opacity: 0.9; }
+        .checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .checkbox-item { display: flex; align-items: center; gap: 5px; }
+        .progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 5px; }
+        .progress-fill { height: 100%; background: var(--success); transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 昱金生能源集團 - 員工日報</h1>
+            <p style="color: #666; margin-top: 10px;">
+                👤 {{ employee.name }} | 🏢 {{ employee.department }}
+            </p>
+        </div>
+
+        <form method="POST" action="/submit">
+            <!-- 基本資訊 -->
+            <input type="hidden" name="employee_id" value="{{ employee.id }}">
+            <input type="hidden" name="employee_name" value="{{ employee.name }}">
+            <input type="hidden" name="department" value="{{ employee.department }}">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📅 日報日期</label>
+                    <input type="date" name="report_date" required value="{{ today }}">
+                </div>
+            </div>
+
+            <!-- 一、今日工作 -->
+            <div class="section">
+                <div class="section-title">一、今日工作</div>
+                <div id="work-items"></div>
+                <button type="button" class="btn btn-secondary" onclick="addWorkItem()">➕ 新增工作項目</button>
+            </div>
+
+            <!-- 二、明日計畫 -->
+            <div class="section">
+                <div class="section-title">二、明日計畫</div>
+                <div id="plan-items"></div>
+                <button type="button" class="btn btn-secondary" onclick="addPlanItem()">➕ 新增計畫項目</button>
+            </div>
+
+            <!-- 三、風險事項 -->
+            <div class="section">
+                <div class="section-title">三、風險事項（有則必填）</div>
+                <div id="risk-items"></div>
+                <button type="button" class="btn btn-secondary" onclick="addRiskItem()">➕ 新增風險事項</button>
+            </div>
+
+            <!-- 四、今日總結 -->
+            <div class="section">
+                <div class="section-title">四、今日總結</div>
+                <div class="form-group">
+                    <label>💡 最大收穫</label>
+                    <textarea name="today_gain" placeholder="今天最大的收穫或學習..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>🔧 需要改進</label>
+                    <textarea name="improvement" placeholder="有哪些地方可以改進..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>📝 其他備註</label>
+                    <textarea name="remarks" placeholder="其他想說明的事項..."></textarea>
+                </div>
+            </div>
+
+            <!-- 五、附件 -->
+            <div class="section">
+                <div class="section-title">五、附件</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="attach_photo"> 📷 現場照片
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="attach_meeting"> 📋 會議記錄
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="attach_document"> 📄 文件檔案
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="attach_other"> 📎 其他
+                    </label>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>附件說明</label>
+                    <textarea name="attach_note" placeholder="請說明附件內容..."></textarea>
+                </div>
+            </div>
+
+            <!-- 提交按鈕 -->
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="submit" class="btn btn-success" style="font-size: 18px; padding: 15px 40px;">📤 提交日報</button>
+                <a href="/" class="btn btn-secondary" style="margin-left: 10px;">取消</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const today = '{{ today }}';
+        let workCount = 0, planCount = 0, riskCount = 0;
+
+        function addWorkItem() {
+            const div = document.createElement('div');
+            div.className = 'item-card';
+            div.innerHTML = `
+                <div class="form-row">
+                    <div><label>案件編號</label><input type="text" name="work_${workCount}_case_id" placeholder="如：58-A"></div>
+                    <div><label>案件名稱</label><input type="text" name="work_${workCount}_case_name" placeholder="如：成功國小"></div>
+                </div>
+                <div class="form-row">
+                    <div><label>工作類型</label>
+                        <select name="work_${workCount}_type">
+                            <option value="設計">設計</option>
+                            <option value="現勘">現勘</option>
+                            <option value="會議">會議</option>
+                            <option value="行政">行政</option>
+                            <option value="施工">施工</option>
+                            <option value="驗收">驗收</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div><label>進度%</label><input type="number" name="work_${workCount}_progress" min="0" max="100" placeholder="0-100"></div>
+                    <div><label>工時</label><input type="number" name="work_${workCount}_hours" min="0" step="0.5" placeholder="小時"></div>
+                </div>
+                <div class="form-group">
+                    <label>工作內容</label>
+                    <textarea name="work_${workCount}_content" placeholder="具體描述工作內容..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div><label>產出物</label><input type="text" name="work_${workCount}_output" placeholder="如：圖面 v3"></div>
+                    <div><label>狀態</label>
+                        <select name="work_${workCount}_status">
+                            <option value="已完成">已完成</option>
+                            <option value="進行中">進行中</option>
+                            <option value="待確認">待確認</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="this.parentElement.remove()" style="margin-top: 10px; font-size: 12px;">🗑️ 刪除</button>
+            `;
+            document.getElementById('work-items').appendChild(div);
+            workCount++;
+        }
+
+        function addPlanItem() {
+            const div = document.createElement('div');
+            div.className = 'item-card';
+            div.innerHTML = `
+                <div class="form-row">
+                    <div><label>案件編號</label><input type="text" name="plan_${planCount}_case_id"></div>
+                    <div><label>案件名稱</label><input type="text" name="plan_${planCount}_case_name"></div>
+                </div>
+                <div class="form-group">
+                    <label>預計工作內容</label>
+                    <textarea name="plan_${planCount}_content" placeholder="明天預計做什麼..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div><label>預計工時</label><input type="number" name="plan_${planCount}_hours" min="0" step="0.5"></div>
+                    <div><label>需要支援</label><input type="text" name="plan_${planCount}_support" placeholder="需要什麼協助..."></div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="this.parentElement.remove()" style="margin-top: 10px; font-size: 12px;">🗑️ 刪除</button>
+            `;
+            document.getElementById('plan-items').appendChild(div);
+            planCount++;
+        }
+
+        function addRiskItem() {
+            const div = document.createElement('div');
+            div.className = 'item-card';
+            div.style.borderLeftColor = '#f56565';
+            div.innerHTML = `
+                <div class="form-row">
+                    <div><label>案件編號</label><input type="text" name="risk_${riskCount}_case_id"></div>
+                    <div><label>風險等級</label>
+                        <select name="risk_${riskCount}_level">
+                            <option value="high">🔴 高風險</option>
+                            <option value="medium">🟠 中風險</option>
+                            <option value="low">🟢 低風險</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>風險說明</label>
+                    <textarea name="risk_${riskCount}_desc" placeholder="描述風險..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>影響層面</label>
+                    <textarea name="risk_${riskCount}_impact" placeholder="對進度/成本/品質的影響..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>需要協助</label>
+                    <textarea name="risk_${riskCount}_help" placeholder="需要什麼協助或資源..."></textarea>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="this.parentElement.remove()" style="margin-top: 10px; font-size: 12px;">🗑️ 刪除</button>
+            `;
+            document.getElementById('risk-items').appendChild(div);
+            riskCount++;
+        }
+
+        // 預設新增一個工作項目
+        addWorkItem();
+        addPlanItem();
+    </script>
+</body>
+</html>

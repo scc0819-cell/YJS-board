@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>昱金生能源集團 - 員工日報</title>
+    <style>
+        :root {
+            --primary-color: #2c5282;
+            --secondary-color: #4299e1;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --danger-color: #f56565;
+            --bg-color: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: var(--bg-color);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        table th,
+        table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+        }
+        
+        table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        table tr:nth-child(even) {
+            background: var(--bg-color);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1a365d;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #3182ce;
+        }
+        
+        .add-row-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .add-row-btn:hover {
+            background: #38a169;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .risk-high { background: #fed7d7; color: #c53030; }
+        .risk-medium { background: #feebc8; color: #c05621; }
+        .risk-low { background: #c6f6d5; color: #276749; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--bg-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--success-color));
+            transition: width 0.3s;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .required {
+            color: var(--danger-color);
+        }
+        
+        .button-group {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .btn, .add-row-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 昱金生能源集團</h1>
+            <div class="subtitle">員工工作日報</div>
+        </div>
+
+        <form id="dailyReportForm">
+            <!-- 基本資訊 -->
+            <div class="section">
+                <div class="section-title">📋 基本資訊</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>姓名 <span class="required">*</span></label>
+                        <select id="employeeName" required>
+                            <option value="">請選擇</option>
+                            <option value="陳明德">陳明德</option>
+                            <option value="陳谷濱">陳谷濱 (BEN)</option>
+                            <option value="張億峖">張億峖</option>
+                            <option value="楊宗衛">楊宗衛</option>
+                            <option value="李雅婷">李雅婷</option>
+                            <option value="高竹妤">高竹妤</option>
+                            <option value="陳靜儒">陳靜儒</option>
+                            <option value="洪淑嫆">洪淑嫆</option>
+                            <option value="楊傑麟">楊傑麟</option>
+                            <option value="褚佩瑜">褚佩瑜</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>日期 <span class="required">*</span></label>
+                        <input type="date" id="reportDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>部門 <span class="required">*</span></label>
+                        <select id="department" required>
+                            <option value="">請選擇</option>
+                            <option value="工程部">工程部</option>
+                            <option value="設計部">設計部</option>
+                            <option value="行政部">行政部</option>
+                            <option value="業務部">業務部</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今日工作 -->
+            <div class="section">
+                <div class="section-title">📝 一、今日工作 <span class="required">*</span></div>
+                <table id="workTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">案件編號</th>
+                            <th style="width: 20%;">案件名稱</th>
+                            <th style="width: 15%;">工作類型</th>
+                            <th style="width: 25%;">工作內容</th>
+                            <th style="width: 10%;">進度%</th>
+                            <th style="width: 8%;">工時</th>
+                            <th style="width: 7%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="如：58-A" class="case-id"></td>
+                            <td><input type="text" placeholder="如：成功國小" class="case-name"></td>
+                            <td>
+                                <select class="work-type">
+                                    <option value="">請選擇</option>
+                                    <option value="設計">設計</option>
+                                    <option value="現勘">現勘</option>
+                                    <option value="會議">會議</option>
+                                    <option value="行政">行政</option>
+                                    <option value="施工">施工</option>
+                                    <option value="驗收">驗收</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </td>
+                            <td><input type="text" placeholder="具體工作內容" class="work-content"></td>
+                            <td><input type="number" min="0" max="100" placeholder="0-100" class="progress" style="width: 60px;"></td>
+                            <td><input type="number" min="0.5" max="12" step="0.5" placeholder="小時" class="hours" style="width: 60px;"></td>
+                            <td><button type="button" class="btn-remove" onclick="removeRow(this)" style="background: #f56565; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">刪除</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="add-row-btn" onclick="addWorkRow()">➕ 新增工作項目</button>
+                <div class="hint">💡 請詳細填寫每個工作項目，進度請填寫具體百分比（0-100%）</div>
+            </div>
+
+            <!-- 明日計畫 -->
+            <div class="section">
+                <div class="section-title">📅 二、明日計畫 <span class="required">*</span></div>
+                <table id="planTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">案件編號</th>
+                            <th style="width: 20%;">案件名稱</th>
+                            <th style="width: 40%;">預計工作內容</th>
+                            <th style="width: 15%;">預計工時</th>
+                            <th style="width: 10%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="如：43-A" class="plan-case-id"></td>
+                            <td><input type="text" placeholder="如：北斗國小" class="plan-case-name"></td>
+                            <td><input type="text" placeholder="預計工作內容" class="plan-content"></td>
+                            <td><input type="number" min="0.5" max="12" step="0.5" placeholder="小時" class="plan-hours" style="width: 80px;"></td>
+                            <td><button type="button" class="btn-remove" onclick="removeRow(this)" style="background: #f56565; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">刪除</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="add-row-btn" onclick="addPlanRow()">➕ 新增明日計畫</button>
+            </div>
+
+            <!-- 風險事項 -->
+            <div class="section">
+                <div class="section-title">⚠️ 三、風險事項 <span class="hint">（有則必填，無則跳過）</span></div>
+                <table id="riskTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">案件編號</th>
+                            <th style="width: 15%;">風險等級</th>
+                            <th style="width: 25%;">風險說明</th>
+                            <th style="width: 20%;">影響層面</th>
+                            <th style="width: 25%;">需要協助</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="如：馬偕護專" class="risk-case-id"></td>
+                            <td>
+                                <select class="risk-level">
+                                    <option value="">請選擇</option>
+                                    <option value="high">🔴 高</option>
+                                    <option value="medium">🟠 中</option>
+                                    <option value="low">🟢 低</option>
+                                </select>
+                            </td>
+                            <td><input type="text" placeholder="風險說明" class="risk-desc"></td>
+                            <td><input type="text" placeholder="如：工期延遲" class="risk-impact"></td>
+                            <td><input type="text" placeholder="需要什麼協助" class="risk-help"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="add-row-btn" onclick="addRiskRow()">➕ 新增風險事項</button>
+                <div class="hint">💡 主動通報風險可獲得加分，隱瞞風險會扣分</div>
+            </div>
+
+            <!-- 今日總結 -->
+            <div class="section">
+                <div class="section-title">📊 四、今日總結 <span class="hint">（選填）</span></div>
+                <div class="form-group">
+                    <label>最大收穫</label>
+                    <textarea id="todayGain" placeholder="今日最有價值的工作或學習..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>需要改進</label>
+                    <textarea id="improvement" placeholder="反思與建議..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>其他備註</label>
+                    <textarea id="remarks" placeholder="自由填寫..."></textarea>
+                </div>
+            </div>
+
+            <!-- 附件 -->
+            <div class="section">
+                <div class="section-title">📎 五、附件</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="attachPhoto">
+                        <span>現場照片</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="attachMeeting">
+                        <span>會議記錄</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="attachDocument">
+                        <span>文件檔案</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="attachOther">
+                        <span>其他佐證資料</span>
+                    </label>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>附件說明</label>
+                    <textarea id="attachNote" placeholder="請說明附件內容，如：58-A 成功國小現場照片 3 張..."></textarea>
+                </div>
+            </div>
+
+            <!-- 提交按鈕 -->
+            <div class="button-group">
+                <button type="button" class="btn btn-primary" onclick="submitReport()">📤 提交日報</button>
+                <button type="button" class="btn btn-secondary" onclick="saveDraft()">💾 儲存草稿</button>
+                <button type="button" class="btn btn-secondary" onclick="printReport()">🖨️ 列印</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 設定今日日期
+        document.getElementById('reportDate').valueAsDate = new Date();
+
+        // 新增工作項目
+        function addWorkRow() {
+            const tbody = document.querySelector('#workTable tbody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" placeholder="如：58-A" class="case-id"></td>
+                <td><input type="text" placeholder="如：成功國小" class="case-name"></td>
+                <td>
+                    <select class="work-type">
+                        <option value="">請選擇</option>
+                        <option value="設計">設計</option>
+                        <option value="現勘">現勘</option>
+                        <option value="會議">會議</option>
+                        <option value="行政">行政</option>
+                        <option value="施工">施工</option>
+                        <option value="驗收">驗收</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </td>
+                <td><input type="text" placeholder="具體工作內容" class="work-content"></td>
+                <td><input type="number" min="0" max="100" placeholder="0-100" class="progress" style="width: 60px;"></td>
+                <td><input type="number" min="0.5" max="12" step="0.5" placeholder="小時" class="hours" style="width: 60px;"></td>
+                <td><button type="button" class="btn-remove" onclick="removeRow(this)" style="background: #f56565; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">刪除</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        // 新增明日計畫
+        function addPlanRow() {
+            const tbody = document.querySelector('#planTable tbody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" placeholder="如：43-A" class="plan-case-id"></td>
+                <td><input type="text" placeholder="如：北斗國小" class="plan-case-name"></td>
+                <td><input type="text" placeholder="預計工作內容" class="plan-content"></td>
+                <td><input type="number" min="0.5" max="12" step="0.5" placeholder="小時" class="plan-hours" style="width: 80px;"></td>
+                <td><button type="button" class="btn-remove" onclick="removeRow(this)" style="background: #f56565; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">刪除</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        // 新增風險事項
+        function addRiskRow() {
+            const tbody = document.querySelector('#riskTable tbody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" placeholder="如：馬偕護專" class="risk-case-id"></td>
+                <td>
+                    <select class="risk-level">
+                        <option value="">請選擇</option>
+                        <option value="high">🔴 高</option>
+                        <option value="medium">🟠 中</option>
+                        <option value="low">🟢 低</option>
+                    </select>
+                </td>
+                <td><input type="text" placeholder="風險說明" class="risk-desc"></td>
+                <td><input type="text" placeholder="如：工期延遲" class="risk-impact"></td>
+                <td><input type="text" placeholder="需要什麼協助" class="risk-help"></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        // 刪除列
+        function removeRow(btn) {
+            const row = btn.closest('tr');
+            const tbody = row.closest('tbody');
+            if (tbody.querySelectorAll('tr').length > 1) {
+                row.remove();
+            } else {
+                alert('至少需要保留一列！');
+            }
+        }
+
+        // 提交日報
+        function submitReport() {
+            const form = document.getElementById('dailyReportForm');
+            if (!form.checkValidity()) {
+                alert('請填寫所有必填欄位！');
+                form.reportValidity();
+                return;
+            }
+
+            // 收集表單資料
+            const data = {
+                employeeName: document.getElementById('employeeName').value,
+                reportDate: document.getElementById('reportDate').value,
+                department: document.getElementById('department').value,
+                workItems: [],
+                planItems: [],
+                riskItems: [],
+                todayGain: document.getElementById('todayGain').value,
+                improvement: document.getElementById('improvement').value,
+                remarks: document.getElementById('remarks').value,
+                attachments: {
+                    photo: document.getElementById('attachPhoto').checked,
+                    meeting: document.getElementById('attachMeeting').checked,
+                    document: document.getElementById('attachDocument').checked,
+                    other: document.getElementById('attachOther').checked
+                },
+                attachNote: document.getElementById('attachNote').value
+            };
+
+            // 收集工作項目
+            document.querySelectorAll('#workTable tbody tr').forEach(row => {
+                data.workItems.push({
+                    caseId: row.querySelector('.case-id').value,
+                    caseName: row.querySelector('.case-name').value,
+                    workType: row.querySelector('.work-type').value,
+                    workContent: row.querySelector('.work-content').value,
+                    progress: row.querySelector('.progress').value,
+                    hours: row.querySelector('.hours').value
+                });
+            });
+
+            // 收集明日計畫
+            document.querySelectorAll('#planTable tbody tr').forEach(row => {
+                data.planItems.push({
+                    caseId: row.querySelector('.plan-case-id').value,
+                    caseName: row.querySelector('.plan-case-name').value,
+                    planContent: row.querySelector('.plan-content').value,
+                    planHours: row.querySelector('.plan-hours').value
+                });
+            });
+
+            // 收集風險事項
+            document.querySelectorAll('#riskTable tbody tr').forEach(row => {
+                if (row.querySelector('.risk-level').value) {
+                    data.riskItems.push({
+                        caseId: row.querySelector('.risk-case-id').value,
+                        riskLevel: row.querySelector('.risk-level').value,
+                        riskDesc: row.querySelector('.risk-desc').value,
+                        riskImpact: row.querySelector('.risk-impact').value,
+                        riskHelp: row.querySelector('.risk-help').value
+                    });
+                }
+            });
+
+            console.log('提交資料:', data);
+            alert('✅ 日報提交成功！\n\n員工：' + data.employeeName + '\n日期：' + data.reportDate + '\n工作項目：' + data.workItems.length + '項');
+            
+            // 此處可加入實際的提交邏輯（如：發送郵件、儲存到資料庫等）
+        }
+
+        // 儲存草稿
+        function saveDraft() {
+            alert('💾 草稿已儲存（功能開發中）');
+        }
+
+        // 列印
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
