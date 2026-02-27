@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>昱金生能源集團 - 員工工作日報分析報告 (2026-02-25)</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2c5282;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c5282;
+            margin: 0;
+            font-size: 24px;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .meta-info {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .meta-item {
+            text-align: center;
+        }
+        .meta-item .label {
+            font-size: 12px;
+            color: #666;
+        }
+        .meta-item .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c5282;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            background: linear-gradient(135deg, #2c5282, #4299e1);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .score-distribution {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .score-bar {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .score-bar.excellent { border-color: #48bb78; }
+        .score-bar.good { border-color: #4299e1; }
+        .score-bar.average { border-color: #ed8936; }
+        .score-bar.needs-improvement { border-color: #f56565; }
+        .score-bar .level {
+            font-size: 12px;
+            color: #666;
+        }
+        .score-bar .count {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5282;
+        }
+        .score-bar .names {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .employee-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+        }
+        .employee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .employee-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c5282;
+        }
+        .employee-position {
+            font-size: 14px;
+            color: #666;
+        }
+        .employee-score {
+            text-align: center;
+            background: linear-gradient(135deg, #2c5282, #4299e1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .employee-score .score-num {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .employee-score .score-label {
+            font-size: 12px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .info-item {
+            font-size: 13px;
+        }
+        .info-item .label {
+            color: #666;
+            font-size: 12px;
+        }
+        .info-item .value {
+            color: #333;
+        }
+        .work-list, .plan-list, .risk-list, .action-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        .work-list li, .plan-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .work-list li:before, .plan-list li:before {
+            content: "•";
+            color: #4299e1;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .risk-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #c53030;
+        }
+        .risk-list li:before {
+            content: "⚠️";
+            position: absolute;
+            left: 0;
+        }
+        .action-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .action-list li:before {
+            content: "✓";
+            color: #48bb78;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .analysis-box {
+            background: #ebf8ff;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #4299e1;
+            margin: 10px 0;
+        }
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .risk-high { background: #fed7d7; color: #c53030; }
+        .risk-medium { background: #feebc8; color: #c05621; }
+        .risk-low { background: #c6f6d5; color: #276749; }
+        .category-tag {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #4a5568;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .summary-table th, .summary-table td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: left;
+        }
+        .summary-table th {
+            background: #2c5282;
+            color: white;
+        }
+        .summary-table tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            font-size: 12px;
+            color: #666;
+        }
+        @media print {
+            body { 
+                max-width: none;
+                padding: 0;
+            }
+            .employee-card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏢 昱金生能源集團</h1>
+        <h2>員工工作日報分析報告</h2>
+        <div class="subtitle">Employee Daily Report Analysis</div>
+    </div>
+
+    <div class="meta-info">
+        <div class="meta-item">
+            <div class="label">報告日期</div>
+            <div class="value">2026-02-25</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">分析員工人數</div>
+            <div class="value">7 位</div>
+        </div>
+        <div class="meta-item">
+            <div class="label">平均評分</div>
+            <div class="value">85.6 分</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">📊 整體概況</div>
+        
+        <div class="score-distribution">
+            <div class="score-bar excellent">
+                <div class="level">優秀 (90-100 分)</div>
+                <div class="count">2 位</div>
+                <div class="names">高竹妤 (92)、陳明德 (90)</div>
+            </div>
+            <div class="score-bar good">
+                <div class="level">良好 (85-89 分)</div>
+                <div class="count">3 位</div>
+                <div class="names">陳谷濱 (88)、張億峖 (87)、楊宗衛 (85)</div>
+            </div>
+            <div class="score-bar average">
+                <div class="level">普通 (80-84 分)</div>
+                <div class="count">1 位</div>
+                <div class="names">李雅婷 (82)</div>
+            </div>
+            <div class="score-bar needs-improvement">
+                <div class="level">待改進 (75-79 分)</div>
+                <div class="count">1 位</div>
+                <div class="names">陳靜儒 (75)</div>
+            </div>
+        </div>
+
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>風險等級</th>
+                    <th>人數</th>
+                    <th>員工名單</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="risk-badge risk-medium">中風險</span></td>
+                    <td>3 位</td>
+                    <td>楊宗衛、陳明德、李雅婷</td>
+                </tr>
+                <tr>
+                    <td><span class="risk-badge risk-low">低風險</span></td>
+                    <td>4 位</td>
+                    <td>陳谷濱、張億峖、高竹妤、陳靜儒</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">👥 個別員工詳細分析</div>
+
+        <!-- 高竹妤 -->
+        <div class="employee-card">
+            <div class="employee-header">
+                <div>
+                    <div class="employee-name">高竹妤</div>
+                    <div class="employee-position">設計工程師 | cukao@yjsenergy.com</div>
+                </div>
+                <div class="employee-score">
+                    <div class="score-num">92</div>
+                    <div class="score-label">評分</div>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">工作類別</div>
+                    <div class="value"><span class="category-tag">🏗️ 設計圖面/竣工備查</span></div>
+                </div>
+                <div class="info-item">
+                    <div class="label">風險等級</div>
+                    <div class="value"><span class="risk-badge risk-low">低風險</span></div>
+                </div>
+            </div>
+            <div>
+                <strong>今日工作：</strong>
+                <ul class="work-list">
+                    <li>P 圖：56-A 竣工備查、52-A 竣工備查、12-1 設備登記</li>
+                    <li>修改結構審查圖面：61-A、61-B、58-A、26-1</li>
+                </ul>
+            </div>
+            <div>
+                <strong>明日計畫：</strong>
+                <ul class="plan-list">
+                    <li>嘗試用 tekla 蓋 43-A 的鋼構</li>
+                    <li>P 圖：56-A 竣工備查</li>
+                </ul>
+            </div>
+            <div class="analysis-box">
+                <strong>📝 分析評語：</strong>負責多個案場的設計圖面修改與竣工圖製作，工作量飽滿且效率高，同時處理 6 個以上案場圖面。
+            </div>
+            <div>
+                <strong>✅ 行動建議：</strong>
+                <ul class="action-list">
+                    <li>確認圖面審查通過狀況</li>
+                    <li>追蹤 tekla 鋼構建模進度</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 陳明德 -->
+        <div class="employee-card">
+            <div class="employee-header">
+                <div>
+                    <div class="employee-name">陳明德</div>
+                    <div class="employee-position">工程師 | alexchen@yjsenergy.com</div>
+                </div>
+                <div class="employee-score">
+                    <div class="score-num">90</div>
+                    <div class="score-label">評分</div>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">工作類別</div>
+                    <div class="value"><span class="category-tag">📋 行政作業/會議準備</span></div>
+                </div>
+                <div class="info-item">
+                    <div class="label">風險等級</div>
+                    <div class="value"><span class="risk-badge risk-medium">中風險</span></div>
+                </div>
+            </div>
+            <div>
+                <strong>今日工作：</strong>
+                <ul class="work-list">
+                    <li>整理同意備案資料提供縣府備查</li>
+                    <li>每一案需列印用印及蓋與正本相符</li>
+                    <li>收到漳和光電球場電力技師資料，用印後連同展延函送給漳和組長</li>
+                    <li>馬偕明天開會，與 ERIC 確認狀況</li>
+                </ul>
+            </div>
+            <div>
+                <strong>⚠️ 風險事項：</strong>
+                <ul class="risk-list">
+                    <li>馬偕開會當天變天，擔心土壤未乾影響夯實進度</li>
+                    <li>用印作業耗時</li>
+                </ul>
+            </div>
+            <div class="analysis-box">
+                <strong>📝 分析評語：</strong>大量行政作業（用印、備查）仍按時完成，主動關注馬偕案場天候風險，責任心強。
+            </div>
+            <div>
+                <strong>✅ 行動建議：</strong>
+                <ul class="action-list">
+                    <li>追蹤馬偕會議結果</li>
+                    <li>確認土壤夯實條件與天候影響評估</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 陳谷濱 -->
+        <div class="employee-card">
+            <div class="employee-header">
+                <div>
+                    <div class="employee-name">陳谷濱 (BEN)</div>
+                    <div class="employee-position">工程師 | eng@yjsenergy.com</div>
+                </div>
+                <div class="employee-score">
+                    <div class="score-num">88</div>
+                    <div class="score-label">評分</div>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">工作類別</div>
+                    <div class="value"><span class="category-tag">🔍 現場現勘/物料協調</span></div>
+                </div>
+                <div class="info-item">
+                    <div class="label">風險等級</div>
+                    <div class="value"><span class="risk-badge risk-low">低風險</span></div>
+                </div>
+            </div>
+            <div>
+                <strong>今日工作：</strong>
+                <ul class="work-list">
+                    <li>北斗國中 - 空拍、台電設計課現勘</li>
+                    <li>永靖國中 - 物料置放區校方協調（預計下周進物料）</li>
+                </ul>
+            </div>
+            <div class="analysis-box">
+                <strong>📝 分析評語：</strong>負責多個彰化案場的現勘與物料協調，永靖國中預計下周進物料，進度掌控良好。
+            </div>
+            <div>
+                <strong>✅ 行動建議：</strong>
+                <ul class="action-list">
+                    <li>確認北斗國中現勘結果</li>
+                    <li>追蹤永靖國中物料進場時程</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 張億峖 -->
+        <div class="employee-card">
+            <div class="employee-header">
+                <div>
+                    <div class="employee-name">張億峖</div>
+                    <div class="employee-position">工程師 | eng@yjsenergy.com</div>
+                </div>
+                <div class="employee-score">
+                    <div class="score-num">87</div>
+                    <div class="score-label">評分</div>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">工作類別</div>
+                    <div class="value"><span class="category-tag">📋 路權申辦/物料配送</span></div>
+                </div>
+                <div class="info-item">
+                    <div class="label">風險等級</div>
+                    <div class="value"><span class="risk-badge risk-low">低風險</span></div>
+                </div>
+            </div>
+            <div>
+                <strong>今日工作：</strong>
+                <ul class="work-list">
+                    <li>申辦忠孝國小路權</li>
+                    <li>陸豐送電錶給工班</li>
+                </ul>
+            </div>
+            <div class="analysis-box">
+                <strong>📝 分析評語：</strong>負責路權申辦與電錶配送，陸豐國小進度良好，工作明確。
+            </div>
+            <div>
+                <strong>✅ 行動建議：</strong>
+                <ul class="action-list">
+                    <li>確認忠孝國小路權進度</li>
+                    <li>追蹤陸豐國小掛錶進度</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 楊宗衛 -->
+        <div class="employee-card">
+            <div class="employee-header">
+                <div>
+                    <div class="employee-name">楊宗衛</div>
+                    <div class="employee-position">工程師 | eng@yjsenergy.com</div>
+                </div>
+                <div class="employee-score">
+                    <div class="score-num">85</div>
+                    <div class="score-label">評分</div>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">工作類別</div>
+                    <div class="value"><span class="category-tag">📅 工程會議/巡場</span></div>
+                </div>
+                <div class="info-item">
+                    <div class="label">風險等級</div>
+                    <div class="value"><span class="risk-badge risk-medium">中風險</span></div>
+                </div>
+            </div>
+            <div>
+                <strong>今日工作：</strong>
+                <ul class="work-list">
+                    <li>2/25 行程規劃</li>
+                    <li>上午 - 馬偕工程會議</li>
+                    <li>下午 - 馬偕光電球場 - 巡場</li>
+                </ul>
+            </div>
+            <div class="analysis-box">
+                <strong>📝 分析評語：</strong>負責馬偕護專案場的工程會議與現場巡視，需關注天候對施工進度的影響。
+            </div>
+            <div>
+                <strong>✅ 行動建議：</strong>
+                <ul class="action-list">
+                    <li>追蹤馬偕會議結論</li>
+                    <li>確認天候影響評估</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 李雅婷 -->
+        <div class="employee-card">
+            <div class="employee-header">
+                <div>
+                    <div class="employee-name">李雅婷</div>
+                    <div class="employee-position">行政/標案 | colleenlee@yjsenergy.com</div>
+                </div>
+                <div class="employee-score">
+                    <div class="score-num">82</div>
+                    <div class="score-label">評分</div>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">工作類別</div>
+                    <div class="value"><span class="category-tag">🏛️ 政府標案/進度追蹤</span></div>
+                </div>
+                <div class="info-item">
+                    <div class="label">風險等級</div>
+                    <div class="value"><span class="risk-badge risk-medium">中風險</span></div>
+                </div>
+            </div>
+            <div>
+                <strong>今日工作：</strong>
+                <ul class="work-list">
+                    <li>併審&同備&免雜進度更新（2/24 與 2/13 進度同）</li>
+                    <li>詢問修樹廠商報價：31 萬合國小 +38 長安國小</li>
+                </ul>
+            </div>
+            <div>
+                <strong>⚠️ 風險事項：</strong>
+                <ul class="risk-list">
+                    <li>進度與 2/13 相同，可能停滯</li>
+                </ul>
+            </div>
+            <div class="analysis-box">
+                <strong>📝 分析評語：</strong>負責政府標案進度追蹤，修樹報價進行中，但進度停滯需加強追蹤力度。
+            </div>
+            <div>
+                <strong>✅ 行動建議：</strong>
+                <ul class="action-list">
+                    <li>催促修樹廠商儘快報價</li>
+                    <li>主動追蹤標案審查進度，避免停滯</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 陳靜儒 -->
+        <div class="employee-card">
+            <div class="employee-header">
+                <div>
+                    <div class="employee-name">陳靜儒</div>
+                    <div class="employee-position">物料/行政 | mat@yjsenergy.com</div>
+                </div>
+                <div class="employee-score">
+                    <div class="score-num">75</div>
+                    <div class="score-label">評分</div>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">工作類別</div>
+                    <div class="value"><span class="category-tag">📋 行政支援</span></div>
+                </div>
+                <div class="info-item">
+                    <div class="label">風險等級</div>
+                    <div class="value"><span class="risk-badge risk-low">低風險</span></div>
+                </div>
+            </div>
+            <div>
+                <strong>今日工作：</strong>
+                <ul class="work-list">
+                    <li>工作日誌（無具體內容）</li>
+                </ul>
+            </div>
+            <div class="analysis-box">
+                <strong>📝 分析評語：</strong>日報內容較簡略，建議增加具體工作項目與進度說明，以提升回報品質。
+            </div>
+            <div>
+                <strong>✅ 行動建議：</strong>
+                <ul class="action-list">
+                    <li>建議完善日報內容，具體列舉工作項目</li>
+                    <li>增加進度百分比或完成狀況說明</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">⚠️ 風險提示彙總</div>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>風險等級</th>
+                    <th>事項</th>
+                    <th>負責人</th>
+                    <th>建議處理</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="risk-badge risk-medium">中</span></td>
+                    <td>馬偕護專案場 - 天候影響土壤夯實進度</td>
+                    <td>陳明德、楊宗衛</td>
+                    <td>關注天氣預報，評估延期可能</td>
+                </tr>
+                <tr>
+                    <td><span class="risk-badge risk-medium">中</span></td>
+                    <td>政府標案進度停滯 - 與 2/13 進度相同</td>
+                    <td>李雅婷</td>
+                    <td>主動聯繫承辦窗口，了解審查狀況</td>
+                </tr>
+                <tr>
+                    <td><span class="risk-badge risk-medium">中</span></td>
+                    <td>用印行政作業耗時 - 影響效率</td>
+                    <td>陳明德</td>
+                    <td>評估批量用印流程優化</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">📋 董事長行動建議</div>
+        <div style="background: #fff5f5; border-left: 4px solid #fc8181; padding: 15px; margin: 15px 0;">
+            <strong style="color: #c53030;">🔥 今日優先處理：</strong>
+            <ul class="action-list">
+                <li>📞 關心馬偕護專會議結果及天候影響</li>
+                <li>📧 催促李雅婷追蹤政府標案審查進度</li>
+                <li>💬 與陳靜儒溝通完善日報內容</li>
+            </ul>
+        </div>
+        <div style="background: #ebf8ff; border-left: 4px solid #4299e1; padding: 15px; margin: 15px 0;">
+            <strong style="color: #2c5282;">📅 本週追蹤事項：</strong>
+            <ul class="work-list">
+                <li>永靖國中物料進場（預計下周）</li>
+                <li>修樹廠商報價（合國小、長安國小）</li>
+                <li>忠孝國小路權申辦進度</li>
+                <li>陸豐國小掛錶進度</li>
+            </ul>
+        </div>
+        <div style="background: #f0fff4; border-left: 4px solid #68d391; padding: 15px; margin: 15px 0;">
+            <strong style="color: #276749;">🏆 表揚建議：</strong>
+            <ul class="work-list">
+                <li><strong>高竹妤 (92 分)</strong> - 設計圖面工作效率優異，多個案場同時進行</li>
+                <li><strong>陳明德 (90 分)</strong> - 行政作業繁瑣但仍按時完成，主動關注風險</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">📈 評分說明</div>
+        <div style="background: #f7fafc; padding: 15px; border-radius: 8px;">
+            <p><strong>評分標準：</strong></p>
+            <ul class="work-list">
+                <li><strong>90-100 分：</strong>工作內容具體、進度明確、主動回報風險、效率高</li>
+                <li><strong>85-89 分：</strong>工作內容完整、進度清楚、按時回報</li>
+                <li><strong>80-84 分：</strong>工作內容基本完整、進度需加強追蹤</li>
+                <li><strong>75-79 分：</strong>工作內容簡略、需改進回報品質</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>評分項目權重：</strong></p>
+            <ul class="work-list">
+                <li>工作內容具體度（30%）</li>
+                <li>進度明確度（25%）</li>
+                <li>風險意識（20%）</li>
+                <li>回報及時性（15%）</li>
+                <li>明日計畫完整性（10%）</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>報告生成：昱金生能源集團 AI 助理 Jenny</p>
+        <p>聯絡信箱：johnnys@yjsenergy.com | 生成時間：2026-02-28</p>
+        <p>─────────────────────────────────────────────────────────────</p>
+        <p style="font-size: 11px; color: #999;">本報告僅供內部管理參考，請妥善保存</p>
+    </div>
+
+    <script>
+        // 列印提示
+        window.onload = function() {
+            console.log("💡 提示：使用 Ctrl+P (Windows) 或 Cmd+P (Mac) 可將此報告列印為 PDF");
+        };
+    </script>
+</body>
+</html>

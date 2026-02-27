@@ -1,0 +1,54 @@
+{
+  "rules": [
+    {
+      "name": "早晨檢查鏈",
+      "trigger": "早晨檢查",
+      "next_tasks": [
+        {
+          "name": "整理早晨檢查結果",
+          "description": "將早晨檢查的郵件、日曆、天氣資訊整理成報告",
+          "delay_minutes": 0
+        }
+      ]
+    },
+    {
+      "name": "郵件處理鏈",
+      "trigger": "檢查郵件",
+      "next_tasks": [
+        {
+          "name": "分類重要郵件",
+          "description": "將郵件分為緊急、重要、普通三類",
+          "delay_minutes": 5
+        },
+        {
+          "name": "產生回覆草稿",
+          "description": "為重要郵件產生回覆草稿",
+          "delay_minutes": 15
+        }
+      ]
+    },
+    {
+      "name": "Git 監控鏈",
+      "trigger": "監控專案 git 狀態",
+      "next_tasks": [
+        {
+          "name": "提交變更報告",
+          "description": "如有未提交變更，產生提交報告",
+          "delay_minutes": 0,
+          "condition": "has_changes"
+        }
+      ]
+    },
+    {
+      "name": "晚間總結鏈",
+      "trigger": "晚間總結",
+      "next_tasks": [
+        {
+          "name": "建立明日待辦",
+          "description": "根據今日總結建立明日待辦清單",
+          "delay_minutes": 0
+        }
+      ]
+    }
+  ]
+}

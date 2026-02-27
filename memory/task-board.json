@@ -1,0 +1,44 @@
+{
+  "tasks": [
+    {
+      "id": "task-1772226611.763032",
+      "name": "測試任務：建立自動化系統",
+      "description": "完成任務看板系統的建置",
+      "agent": "main",
+      "status": "running",
+      "createdAt": "2026-02-28T05:10:11.763054",
+      "updatedAt": "2026-02-28T05:10:11.763060"
+    },
+    {
+      "id": "task-1772226615.948298",
+      "name": "早晨檢查",
+      "description": "每日早晨例行檢查",
+      "agent": "main",
+      "status": "pending",
+      "createdAt": "2026-02-28T05:10:15.948309",
+      "updatedAt": "2026-02-28T05:10:15.948312"
+    },
+    {
+      "id": "task-1772227534.908372",
+      "name": "日報產生",
+      "description": "每天晚上八點彙整掃描我的郵箱，彙整當天的員工日報，進行重點摘要整理",
+      "agent": "main",
+      "status": "pending",
+      "createdAt": "2026-02-28T05:25:34.908382",
+      "updatedAt": "2026-02-28T05:25:34.908386"
+    }
+  ],
+  "cronJobs": [],
+  "agents": {
+    "main": {
+      "name": "Jenny (主助理)",
+      "model": "ollama/qwen3.5:397b-cloud",
+      "specialty": "綜合任務處理"
+    }
+  },
+  "stats": {
+    "totalCreated": 3,
+    "totalCompleted": 0,
+    "totalFailed": 0
+  }
+}
