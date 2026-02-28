@@ -280,6 +280,16 @@ function addRisk(data = {}) {
         <button type="button" class="btn-remove" onclick="removeItem('risk',${id})">✕ 移除</button>
         <div class="form-row">
             <div class="form-group"><label>案場</label>${caseSelect(`r_case_${id}`)}</div>
+            <div class="form-group"><label>風險分類</label>
+                <select name="r_cat_${id}" onchange="syncData()">
+                    <option value="工期">工期</option>
+                    <option value="成本">成本</option>
+                    <option value="協調">協調</option>
+                    <option value="合約">合約</option>
+                    <option value="品質">品質</option>
+                    <option value="其他">其他</option>
+                </select>
+            </div>
             <div class="form-group"><label>風險等級</label>
                 <div class="risk-selector">
                     <div class="risk-opt ${level==='high'?'active':''}" data-val="high" onclick="setRisk(${id},'high',this)">🔴 高</div>
@@ -302,6 +312,7 @@ function addRisk(data = {}) {
         </div>`;
     document.getElementById('risk-container').appendChild(div);
     if (data.case_id) div.querySelector(`[name="r_case_${id}"]`).value = data.case_id;
+    if (data.category) div.querySelector(`[name="r_cat_${id}"]`).value = data.category;
 }
 
 function setRisk(id, level, el) {
@@ -348,6 +359,7 @@ function syncData() {
         const id = card.id.replace('risk-','');
         riskData.push({
             case_id: card.querySelector(`[name="r_case_${id}"]`)?.value || '',
+            category: card.querySelector(`[name="r_cat_${id}"]`)?.value || '協調',
             risk_level: document.getElementById(`r_level_${id}`)?.value || 'low',
             risk_desc: card.querySelector(`[name="r_desc_${id}"]`)?.value || '',
             risk_impact: card.querySelector(`[name="r_impact_${id}"]`)?.value || '',

@@ -11,7 +11,7 @@
 7. 員工管理後台
 """
 
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, send_file
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, send_file, abort
 from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -23,6 +23,7 @@ from pathlib import Path
 import threading
 import subprocess
 import io
+import sqlite3
 try:
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -188,6 +189,95 @@ def tail_jsonl(p: Path, max_lines: int = 400):
         return []
 
 
+# ===================== 資料庫（SQLite） =====================
+DB_FILE = DATA_DIR / 'app.db'
+
+# 里程碑（你指定 C：里程碑 + 百分比都要）
+MILESTONE_STAGES = [
+    '現勘', '投標', '得標', '設計', '送審', '施工', '完工掛表', '維運'
+]
+
+RISK_CATEGORIES = ['工期', '成本', '協調', '合約', '品質', '其他']
+
+
+def get_db():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db():
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with get_db() as db:
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS reports (
+              report_key TEXT PRIMARY KEY,
+              report_date TEXT,
+              employee_id TEXT,
+              submitted_at TEXT,
+              report_json TEXT
+            )
+        ''')
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS work_items (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              report_key TEXT,
+              case_id TEXT,
+              work_type TEXT,
+              progress REAL,
+              hours REAL,
+              work_content TEXT,
+              output TEXT,
+              status TEXT
+            )
+        ''')
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS risk_items (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              report_key TEXT,
+              report_date TEXT,
+              employee_id TEXT,
+              case_id TEXT,
+              category TEXT,
+              level TEXT,
+              risk_desc TEXT,
+              risk_impact TEXT,
+              need_help TEXT,
+              status TEXT DEFAULT 'open',
+              owner_id TEXT DEFAULT '',
+              due_date TEXT DEFAULT '',
+              created_at TEXT
+            )
+        ''')
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS case_status (
+              case_id TEXT PRIMARY KEY,
+              stage TEXT,
+              percent REAL,
+              note TEXT,
+              updated_at TEXT,
+              updated_by TEXT
+            )
+        ''')
+        db.commit()
+
+
+def ensure_case_status_seed():
+    """把 CASES 清單 seed 到 case_status（若尚未有記錄）。"""
+    try:
+        with get_db() as db:
+            for c in CASES:
+                row = db.execute('SELECT case_id FROM case_status WHERE case_id=?', (c['id'],)).fetchone()
+                if not row:
+                    db.execute(
+                        'INSERT INTO case_status(case_id, stage, percent, note, updated_at, updated_by) VALUES(?,?,?,?,?,?)',
+                        (c['id'], '', None, '', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'system')
+                    )
+            db.commit()
+    except Exception:
+        pass
+
+
 # ===================== 案場清單 =====================
 CASES = [
     {"id": "馬偕護專", "name": "馬偕護專停車場", "type": "停車場"},
@@ -204,6 +294,13 @@ CASES = [
     {"id": "永豐融資", "name": "永豐銀行融資展延", "type": "行政"},
     {"id": "其他", "name": "其他/行政事務", "type": "行政"},
 ]
+
+# 初始化資料庫
+try:
+    init_db()
+    ensure_case_status_seed()
+except Exception:
+    pass
 
 # ===================== 登入系統 =====================
 class User(UserMixin):
@@ -437,6 +534,51 @@ def report_form(employee_id=None):
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
 
+        # 同步寫入 SQLite（供後續案件儀表板/風險追蹤/AI 取用）
+        try:
+            report_key = f"{today}|{employee_id}"
+            with get_db() as db:
+                db.execute('REPLACE INTO reports(report_key, report_date, employee_id, submitted_at, report_json) VALUES(?,?,?,?,?)',
+                           (report_key, today, employee_id, report['submit_time'], json.dumps(report, ensure_ascii=False)))
+                db.execute('DELETE FROM work_items WHERE report_key=?', (report_key,))
+                db.execute('DELETE FROM risk_items WHERE report_key=?', (report_key,))
+
+                for w in work_items:
+                    db.execute(
+                        'INSERT INTO work_items(report_key, case_id, work_type, progress, hours, work_content, output, status) VALUES(?,?,?,?,?,?,?,?)',
+                        (
+                            report_key,
+                            (w.get('case_id') or '').strip(),
+                            (w.get('work_type') or '').strip(),
+                            float(w.get('progress') or 0),
+                            float(w.get('hours') or 0),
+                            (w.get('work_content') or '').strip(),
+                            (w.get('output') or '').strip(),
+                            (w.get('status') or '').strip(),
+                        )
+                    )
+
+                for r in risk_items:
+                    db.execute(
+                        'INSERT INTO risk_items(report_key, report_date, employee_id, case_id, category, level, risk_desc, risk_impact, need_help, created_at) VALUES(?,?,?,?,?,?,?,?,?,?)',
+                        (
+                            report_key,
+                            today,
+                            employee_id,
+                            (r.get('case_id') or '').strip(),
+                            (r.get('category') or '協調').strip(),
+                            (r.get('risk_level') or 'low').strip(),
+                            (r.get('risk_desc') or '').strip(),
+                            (r.get('risk_impact') or '').strip(),
+                            (r.get('need_help') or '').strip(),
+                            report['submit_time'],
+                        )
+                    )
+
+                db.commit()
+        except Exception:
+            pass
+
         audit('report_submit', actor_id=current_user.id, target_id=employee_id, detail={'date': today, 'edit': bool(is_edit)})
 
         # 編輯留痕
@@ -580,6 +722,244 @@ def history():
         employees=EMPLOYEES,
         is_admin=current_user.role == 'admin'
     )
+
+# ===================== 案場 / 風險（案件中心管理） =====================
+
+def case_by_id(case_id: str):
+    for c in CASES:
+        if c.get('id') == case_id:
+            return c
+    return {'id': case_id, 'name': case_id, 'type': ''}
+
+
+@app.route('/cases')
+@login_required
+def cases_dashboard():
+    with get_db() as db:
+        # 員工只看到自己碰過的案場；管理員看到全部
+        visible_cases = list(CASES)
+        if current_user.role == 'employee':
+            rows = db.execute(
+                """
+                SELECT DISTINCT w.case_id AS case_id
+                FROM work_items w
+                JOIN reports r ON w.report_key = r.report_key
+                WHERE r.employee_id = ? AND w.case_id != ''
+                """,
+                (current_user.id,)
+            ).fetchall()
+            touched = {r['case_id'] for r in rows}
+            visible_cases = [c for c in CASES if c['id'] in touched]
+
+        status_rows = db.execute('SELECT * FROM case_status').fetchall()
+        status_map = {r['case_id']: r for r in status_rows}
+
+        summaries = []
+        for c in visible_cases:
+            cid = c['id']
+            st = status_map.get(cid)
+
+            r1 = db.execute(
+                """
+                SELECT MAX(r.report_date) AS last_date
+                FROM work_items w
+                JOIN reports r ON w.report_key = r.report_key
+                WHERE w.case_id = ?
+                """,
+                (cid,)
+            ).fetchone()
+            r2 = db.execute(
+                "SELECT MAX(report_date) AS last_date FROM risk_items WHERE case_id = ?",
+                (cid,)
+            ).fetchone()
+            last_date = max((r1['last_date'] or ''), (r2['last_date'] or ''))
+
+            rc = db.execute(
+                """
+                SELECT
+                  SUM(CASE WHEN status != 'closed' THEN 1 ELSE 0 END) AS total,
+                  SUM(CASE WHEN status != 'closed' AND level = 'high' THEN 1 ELSE 0 END) AS high,
+                  SUM(CASE WHEN status != 'closed' AND level = 'medium' THEN 1 ELSE 0 END) AS medium,
+                  SUM(CASE WHEN status != 'closed' AND level = 'low' THEN 1 ELSE 0 END) AS low
+                FROM risk_items
+                WHERE case_id = ?
+                """,
+                (cid,)
+            ).fetchone()
+
+            summaries.append({
+                'id': cid,
+                'name': c.get('name', cid),
+                'type': c.get('type', ''),
+                'stage': (st['stage'] if st else ''),
+                'percent': (st['percent'] if st and st['percent'] is not None else ''),
+                'updated_at': (st['updated_at'] if st else ''),
+                'last_date': last_date,
+                'risk_total': rc['total'] or 0,
+                'risk_high': rc['high'] or 0,
+                'risk_medium': rc['medium'] or 0,
+                'risk_low': rc['low'] or 0,
+            })
+
+    return render_template('cases.html', cases=summaries, is_admin=current_user.role == 'admin')
+
+
+@app.route('/cases/<case_id>', methods=['GET', 'POST'])
+@login_required
+def case_detail(case_id):
+    case = case_by_id(case_id)
+
+    with get_db() as db:
+        if request.method == 'POST':
+            if current_user.role != 'admin':
+                abort(403)
+            stage = (request.form.get('stage') or '').strip()
+            percent_raw = (request.form.get('percent') or '').strip()
+            note = (request.form.get('note') or '').strip()
+
+            if stage and stage not in MILESTONE_STAGES:
+                flash('里程碑階段不正確', 'error')
+                return redirect(url_for('case_detail', case_id=case_id))
+
+            percent = None
+            if percent_raw != '':
+                try:
+                    percent = float(percent_raw)
+                except Exception:
+                    flash('百分比需為數字', 'error')
+                    return redirect(url_for('case_detail', case_id=case_id))
+                if percent < 0 or percent > 100:
+                    flash('百分比需在 0~100 之間', 'error')
+                    return redirect(url_for('case_detail', case_id=case_id))
+
+            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            db.execute(
+                'REPLACE INTO case_status(case_id, stage, percent, note, updated_at, updated_by) VALUES(?,?,?,?,?,?)',
+                (case_id, stage, percent, note, now, current_user.id)
+            )
+            db.commit()
+            audit('case_status_update', actor_id=current_user.id, target_id=case_id, detail={'stage': stage, 'percent': percent})
+            flash('✅ 案場進度已更新', 'success')
+            return redirect(url_for('case_detail', case_id=case_id))
+
+        st = db.execute('SELECT * FROM case_status WHERE case_id = ?', (case_id,)).fetchone()
+
+        # 近期工作明細（最近 60 筆）
+        works = db.execute(
+            """
+            SELECT r.report_date, r.employee_id, w.*
+            FROM work_items w
+            JOIN reports r ON w.report_key = r.report_key
+            WHERE w.case_id = ?
+            ORDER BY r.report_date DESC, w.id DESC
+            LIMIT 60
+            """,
+            (case_id,)
+        ).fetchall()
+
+        # 風險清單（最近 80 筆）
+        if current_user.role == 'admin':
+            risks = db.execute(
+                "SELECT * FROM risk_items WHERE case_id = ? ORDER BY id DESC LIMIT 80",
+                (case_id,)
+            ).fetchall()
+        else:
+            risks = db.execute(
+                "SELECT * FROM risk_items WHERE case_id = ? AND employee_id = ? ORDER BY id DESC LIMIT 80",
+                (case_id, current_user.id)
+            ).fetchall()
+
+    return render_template(
+        'case_detail.html',
+        case=case,
+        status=st,
+        works=works,
+        risks=risks,
+        is_admin=current_user.role == 'admin',
+        stages=MILESTONE_STAGES,
+        risk_categories=RISK_CATEGORIES,
+    )
+
+
+@app.route('/risks')
+@login_required
+def risks_page():
+    q_case = (request.args.get('case') or '').strip()
+    q_cat = (request.args.get('cat') or '').strip()
+    q_status = (request.args.get('status') or '').strip()
+
+    sql = "SELECT * FROM risk_items WHERE 1=1"
+    params = []
+
+    if current_user.role == 'employee':
+        sql += " AND employee_id = ?"
+        params.append(current_user.id)
+
+    if q_case:
+        sql += " AND case_id = ?"
+        params.append(q_case)
+    if q_cat:
+        sql += " AND category = ?"
+        params.append(q_cat)
+    if q_status:
+        sql += " AND status = ?"
+        params.append(q_status)
+
+    sql += " ORDER BY id DESC LIMIT 300"
+
+    with get_db() as db:
+        rows = db.execute(sql, tuple(params)).fetchall()
+
+    return render_template(
+        'risks.html',
+        rows=rows,
+        cases=CASES,
+        categories=RISK_CATEGORIES,
+        is_admin=current_user.role == 'admin',
+        q_case=q_case,
+        q_cat=q_cat,
+        q_status=q_status,
+    )
+
+
+@app.route('/risks/update/<int:risk_id>', methods=['POST'])
+@login_required
+def risks_update(risk_id: int):
+    with get_db() as db:
+        row = db.execute('SELECT * FROM risk_items WHERE id = ?', (risk_id,)).fetchone()
+        if not row:
+            flash('風險不存在', 'error')
+            return redirect(url_for('risks_page'))
+
+        if current_user.role != 'admin' and row['employee_id'] != current_user.id:
+            abort(403)
+
+        status = (request.form.get('status') or row['status'] or 'open').strip()
+        owner_id = (request.form.get('owner_id') or row['owner_id'] or '').strip()
+        due_date = (request.form.get('due_date') or row['due_date'] or '').strip()
+        category = (request.form.get('category') or row['category'] or '協調').strip()
+        level = (request.form.get('level') or row['level'] or 'low').strip()
+
+        if category not in RISK_CATEGORIES:
+            category = '其他'
+        if level not in ('high', 'medium', 'low'):
+            level = 'low'
+        if status not in ('open', 'in_progress', 'closed'):
+            status = 'open'
+
+        db.execute(
+            'UPDATE risk_items SET status=?, owner_id=?, due_date=?, category=?, level=? WHERE id=?',
+            (status, owner_id, due_date, category, level, risk_id)
+        )
+        db.commit()
+
+    audit('risk_update', actor_id=current_user.id, target_id=str(risk_id), detail={'status': status, 'owner': owner_id, 'due': due_date, 'cat': category, 'level': level})
+    flash('✅ 風險已更新', 'success')
+
+    # 回到上一頁
+    ref = request.headers.get('Referer')
+    return redirect(ref or url_for('risks_page'))
+
 
 @app.route('/health')
 def health():

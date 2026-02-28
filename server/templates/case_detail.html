@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>案場明細 - {{ case.name }}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;background:#f3f4f6;color:#111827}
+    .top{background:#111827;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+    .top a{color:#c7d2fe;text-decoration:none;margin-left:12px;font-size:14px}
+    .wrap{max-width:1200px;margin:20px auto;padding:0 16px 60px}
+    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:16px}
+    h1{font-size:20px;font-weight:900}
+    .muted{color:#6b7280;font-size:13px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    label{font-size:13px;font-weight:900;color:#374151}
+    input,select,textarea{padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px}
+    textarea{min-height:64px;resize:vertical;width:100%}
+    .btn{padding:8px 14px;border:none;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;display:inline-block;font-weight:900;font-size:13px}
+    .btn-danger{background:#ef4444}
+    .alert{padding:12px 16px;border-radius:10px;margin-bottom:14px;font-size:14px}
+    .alert-success{background:#d4edda;color:#155724;border-left:4px solid #28a745}
+    .alert-error{background:#f8d7da;color:#721c24;border-left:4px solid #dc3545}
+    .alert-info{background:#d1ecf1;color:#0c5460;border-left:4px solid #17a2b8}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#f9fafb;color:#6b7280;font-weight:900;padding:10px 12px;text-align:left;border-bottom:2px solid #e5e7eb;white-space:nowrap}
+    td{padding:10px 12px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+    tr:hover td{background:#fafafa}
+    .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:900}
+    .p-high{background:#fee2e2;color:#991b1b}
+    .p-mid{background:#fef3c7;color:#92400e}
+    .p-low{background:#dcfce7;color:#166534}
+    code{background:#f3f4f6;border-radius:6px;padding:2px 6px}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div style="font-weight:900">📌 案場明細：{{ case.name }}</div>
+    <div>
+      <a href="/cases">案場總覽</a>
+      <a href="/risks">風險追蹤</a>
+      <a href="/">首頁</a>
+      {% if is_admin %}<a href="/admin">管理後台</a>{% endif %}
+      <a href="/change-password">修改密碼</a>
+      <a href="/logout">登出</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+      <h1>{{ case.name }} <span class="muted">({{ case.id }} · {{ case.type }})</span></h1>
+      <div class="muted" style="margin-top:6px">此頁整合：里程碑/進度（人工維護）＋ 近期工作與風險（由日報自動沉澱到資料庫）。</div>
+    </div>
+
+    {% if is_admin %}
+    <div class="card">
+      <h2 style="font-size:16px;font-weight:900;margin-bottom:10px">🧭 里程碑 + 百分比（管理員更新）</h2>
+      <form method="POST" class="row">
+        <div>
+          <label>里程碑</label><br>
+          <select name="stage">
+            <option value="">-- 未設定 --</option>
+            {% for s in stages %}
+              <option value="{{ s }}" {% if status and status.stage==s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>百分比</label><br>
+          <input type="number" name="percent" min="0" max="100" step="0.1" value="{{ status.percent if status and status.percent is not none else '' }}" placeholder="0~100" style="width:120px"/>
+        </div>
+        <div style="flex:1;min-width:220px">
+          <label>備註</label><br>
+          <input type="text" name="note" value="{{ status.note if status else '' }}" placeholder="例如：待送審文件補件" style="width:100%"/>
+        </div>
+        <div style="align-self:flex-end">
+          <button class="btn" type="submit">更新</button>
+        </div>
+      </form>
+      <div class="muted" style="margin-top:8px">最後更新：{{ status.updated_at if status else '-' }}（{{ status.updated_by if status else '-' }}）</div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+      <h2 style="font-size:16px;font-weight:900;margin-bottom:10px">⚠️ 風險（最新 80 筆）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>日期</th>
+            <th>提報人</th>
+            <th>分類</th>
+            <th>等級</th>
+            <th>說明</th>
+            <th>狀態</th>
+            <th>Owner</th>
+            <th>Due</th>
+            {% if is_admin %}<th>更新</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in risks %}
+          <tr>
+            <td><code>{{ r.id }}</code></td>
+            <td style="white-space:nowrap">{{ r.report_date }}</td>
+            <td><code>{{ r.employee_id }}</code></td>
+            <td>{{ r.category }}</td>
+            <td>
+              {% if r.level=='high' %}<span class="pill p-high">高</span>
+              {% elif r.level=='medium' %}<span class="pill p-mid">中</span>
+              {% else %}<span class="pill p-low">低</span>{% endif %}
+            </td>
+            <td style="max-width:420px">
+              <div><strong>{{ r.risk_desc }}</strong></div>
+              {% if r.risk_impact %}<div class="muted">影響：{{ r.risk_impact }}</div>{% endif %}
+              {% if r.need_help %}<div class="muted">協助：{{ r.need_help }}</div>{% endif %}
+            </td>
+            <td><code>{{ r.status }}</code></td>
+            <td><code>{{ r.owner_id }}</code></td>
+            <td style="white-space:nowrap"><code>{{ r.due_date }}</code></td>
+            {% if is_admin %}
+            <td>
+              <form method="POST" action="/risks/update/{{ r.id }}" class="row" style="gap:6px">
+                <select name="status">
+                  <option value="open" {% if r.status=='open' %}selected{% endif %}>open</option>
+                  <option value="in_progress" {% if r.status=='in_progress' %}selected{% endif %}>in_progress</option>
+                  <option value="closed" {% if r.status=='closed' %}selected{% endif %}>closed</option>
+                </select>
+                <select name="category">
+                  {% for c in risk_categories %}
+                    <option value="{{ c }}" {% if r.category==c %}selected{% endif %}>{{ c }}</option>
+                  {% endfor %}
+                </select>
+                <select name="level">
+                  <option value="high" {% if r.level=='high' %}selected{% endif %}>high</option>
+                  <option value="medium" {% if r.level=='medium' %}selected{% endif %}>medium</option>
+                  <option value="low" {% if r.level=='low' %}selected{% endif %}>low</option>
+                </select>
+                <input name="owner_id" value="{{ r.owner_id }}" placeholder="owner" style="width:110px"/>
+                <input name="due_date" value="{{ r.due_date }}" placeholder="YYYY-MM-DD" style="width:120px"/>
+                <button class="btn" type="submit">存</button>
+              </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if not risks %}
+        <div class="muted" style="padding:14px;text-align:center">目前沒有風險紀錄</div>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:16px;font-weight:900;margin-bottom:10px">🧱 近期工作（最新 60 筆）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>員工</th>
+            <th>類型</th>
+            <th>進度%</th>
+            <th>工時</th>
+            <th>內容</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for w in works %}
+          <tr>
+            <td style="white-space:nowrap">{{ w.report_date }}</td>
+            <td><code>{{ w.employee_id }}</code></td>
+            <td>{{ w.work_type }}</td>
+            <td><strong>{{ '%.0f'|format(w.progress or 0) }}</strong></td>
+            <td>{{ w.hours }}</td>
+            <td style="max-width:520px">{{ w.work_content }}</td>
+            <td><code>{{ w.status }}</code></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if not works %}
+        <div class="muted" style="padding:14px;text-align:center">目前沒有工作紀錄</div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

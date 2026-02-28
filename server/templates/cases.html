@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>案場總覽 - 員工日報系統</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;background:#f3f4f6;color:#111827}
+    .top{background:#111827;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+    .top a{color:#c7d2fe;text-decoration:none;margin-left:12px;font-size:14px}
+    .wrap{max-width:1200px;margin:20px auto;padding:0 16px 60px}
+    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:16px}
+    h1{font-size:20px;font-weight:900}
+    .muted{color:#6b7280;font-size:13px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th{background:#f9fafb;color:#6b7280;font-weight:900;padding:12px 14px;text-align:left;border-bottom:2px solid #e5e7eb;white-space:nowrap}
+    td{padding:12px 14px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+    tr:hover td{background:#fafafa}
+    .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:900;margin-right:6px}
+    .p-high{background:#fee2e2;color:#991b1b}
+    .p-mid{background:#fef3c7;color:#92400e}
+    .p-low{background:#dcfce7;color:#166534}
+    .btn{padding:7px 12px;border:none;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;display:inline-block;font-weight:800;font-size:13px}
+    .progress{min-width:120px}
+    .bar{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+    .fill{height:100%;background:#22c55e}
+    .fill.warn{background:#f59e0b}
+    .fill.bad{background:#ef4444}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div style="font-weight:900">🧭 案場總覽</div>
+    <div>
+      <a href="/">首頁</a>
+      <a href="/risks">風險追蹤</a>
+      {% if is_admin %}<a href="/admin">管理後台</a>{% endif %}
+      <a href="/history">歷史</a>
+      <a href="/change-password">修改密碼</a>
+      <a href="/logout">登出</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>案場進度 + 風險概覽</h1>
+      <div class="muted" style="margin-top:6px">你選擇 C：同時顯示「里程碑階段」與「百分比」。里程碑/百分比可在各案場明細頁更新。</div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>案場</th>
+            <th>類型</th>
+            <th>里程碑</th>
+            <th class="progress">進度%</th>
+            <th>風險（未結案）</th>
+            <th>最近活動</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in cases %}
+          <tr>
+            <td><strong>{{ c.name }}</strong><div class="muted">{{ c.id }}</div></td>
+            <td>{{ c.type }}</td>
+            <td>{{ c.stage or '-' }}</td>
+            <td>
+              {% if c.percent != '' %}
+                {% set p = c.percent|float %}
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="min-width:42px;font-weight:900">{{ '%.0f'|format(p) }}%</div>
+                  <div class="bar" style="flex:1">
+                    <div class="fill {{ 'bad' if p<30 else 'warn' if p<70 else '' }}" style="width:{{ p }}%"></div>
+                  </div>
+                </div>
+              {% else %}
+                <span class="muted">-</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="pill p-high">高 {{ c.risk_high }}</span>
+              <span class="pill p-mid">中 {{ c.risk_medium }}</span>
+              <span class="pill p-low">低 {{ c.risk_low }}</span>
+              <span class="muted">合計 {{ c.risk_total }}</span>
+            </td>
+            <td>{{ c.last_date or c.updated_at or '-' }}</td>
+            <td><a class="btn" href="/cases/{{ c.id }}">查看</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if not cases %}
+        <div class="muted" style="padding:16px;text-align:center">目前沒有可顯示的案場（員工視角：需先提交含案場的工作項）</div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
