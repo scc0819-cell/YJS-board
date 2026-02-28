@@ -1,0 +1,278 @@
+{
+  "captured_at": "2026-03-01T05:29:57+08:00",
+  "total_plants": 88,
+  "total_capacity_kw": 23285.66,
+  "stale_over_180m": 88,
+  "tiny_capacity_sites": 3,
+  "high_alert_sites": 3,
+  "top_states": [
+    [
+      "彰化縣",
+      23
+    ],
+    [
+      "新北市",
+      13
+    ],
+    [
+      "桃園市",
+      11
+    ],
+    [
+      "臺中市",
+      11
+    ],
+    [
+      "臺南市",
+      8
+    ],
+    [
+      "高雄市",
+      7
+    ]
+  ],
+  "top_stale": [
+    {
+      "plant_id": "BDLP24112466",
+      "plant_name": "新竹寶山_乾坤科技",
+      "state": "新竹縣",
+      "city": "寶山鄉",
+      "capacity_kw": 301.78,
+      "collection_time": "2024/12/24 15:44:56",
+      "data_age_min": 621465,
+      "ac_kw": 27.166,
+      "radiation": 154.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDLP24102345",
+      "plant_name": "新北中和_漳和國中第一校區",
+      "state": "新北市",
+      "city": "中和區",
+      "capacity_kw": 0.0001,
+      "collection_time": "2025/12/10 11:33:30",
+      "data_age_min": 116276,
+      "ac_kw": 287.744,
+      "radiation": 824.0,
+      "alert_num": -1
+    },
+    {
+      "plant_id": "BDLP25012693",
+      "plant_name": "新北三芝_馬偕護專",
+      "state": "新北市",
+      "city": "三芝區",
+      "capacity_kw": 0.0001,
+      "collection_time": "2025/12/10 14:31:26",
+      "data_age_min": 116099,
+      "ac_kw": 108.663,
+      "radiation": 80.0,
+      "alert_num": -1
+    },
+    {
+      "plant_id": "BDLP24102273",
+      "plant_name": "高雄燕巢_仁愛之家二三期",
+      "state": "高雄市",
+      "city": "燕巢區",
+      "capacity_kw": 0.0001,
+      "collection_time": "2025/12/10 15:39:20",
+      "data_age_min": 116031,
+      "ac_kw": 451.565,
+      "radiation": 242.0,
+      "alert_num": 2
+    },
+    {
+      "plant_id": "BDL020090120",
+      "plant_name": "雲林東勢_金田畜牧場",
+      "state": "雲林縣",
+      "city": "東勢鄉",
+      "capacity_kw": 98.94,
+      "collection_time": "2026/02/28 06:53:55",
+      "data_age_min": 1356,
+      "ac_kw": 0.0,
+      "radiation": 3.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDLP25123886",
+      "plant_name": "新北中和_漳和國中_半戶外球場",
+      "state": "新北市",
+      "city": "中和區",
+      "capacity_kw": 92.4,
+      "collection_time": "2026/02/28 17:47:20",
+      "data_age_min": 703,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDLP25063164",
+      "plant_name": "花蓮壽豐_壽豐淨水廠",
+      "state": "花蓮縣",
+      "city": "壽豐鄉",
+      "capacity_kw": 141.12,
+      "collection_time": "2026/02/28 17:51:35",
+      "data_age_min": 698,
+      "ac_kw": 1.133,
+      "radiation": 1.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDLP25123891",
+      "plant_name": "新北三芝_馬偕護專_幼保大樓",
+      "state": "新北市",
+      "city": "三芝區",
+      "capacity_kw": 195.465,
+      "collection_time": "2026/02/28 17:51:43",
+      "data_age_min": 698,
+      "ac_kw": 0.08,
+      "radiation": 1.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDLP25123896",
+      "plant_name": "新北三芝_馬偕護專_汙水處理廠、看臺",
+      "state": "新北市",
+      "city": "三芝區",
+      "capacity_kw": 50.215,
+      "collection_time": "2026/02/28 17:54:58",
+      "data_age_min": 695,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDLP26024147",
+      "plant_name": "彰化線西_線西國小屋頂型3-2",
+      "state": "彰化縣",
+      "city": "線西鄉",
+      "capacity_kw": 50.5,
+      "collection_time": "2026/02/28 17:55:10",
+      "data_age_min": 695,
+      "ac_kw": 0.313,
+      "radiation": 0.0,
+      "alert_num": 1
+    }
+  ],
+  "top_alert": [
+    {
+      "plant_id": "BDLP23060200",
+      "plant_name": "彰化鹿港_金農友生技",
+      "state": "彰化縣",
+      "city": "鹿港鎮",
+      "capacity_kw": 1397.26,
+      "collection_time": "2026/03/01 02:06:35",
+      "data_age_min": 203,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 5
+    },
+    {
+      "plant_id": "BDLP26024099",
+      "plant_name": "彰化員林_明倫國中",
+      "state": "彰化縣",
+      "city": "員林市",
+      "capacity_kw": 245.43,
+      "collection_time": "2026/03/01 02:06:07",
+      "data_age_min": 204,
+      "ac_kw": 0.277,
+      "radiation": 0.0,
+      "alert_num": 4
+    },
+    {
+      "plant_id": "BDLP23050106",
+      "plant_name": "台中大安_大安國小",
+      "state": "臺中市",
+      "city": "大安區",
+      "capacity_kw": 400.9,
+      "collection_time": "2026/03/01 02:05:53",
+      "data_age_min": 204,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 3
+    },
+    {
+      "plant_id": "BDLP24102273",
+      "plant_name": "高雄燕巢_仁愛之家二三期",
+      "state": "高雄市",
+      "city": "燕巢區",
+      "capacity_kw": 0.0001,
+      "collection_time": "2025/12/10 15:39:20",
+      "data_age_min": 116031,
+      "ac_kw": 451.565,
+      "radiation": 242.0,
+      "alert_num": 2
+    },
+    {
+      "plant_id": "BDLP25093605",
+      "plant_name": "南投草屯_草療一期行政大樓",
+      "state": "南投縣",
+      "city": "草屯鎮",
+      "capacity_kw": 735.84,
+      "collection_time": "2026/03/01 02:08:37",
+      "data_age_min": 201,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 2
+    },
+    {
+      "plant_id": "BDLP26014072",
+      "plant_name": "彰化竹塘_竹塘國小地面型",
+      "state": "彰化縣",
+      "city": "竹塘鄉",
+      "capacity_kw": 140.39,
+      "collection_time": "2026/03/01 01:59:36",
+      "data_age_min": 210,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 2
+    },
+    {
+      "plant_id": "BDL020090120",
+      "plant_name": "雲林東勢_金田畜牧場",
+      "state": "雲林縣",
+      "city": "東勢鄉",
+      "capacity_kw": 98.94,
+      "collection_time": "2026/02/28 06:53:55",
+      "data_age_min": 1356,
+      "ac_kw": 0.0,
+      "radiation": 3.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDL020090371",
+      "plant_name": "雲林台西_祐康畜牧場",
+      "state": "雲林縣",
+      "city": "臺西鄉",
+      "capacity_kw": 226.2,
+      "collection_time": "2026/02/28 19:06:10",
+      "data_age_min": 624,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDL021080241",
+      "plant_name": "桃園新屋_勤志企業社",
+      "state": "桃園市",
+      "city": "新屋區",
+      "capacity_kw": 180.54,
+      "collection_time": "2026/02/28 19:13:32",
+      "data_age_min": 616,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 1
+    },
+    {
+      "plant_id": "BDL021080293",
+      "plant_name": "台南永康_永仁高中一期",
+      "state": "臺南市",
+      "city": "永康區",
+      "capacity_kw": 261.12,
+      "collection_time": "2026/02/28 19:05:38",
+      "data_age_min": 624,
+      "ac_kw": 0.0,
+      "radiation": 0.0,
+      "alert_num": 1
+    }
+  ]
+}
