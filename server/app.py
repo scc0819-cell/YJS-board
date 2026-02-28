@@ -14,6 +14,7 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, send_file
 from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import os
 import json
@@ -30,7 +31,13 @@ except ImportError:
     EXCEL_OK = False
 
 app = Flask(__name__)
-app.secret_key = 'yjsenergy_v3_2026_ultra_secret'
+# NOTE: 正式環境請改用環境變數或外部設定檔提供 secret key
+app.secret_key = os.environ.get('YJS_DAILY_REPORT_SECRET_KEY', 'yjsenergy_v3_2026_ultra_secret')
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=12),
+)
 CORS(app)
 
 login_manager = LoginManager()
@@ -45,74 +52,75 @@ SCRIPTS_DIR = BASE_DIR / 'scripts'
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ===================== 帳號資料 =====================
-# 密碼使用 SHA256 雜湊，格式：sha256(帳號+密碼)
-def hash_pw(username, password):
-    return hashlib.sha256(f"{username}{password}".encode()).hexdigest()
+# ✅ 改善重點：
+# - 不再把預設密碼顯示在畫面上
+# - 支援登入後自行修改密碼
+# - 使用者資料改為落地到 JSON（重啟不會消失）
+# - 密碼雜湊改用 werkzeug（含 salt），避免自製 SHA256
 
-USERS = {
+DATA_DIR = BASE_DIR / 'server' / 'data'
+USERS_FILE = DATA_DIR / 'users.json'
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+# 初始帳號（首次建立 users.json 時才會使用）
+# 注意：員工初始密碼不在畫面顯示；首次登入會被要求修改密碼。
+SEED_USERS = {
     "admin": {
         "id": "admin",
         "name": "宋董事長",
         "role": "admin",
-        "password_hash": hash_pw("admin", "yjsenergy2026")
+        "password_hash": generate_password_hash("yjsenergy2026"),
+        "password_temp": False,
     },
-    "chen_ming_de": {
-        "id": "chen_ming_de",
-        "name": "陳明德",
-        "role": "employee",
-        "password_hash": hash_pw("chen_ming_de", "1234")
-    },
-    "yang_zong_wei": {
-        "id": "yang_zong_wei",
-        "name": "楊宗衛",
-        "role": "employee",
-        "password_hash": hash_pw("yang_zong_wei", "1234")
-    },
-    "li_ya_ting": {
-        "id": "li_ya_ting",
-        "name": "李雅婷",
-        "role": "employee",
-        "password_hash": hash_pw("li_ya_ting", "1234")
-    },
-    "hong_shu_rong": {
-        "id": "hong_shu_rong",
-        "name": "洪淑嫆",
-        "role": "employee",
-        "password_hash": hash_pw("hong_shu_rong", "1234")
-    },
-    "chen_gu_bin": {
-        "id": "chen_gu_bin",
-        "name": "陳谷濱",
-        "role": "employee",
-        "password_hash": hash_pw("chen_gu_bin", "1234")
-    },
-    "zhang_yi_chuan": {
-        "id": "zhang_yi_chuan",
-        "name": "張億峖",
-        "role": "employee",
-        "password_hash": hash_pw("zhang_yi_chuan", "1234")
-    },
-    "lin_kun_yi": {
-        "id": "lin_kun_yi",
-        "name": "林坤誼",
-        "role": "employee",
-        "password_hash": hash_pw("lin_kun_yi", "1234")
-    },
-    "huang_zhen_hao": {
-        "id": "huang_zhen_hao",
-        "name": "黃振豪",
-        "role": "employee",
-        "password_hash": hash_pw("huang_zhen_hao", "1234")
-    },
-    "xu_hui_ling": {
-        "id": "xu_hui_ling",
-        "name": "許惠玲",
-        "role": "employee",
-        "password_hash": hash_pw("xu_hui_ling", "1234")
-    },
+    "chen_ming_de": {"id": "chen_ming_de", "name": "陳明德", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "yang_zong_wei": {"id": "yang_zong_wei", "name": "楊宗衛", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "li_ya_ting": {"id": "li_ya_ting", "name": "李雅婷", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "hong_shu_rong": {"id": "hong_shu_rong", "name": "洪淑嫆", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "chen_gu_bin": {"id": "chen_gu_bin", "name": "陳谷濱", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "zhang_yi_chuan": {"id": "zhang_yi_chuan", "name": "張億峖", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "lin_kun_yi": {"id": "lin_kun_yi", "name": "林坤誼", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "huang_zhen_hao": {"id": "huang_zhen_hao", "name": "黃振豪", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "xu_hui_ling": {"id": "xu_hui_ling", "name": "許惠玲", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
 }
 
-EMPLOYEES = [v for v in USERS.values() if v["role"] == "employee"]
+
+def load_users():
+    if USERS_FILE.exists():
+        try:
+            return json.loads(USERS_FILE.read_text(encoding='utf-8'))
+        except Exception:
+            # 檔案損壞時回退到 seed（避免整個系統起不來）
+            return dict(SEED_USERS)
+    # 首次建立
+    USERS_FILE.write_text(json.dumps(SEED_USERS, ensure_ascii=False, indent=2), encoding='utf-8')
+    return dict(SEED_USERS)
+
+
+def save_users(users: dict):
+    tmp = USERS_FILE.with_suffix('.json.tmp')
+    tmp.write_text(json.dumps(users, ensure_ascii=False, indent=2), encoding='utf-8')
+    tmp.replace(USERS_FILE)
+
+
+def public_user(u: dict) -> dict:
+    return {
+        'id': u.get('id'),
+        'name': u.get('name'),
+        'role': u.get('role'),
+    }
+
+
+USERS = load_users()
+
+
+def refresh_employee_cache():
+    global EMPLOYEES
+    EMPLOYEES = [public_user(v) for v in USERS.values() if v.get('role') == 'employee']
+    EMPLOYEES.sort(key=lambda x: x.get('name') or '')
+
+
+refresh_employee_cache()
+
 
 # ===================== 案場清單 =====================
 CASES = [
@@ -152,7 +160,7 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
         user_data = USERS.get(username)
-        if user_data and user_data['password_hash'] == hash_pw(username, password):
+        if user_data and check_password_hash(user_data.get('password_hash',''), password):
             user = User(user_data)
             login_user(user)
             flash(f'歡迎回來，{user.name}！', 'success')
@@ -166,6 +174,71 @@ def logout():
     logout_user()
     flash('已登出', 'info')
     return redirect(url_for('login'))
+
+
+@app.before_request
+def force_password_change():
+    """若帳號仍為臨時密碼，強制導向修改密碼頁。"""
+    try:
+        if current_user.is_authenticated:
+            u = USERS.get(current_user.id)
+            if u and u.get('password_temp'):
+                # 允許的 endpoint
+                allow = {'change_password', 'logout', 'static', 'login'}
+                if request.endpoint not in allow and not (request.path or '').startswith('/static'):
+                    return redirect(url_for('change_password'))
+    except Exception:
+        pass
+
+
+def _validate_new_password(pw: str):
+    """基本密碼規則：至少 8 碼，且同時包含英文字母與數字。"""
+    if not pw or len(pw) < 8:
+        return False, '密碼長度需至少 8 碼'
+    has_alpha = any(c.isalpha() for c in pw)
+    has_digit = any(c.isdigit() for c in pw)
+    if not (has_alpha and has_digit):
+        return False, '密碼需同時包含英文字母與數字'
+    if ' ' in pw:
+        return False, '密碼不可包含空白'
+    return True, ''
+
+
+@app.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    u = USERS.get(current_user.id)
+    if not u:
+        flash('使用者不存在', 'error')
+        return redirect(url_for('logout'))
+
+    forced = bool(u.get('password_temp'))
+
+    if request.method == 'POST':
+        old_pw = request.form.get('old_password', '')
+        new_pw = request.form.get('new_password', '')
+        confirm_pw = request.form.get('confirm_password', '')
+
+        if not check_password_hash(u.get('password_hash', ''), old_pw):
+            flash('舊密碼不正確', 'error')
+            return redirect(url_for('change_password'))
+        if new_pw != confirm_pw:
+            flash('新密碼與確認密碼不一致', 'error')
+            return redirect(url_for('change_password'))
+        ok, msg = _validate_new_password(new_pw)
+        if not ok:
+            flash(msg, 'error')
+            return redirect(url_for('change_password'))
+
+        u['password_hash'] = generate_password_hash(new_pw)
+        u['password_temp'] = False
+        USERS[current_user.id] = u
+        save_users(USERS)
+        refresh_employee_cache()
+        flash('✅ 密碼已更新', 'success')
+        return redirect(url_for('index'))
+
+    return render_template('change_password.html', forced=forced)
 
 # ===================== 首頁 =====================
 @app.route('/')
@@ -508,6 +581,32 @@ def export_excel():
                      mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 # ===================== 員工管理頁 =====================
+@app.route('/admin/reset-password/<user_id>', methods=['POST'])
+@login_required
+def admin_reset_password(user_id):
+    if current_user.role != 'admin':
+        flash('無權限', 'error')
+        return redirect(url_for('index'))
+
+    if user_id not in USERS:
+        flash('員工不存在', 'error')
+        return redirect(url_for('admin_employees'))
+
+    # 產生一次性臨時密碼（不在登入頁顯示；只回給管理員）
+    import secrets
+    temp_pw = secrets.token_urlsafe(9)  # 約 12~13 字元
+
+    u = USERS[user_id]
+    u['password_hash'] = generate_password_hash(temp_pw)
+    u['password_temp'] = True
+    USERS[user_id] = u
+    save_users(USERS)
+    refresh_employee_cache()
+
+    flash(f'已重設 {u.get("name")} 的密碼。臨時密碼：{temp_pw}（請轉交本人並提醒登入後立即修改）', 'success')
+    return redirect(url_for('admin_employees'))
+
+
 @app.route('/admin/employees')
 @login_required
 def admin_employees():
@@ -628,7 +727,7 @@ if __name__ == '__main__':
     print("🏢 昱金生能源集團 - 員工日報系統 v3.0")
     print("=" * 60)
     print(f"🌐 http://127.0.0.1:5000")
-    print(f"🔐 管理員帳號：admin / yjsenergy2026")
-    print(f"👷 員工預設密碼：1234")
+    print("🔐 管理員帳號：admin（密碼請由管理員另行提供/保存）")
+    print("👷 員工初始密碼：首次登入需修改（密碼不在此顯示）")
     print("=" * 60)
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
