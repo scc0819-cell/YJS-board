@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>填寫日報 - {{ employee.name }}</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", sans-serif;
+            background: #f0f2f5; min-height: 100vh;
+        }
+        .topbar {
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            color: white; padding: 0 30px; height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar a { color: rgba(255,255,255,0.8); text-decoration: none; font-size:14px; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px 60px; }
+        .page-title {
+            background: white; border-radius: 12px; padding: 25px 30px;
+            margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .page-title h1 { font-size: 22px; color: #333; }
+        .page-title p { color: #888; font-size: 14px; margin-top: 4px; }
+        .draft-status {
+            font-size: 13px; padding: 6px 14px; border-radius: 20px;
+            background: #f8f9fa; color: #666;
+        }
+        .draft-status.saved { background: #d4edda; color: #155724; }
+        .section {
+            background: white; border-radius: 12px; padding: 25px 30px;
+            margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section-title {
+            font-size: 18px; font-weight: 700; color: #333;
+            margin-bottom: 20px; padding-bottom: 12px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+        .item-card {
+            background: #f8f9fa; border-radius: 10px; padding: 20px;
+            margin-bottom: 15px; border-left: 4px solid #667eea; position: relative;
+        }
+        .item-card.risk-high { border-left-color: #dc3545; }
+        .item-card.risk-medium { border-left-color: #ffc107; }
+        .item-card.risk-low { border-left-color: #28a745; }
+        .item-num {
+            display: inline-block; background: #667eea; color: white;
+            padding: 3px 12px; border-radius: 12px; font-size: 12px;
+            font-weight: 700; margin-bottom: 15px;
+        }
+        .btn-remove {
+            position: absolute; top: 15px; right: 15px;
+            background: #dc3545; color: white; border: none;
+            padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
+        }
+        .form-row { display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        label { display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:#555; }
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%; padding: 10px 12px; border: 2px solid #e9ecef;
+            border-radius: 8px; font-size: 14px; font-family: inherit;
+            transition: border-color 0.2s; outline: none;
+        }
+        select:focus, input:focus, textarea:focus { border-color: #667eea; }
+        textarea { min-height: 90px; resize: vertical; }
+        .btn-add {
+            background: none; border: 2px dashed #667eea;
+            color: #667eea; padding: 10px 20px; border-radius: 8px;
+            cursor: pointer; font-size: 14px; font-weight: 600;
+            width: 100%; transition: all 0.2s; margin-top: 5px;
+        }
+        .btn-add:hover { background: #f0f2ff; }
+        .checkbox-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;
+        }
+        .checkbox-label {
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px; background: #f8f9fa; border-radius: 8px; cursor: pointer;
+            font-size: 14px; transition: background 0.2s;
+        }
+        .checkbox-label:hover { background: #e9ecef; }
+        .checkbox-label input { width: 16px; height: 16px; cursor: pointer; }
+        .btn-submit {
+            width: 100%; padding: 16px; font-size: 17px; font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border: none; border-radius: 12px; cursor: pointer;
+            transition: all 0.3s; margin-top: 15px;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.4); }
+        .alert-warning { background:#fff3cd; color:#856404; border-left:4px solid #ffc107; padding:12px 16px; border-radius:8px; margin-bottom:20px; font-size:14px; }
+        .risk-selector { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+        .risk-opt {
+            padding: 10px; border: 2px solid #e9ecef; border-radius: 8px;
+            text-align: center; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s;
+        }
+        .risk-opt[data-val="high"] { color: #dc3545; }
+        .risk-opt[data-val="medium"] { color: #ffc107; }
+        .risk-opt[data-val="low"] { color: #28a745; }
+        .risk-opt.active { border-width: 3px; background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <span style="font-weight:700; font-size:16px;">☀️ 昱金生能源集團 · 員工日報系統</span>
+        <a href="/">← 返回首頁</a>
+    </div>
+
+    <div class="container">
+        <div class="page-title">
+            <div>
+                <h1>📝 填寫日報 - {{ employee.name }}</h1>
+                <p>{{ today }} 日報</p>
+            </div>
+            <span class="draft-status" id="draft-status">草稿自動儲存中...</span>
+        </div>
+
+        {% if existing %}
+        <div class="alert-warning">⚠️ 您今天已提交過日報（{{ existing.submit_time }}），再次提交將覆蓋原有記錄。</div>
+        {% endif %}
+
+        <form method="POST" id="mainForm">
+            <input type="hidden" name="work_items_json" id="work_items_json">
+            <input type="hidden" name="plan_items_json" id="plan_items_json">
+            <input type="hidden" name="risk_items_json" id="risk_items_json">
+
+            <!-- 今日工作 -->
+            <div class="section">
+                <div class="section-title">💼 一、今日工作</div>
+                <div id="work-container"></div>
+                <button type="button" class="btn-add" onclick="addWork()">＋ 新增工作項目</button>
+            </div>
+
+            <!-- 明日計畫 -->
+            <div class="section">
+                <div class="section-title">📅 二、明日計畫</div>
+                <div id="plan-container"></div>
+                <button type="button" class="btn-add" onclick="addPlan()">＋ 新增計畫項目</button>
+            </div>
+
+            <!-- 風險事項 -->
+            <div class="section">
+                <div class="section-title">⚠️ 三、風險事項（選填）</div>
+                <div id="risk-container"></div>
+                <button type="button" class="btn-add" onclick="addRisk()">＋ 新增風險事項</button>
+            </div>
+
+            <!-- 今日總結 -->
+            <div class="section">
+                <div class="section-title">💡 四、今日總結</div>
+                <div class="form-group">
+                    <label>💪 最大收穫</label>
+                    <textarea name="today_gain" id="today_gain" placeholder="今天最大的收穫或學到的事..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>🔧 需要改進</label>
+                    <textarea name="improvement" id="improvement" placeholder="有什麼可以做得更好的地方..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>📝 其他備註</label>
+                    <textarea name="remarks" id="remarks" placeholder="其他補充..."></textarea>
+                </div>
+            </div>
+
+            <!-- 附件 -->
+            <div class="section">
+                <div class="section-title">📎 五、附件</div>
+                <div class="checkbox-row">
+                    <label class="checkbox-label"><input type="checkbox" name="photo"> 📷 現場照片</label>
+                    <label class="checkbox-label"><input type="checkbox" name="meeting"> 📋 會議記錄</label>
+                    <label class="checkbox-label"><input type="checkbox" name="document"> 📄 文件檔案</label>
+                    <label class="checkbox-label"><input type="checkbox" name="other_attachment"> 📎 其他</label>
+                </div>
+                <div class="form-group" style="margin-top:15px;">
+                    <label>附件說明</label>
+                    <textarea name="attachment_note" id="attachment_note" placeholder="說明附件內容或雲端連結..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">📤 提交日報</button>
+        </form>
+    </div>
+
+<script>
+const CASES = {{ cases | tojson }};
+const CASE_OPTIONS = CASES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+let workItems = [], planItems = [], riskItems = [];
+
+// ========== 案場選單 ==========
+function caseSelect(name) {
+    return `<select name="${name}" onchange="syncData()" style="background:white">
+        <option value="">-- 選擇案場 --</option>
+        ${CASE_OPTIONS}
+        <option value="其他">其他（手動輸入）</option>
+    </select>`;
+}
+
+// ========== 今日工作 ==========
+function addWork(data = {}) {
+    const id = Date.now();
+    workItems.push({ id });
+    const div = document.createElement('div');
+    div.className = 'item-card';
+    div.id = `work-${id}`;
+    div.innerHTML = `
+        <span class="item-num">工作 #${workItems.length}</span>
+        <button type="button" class="btn-remove" onclick="removeItem('work',${id})">✕ 移除</button>
+        <div class="form-row">
+            <div class="form-group"><label>案場</label>${caseSelect(`w_case_${id}`)}</div>
+            <div class="form-group"><label>工作類型</label>
+                <select name="w_type_${id}" onchange="syncData()">
+                    <option>現勘</option><option>設計</option><option>施工</option>
+                    <option>驗收</option><option>會議</option><option>行政</option><option>其他</option>
+                </select>
+            </div>
+            <div class="form-group"><label>進度 (%)</label>
+                <input type="number" name="w_prog_${id}" value="${data.progress||0}" min="0" max="100" oninput="syncData()">
+            </div>
+            <div class="form-group"><label>工時</label>
+                <input type="number" name="w_hours_${id}" value="${data.hours||0}" min="0" max="24" step="0.5" oninput="syncData()">
+            </div>
+        </div>
+        <div class="form-group"><label>工作內容 *</label>
+            <textarea name="w_content_${id}" placeholder="詳細描述工作內容..." oninput="syncData()">${data.work_content||''}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>產出物</label>
+                <input type="text" name="w_output_${id}" value="${data.output||''}" placeholder="會議記錄、設計圖..." oninput="syncData()">
+            </div>
+            <div class="form-group"><label>狀態</label>
+                <select name="w_status_${id}" onchange="syncData()">
+                    <option>已完成</option><option>進行中</option><option>待確認</option>
+                </select>
+            </div>
+        </div>`;
+    document.getElementById('work-container').appendChild(div);
+    if (data.case_id) div.querySelector(`[name="w_case_${id}"]`).value = data.case_id;
+    if (data.work_type) div.querySelector(`[name="w_type_${id}"]`).value = data.work_type;
+    if (data.status) div.querySelector(`[name="w_status_${id}"]`).value = data.status;
+}
+
+// ========== 明日計畫 ==========
+function addPlan(data = {}) {
+    const id = Date.now() + 1;
+    planItems.push({ id });
+    const div = document.createElement('div');
+    div.className = 'item-card';
+    div.id = `plan-${id}`;
+    div.innerHTML = `
+        <span class="item-num">計畫 #${planItems.length}</span>
+        <button type="button" class="btn-remove" onclick="removeItem('plan',${id})">✕ 移除</button>
+        <div class="form-row">
+            <div class="form-group"><label>案場</label>${caseSelect(`p_case_${id}`)}</div>
+            <div class="form-group"><label>預計工時</label>
+                <input type="number" name="p_hours_${id}" value="${data.plan_hours||0}" min="0" max="24" step="0.5" oninput="syncData()">
+            </div>
+        </div>
+        <div class="form-group"><label>預計工作內容 *</label>
+            <textarea name="p_content_${id}" placeholder="明日預計進行的工作..." oninput="syncData()">${data.plan_content||''}</textarea>
+        </div>
+        <div class="form-group"><label>需要支援</label>
+            <input type="text" name="p_support_${id}" value="${data.need_support||''}" placeholder="需要哪些協助？" oninput="syncData()">
+        </div>`;
+    document.getElementById('plan-container').appendChild(div);
+    if (data.case_id) div.querySelector(`[name="p_case_${id}"]`).value = data.case_id;
+}
+
+// ========== 風險事項 ==========
+function addRisk(data = {}) {
+    const id = Date.now() + 2;
+    riskItems.push({ id });
+    const level = data.risk_level || 'low';
+    const div = document.createElement('div');
+    div.className = `item-card risk-${level}`;
+    div.id = `risk-${id}`;
+    div.innerHTML = `
+        <span class="item-num">風險 #${riskItems.length}</span>
+        <button type="button" class="btn-remove" onclick="removeItem('risk',${id})">✕ 移除</button>
+        <div class="form-row">
+            <div class="form-group"><label>案場</label>${caseSelect(`r_case_${id}`)}</div>
+            <div class="form-group"><label>風險等級</label>
+                <div class="risk-selector">
+                    <div class="risk-opt ${level==='high'?'active':''}" data-val="high" onclick="setRisk(${id},'high',this)">🔴 高</div>
+                    <div class="risk-opt ${level==='medium'?'active':''}" data-val="medium" onclick="setRisk(${id},'medium',this)">🟠 中</div>
+                    <div class="risk-opt ${level==='low'?'active':''}" data-val="low" onclick="setRisk(${id},'low',this)">🟢 低</div>
+                </div>
+                <input type="hidden" name="r_level_${id}" id="r_level_${id}" value="${level}">
+            </div>
+        </div>
+        <div class="form-group"><label>風險說明</label>
+            <textarea name="r_desc_${id}" placeholder="描述風險內容..." oninput="syncData()">${data.risk_desc||''}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>影響層面</label>
+                <input type="text" name="r_impact_${id}" value="${data.risk_impact||''}" placeholder="影響進度/成本/品質" oninput="syncData()">
+            </div>
+            <div class="form-group"><label>需要協助</label>
+                <input type="text" name="r_help_${id}" value="${data.need_help||''}" placeholder="需要什麼協助？" oninput="syncData()">
+            </div>
+        </div>`;
+    document.getElementById('risk-container').appendChild(div);
+    if (data.case_id) div.querySelector(`[name="r_case_${id}"]`).value = data.case_id;
+}
+
+function setRisk(id, level, el) {
+    document.getElementById(`r_level_${id}`).value = level;
+    document.getElementById(`risk-${id}`).className = `item-card risk-${level}`;
+    el.closest('.risk-selector').querySelectorAll('.risk-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    syncData();
+}
+
+function removeItem(type, id) {
+    document.getElementById(`${type}-${id}`).remove();
+    syncData();
+}
+
+// ========== 資料同步 ==========
+function syncData() {
+    const workData = [], planData = [], riskData = [];
+
+    document.querySelectorAll('#work-container .item-card').forEach(card => {
+        const id = card.id.replace('work-','');
+        workData.push({
+            case_id: card.querySelector(`[name="w_case_${id}"]`)?.value || '',
+            work_type: card.querySelector(`[name="w_type_${id}"]`)?.value || '',
+            progress: card.querySelector(`[name="w_prog_${id}"]`)?.value || '0',
+            hours: card.querySelector(`[name="w_hours_${id}"]`)?.value || '0',
+            work_content: card.querySelector(`[name="w_content_${id}"]`)?.value || '',
+            output: card.querySelector(`[name="w_output_${id}"]`)?.value || '',
+            status: card.querySelector(`[name="w_status_${id}"]`)?.value || '進行中',
+        });
+    });
+
+    document.querySelectorAll('#plan-container .item-card').forEach(card => {
+        const id = card.id.replace('plan-','');
+        planData.push({
+            case_id: card.querySelector(`[name="p_case_${id}"]`)?.value || '',
+            plan_content: card.querySelector(`[name="p_content_${id}"]`)?.value || '',
+            plan_hours: card.querySelector(`[name="p_hours_${id}"]`)?.value || '0',
+            need_support: card.querySelector(`[name="p_support_${id}"]`)?.value || '',
+        });
+    });
+
+    document.querySelectorAll('#risk-container .item-card').forEach(card => {
+        const id = card.id.replace('risk-','');
+        riskData.push({
+            case_id: card.querySelector(`[name="r_case_${id}"]`)?.value || '',
+            risk_level: document.getElementById(`r_level_${id}`)?.value || 'low',
+            risk_desc: card.querySelector(`[name="r_desc_${id}"]`)?.value || '',
+            risk_impact: card.querySelector(`[name="r_impact_${id}"]`)?.value || '',
+            need_help: card.querySelector(`[name="r_help_${id}"]`)?.value || '',
+        });
+    });
+
+    document.getElementById('work_items_json').value = JSON.stringify(workData);
+    document.getElementById('plan_items_json').value = JSON.stringify(planData);
+    document.getElementById('risk_items_json').value = JSON.stringify(riskData);
+}
+
+// ========== 草稿儲存 ==========
+let draftTimer;
+function saveDraft() {
+    syncData();
+    const draft = {
+        work_items: JSON.parse(document.getElementById('work_items_json').value || '[]'),
+        plan_items: JSON.parse(document.getElementById('plan_items_json').value || '[]'),
+        risk_items: JSON.parse(document.getElementById('risk_items_json').value || '[]'),
+        today_gain: document.getElementById('today_gain')?.value || '',
+        improvement: document.getElementById('improvement')?.value || '',
+        remarks: document.getElementById('remarks')?.value || '',
+        attachment_note: document.getElementById('attachment_note')?.value || '',
+    };
+    fetch('/api/draft/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(draft)
+    }).then(() => {
+        const el = document.getElementById('draft-status');
+        el.textContent = '✅ 草稿已儲存 ' + new Date().toLocaleTimeString();
+        el.className = 'draft-status saved';
+        setTimeout(() => { el.className = 'draft-status'; el.textContent = '草稿自動儲存中...'; }, 3000);
+    });
+}
+
+document.getElementById('mainForm').addEventListener('input', () => {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(saveDraft, 2000);
+});
+
+// 提交前同步資料
+document.getElementById('mainForm').addEventListener('submit', (e) => {
+    syncData();
+    const work = JSON.parse(document.getElementById('work_items_json').value || '[]');
+    if (work.length === 0 || !work[0].work_content) {
+        e.preventDefault();
+        alert('請至少填寫一項今日工作內容！');
+    }
+});
+
+// ========== 載入草稿 ==========
+async function loadDraft() {
+    try {
+        const res = await fetch('/api/draft/load');
+        const draft = await res.json();
+        if (draft.work_items && draft.work_items.length > 0) {
+            draft.work_items.forEach(addWork);
+        } else { addWork(); }
+        if (draft.plan_items && draft.plan_items.length > 0) {
+            draft.plan_items.forEach(addPlan);
+        } else { addPlan(); }
+        if (draft.risk_items) draft.risk_items.forEach(addRisk);
+        if (draft.today_gain) document.getElementById('today_gain').value = draft.today_gain;
+        if (draft.improvement) document.getElementById('improvement').value = draft.improvement;
+        if (draft.remarks) document.getElementById('remarks').value = draft.remarks;
+        if (draft.attachment_note) document.getElementById('attachment_note').value = draft.attachment_note;
+
+        if (draft.work_items && draft.work_items.length > 0) {
+            document.getElementById('draft-status').textContent = '✅ 已還原草稿';
+        }
+    } catch { addWork(); addPlan(); }
+    syncData();
+}
+
+loadDraft();
+</script>
+</body>
+</html>

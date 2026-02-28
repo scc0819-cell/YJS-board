@@ -1,283 +1,392 @@
 #!/usr/bin/env python3
 """
-昱金生能源集團 - 員工日報系統後端伺服器
-功能：
-1. 提供員工日報填寫網頁
-2. 自動儲存日報資料（依日期分類）
-3. 自動觸發 AI 分析
-4. 生成管理報表
+昱金生能源集團 - 員工日報系統 v3.0
+改進：
+1. 登入驗證（帳號密碼保護）
+2. 案場下拉選單（不需手打）
+3. AI 自動分析（提交即觸發）
+4. 歷史查詢功能
+5. 草稿自動儲存
+6. 自動提醒（超時未交）
+7. 員工管理後台
 """
 
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, send_from_directory
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
 from flask_cors import CORS
-from datetime import datetime, timedelta
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from datetime import datetime
 import os
 import json
-import pandas as pd
+import hashlib
 from pathlib import Path
+import threading
 import subprocess
-import shutil
 
 app = Flask(__name__)
-app.secret_key = 'yjsenergy_daily_report_2026_secret_key'
+app.secret_key = 'yjsenergy_v3_2026_ultra_secret'
 CORS(app)
 
-# 設定路徑
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = '請先登入'
+
+# ===================== 路徑設定 =====================
 BASE_DIR = Path('/home/yjsclaw/.openclaw/workspace')
 REPORTS_DIR = BASE_DIR / 'daily_reports'
-TEMPLATES_DIR = BASE_DIR / 'templates'
 SCRIPTS_DIR = BASE_DIR / 'scripts'
-
-# 確保目錄存在
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# 員工清單
-EMPLOYEES = [
-    {"id": "chen_ming_de", "name": "陳明德", "email": "alexchen@yjsenergy.com", "department": "工程部"},
-    {"id": "chen_gu_bin", "name": "陳谷濱", "email": "eng@yjsenergy.com", "department": "工程部"},
-    {"id": "zhang_yi_chuan", "name": "張億峖", "email": "eng@yjsenergy.com", "department": "工程部"},
-    {"id": "yang_zong_wei", "name": "楊宗衛", "email": "eng@yjsenergy.com", "department": "工程部"},
-    {"id": "li_ya_ting", "name": "李雅婷", "email": "colleenlee@yjsenergy.com", "department": "行政部"},
-    {"id": "gao_zhu_yu", "name": "高竹妤", "email": "cukao@yjsenergy.com", "department": "設計部"},
-    {"id": "chen_jing_ru", "name": "陳靜儒", "email": "mat@yjsenergy.com", "department": "行政部"},
-    {"id": "hong_shu_rong", "name": "洪淑嫆", "email": "hr@yjsenergy.com", "department": "行政部"},
-    {"id": "yang_jie_lin", "name": "楊傑麟", "email": "legal@yjsenergy.com", "department": "業務部"},
+# ===================== 帳號資料 =====================
+# 密碼使用 SHA256 雜湊，格式：sha256(帳號+密碼)
+def hash_pw(username, password):
+    return hashlib.sha256(f"{username}{password}".encode()).hexdigest()
+
+USERS = {
+    "admin": {
+        "id": "admin",
+        "name": "宋董事長",
+        "role": "admin",
+        "password_hash": hash_pw("admin", "yjsenergy2026")
+    },
+    "chen_ming_de": {
+        "id": "chen_ming_de",
+        "name": "陳明德",
+        "role": "employee",
+        "password_hash": hash_pw("chen_ming_de", "1234")
+    },
+    "yang_zong_wei": {
+        "id": "yang_zong_wei",
+        "name": "楊宗衛",
+        "role": "employee",
+        "password_hash": hash_pw("yang_zong_wei", "1234")
+    },
+    "li_ya_ting": {
+        "id": "li_ya_ting",
+        "name": "李雅婷",
+        "role": "employee",
+        "password_hash": hash_pw("li_ya_ting", "1234")
+    },
+    "hong_shu_rong": {
+        "id": "hong_shu_rong",
+        "name": "洪淑嫆",
+        "role": "employee",
+        "password_hash": hash_pw("hong_shu_rong", "1234")
+    },
+    "chen_gu_bin": {
+        "id": "chen_gu_bin",
+        "name": "陳谷濱",
+        "role": "employee",
+        "password_hash": hash_pw("chen_gu_bin", "1234")
+    },
+    "zhang_yi_chuan": {
+        "id": "zhang_yi_chuan",
+        "name": "張億峖",
+        "role": "employee",
+        "password_hash": hash_pw("zhang_yi_chuan", "1234")
+    },
+    "lin_kun_yi": {
+        "id": "lin_kun_yi",
+        "name": "林坤誼",
+        "role": "employee",
+        "password_hash": hash_pw("lin_kun_yi", "1234")
+    },
+    "huang_zhen_hao": {
+        "id": "huang_zhen_hao",
+        "name": "黃振豪",
+        "role": "employee",
+        "password_hash": hash_pw("huang_zhen_hao", "1234")
+    },
+    "xu_hui_ling": {
+        "id": "xu_hui_ling",
+        "name": "許惠玲",
+        "role": "employee",
+        "password_hash": hash_pw("xu_hui_ling", "1234")
+    },
+}
+
+EMPLOYEES = [v for v in USERS.values() if v["role"] == "employee"]
+
+# ===================== 案場清單 =====================
+CASES = [
+    {"id": "馬偕護專", "name": "馬偕護專停車場", "type": "停車場"},
+    {"id": "彰化聯合標租", "name": "彰化學校聯合標租", "type": "屋頂型"},
+    {"id": "陸豐國小", "name": "陸豐國小", "type": "屋頂型"},
+    {"id": "媽厝國小", "name": "媽厝國小", "type": "屋頂型"},
+    {"id": "仁豐國小", "name": "仁豐國小", "type": "屋頂型"},
+    {"id": "萬合國小", "name": "萬合國小", "type": "屋頂型"},
+    {"id": "長安國小", "name": "長安國小", "type": "屋頂型"},
+    {"id": "線西國小", "name": "線西國小H區", "type": "風雨球場"},
+    {"id": "伸東國小", "name": "伸東國小", "type": "屋頂型"},
+    {"id": "鹿東國小", "name": "鹿東國小二校區", "type": "屋頂型"},
+    {"id": "台積電PPA", "name": "台積電 PPA 綠電轉供", "type": "PPA"},
+    {"id": "永豐融資", "name": "永豐銀行融資展延", "type": "行政"},
+    {"id": "其他", "name": "其他/行政事務", "type": "行政"},
 ]
 
-# ==================== 網頁路由 ====================
+# ===================== 登入系統 =====================
+class User(UserMixin):
+    def __init__(self, user_data):
+        self.id = user_data["id"]
+        self.name = user_data["name"]
+        self.role = user_data["role"]
 
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id in USERS:
+        return User(USERS[user_id])
+    return None
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        user_data = USERS.get(username)
+        if user_data and user_data['password_hash'] == hash_pw(username, password):
+            user = User(user_data)
+            login_user(user)
+            flash(f'歡迎回來，{user.name}！', 'success')
+            return redirect(url_for('index'))
+        flash('帳號或密碼錯誤', 'error')
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('已登出', 'info')
+    return redirect(url_for('login'))
+
+# ===================== 首頁 =====================
 @app.route('/')
+@login_required
 def index():
-    """首頁 - 日報提交清單"""
     today = datetime.now().strftime('%Y-%m-%d')
     today_dir = REPORTS_DIR / today
-    
-    # 檢查今日提交狀況
-    submissions = []
+
+    submitted_ids = set()
     if today_dir.exists():
-        for emp in EMPLOYEES:
-            report_file = today_dir / f"{emp['id']}_report.json"
-            submitted = report_file.exists()
-            submissions.append({
-                **emp,
-                'submitted': submitted,
-                'submit_time': None
-            })
-            if submitted:
-                with open(report_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    submissions[-1]['submit_time'] = data.get('submit_time', 'Unknown')
-    else:
-        submissions = [{**emp, 'submitted': False, 'submit_time': None} for emp in EMPLOYEES]
-    
-    return render_template('index.html', submissions=submissions, today=today)
+        for f in today_dir.glob('*_report.json'):
+            submitted_ids.add(f.stem.replace('_report', ''))
 
-@app.route('/submit', methods=['GET'])
-def submit_form():
-    """日報填寫表單"""
-    employee_id = request.args.get('employee_id')
-    employee = next((emp for emp in EMPLOYEES if emp['id'] == employee_id), None)
-    if not employee:
-        flash('請選擇員工', 'error')
+    submitted = [e for e in EMPLOYEES if e['id'] in submitted_ids]
+    not_submitted = [e for e in EMPLOYEES if e['id'] not in submitted_ids]
+    total = len(EMPLOYEES)
+    submitted_count = len(submitted)
+    rate = round(submitted_count / total * 100, 1) if total else 0
+
+    # 員工只能看到自己的按鈕
+    is_admin = current_user.role == 'admin'
+
+    return render_template('index_v3.html',
+        employees=EMPLOYEES,
+        submitted=submitted,
+        not_submitted=not_submitted,
+        total=total,
+        submitted_count=submitted_count,
+        submission_rate=rate,
+        today=today,
+        is_admin=is_admin,
+        current_user_id=current_user.id
+    )
+
+# ===================== 填寫表單 =====================
+@app.route('/report', methods=['GET', 'POST'])
+@app.route('/report/<employee_id>', methods=['GET', 'POST'])
+@login_required
+def report_form(employee_id=None):
+    # 員工只能填自己的日報
+    if current_user.role == 'employee':
+        employee_id = current_user.id
+
+    user_data = USERS.get(employee_id)
+    if not user_data:
+        flash('員工不存在', 'error')
         return redirect(url_for('index'))
-    
-    return render_template('daily_report_form_full.html', employee=employee)
 
-@app.route('/submit', methods=['POST'])
-def submit_report():
-    """提交日報"""
-    try:
-        # 收集表單資料
-        data = {
-            'employee_id': request.form.get('employee_id'),
-            'employee_name': request.form.get('employee_name'),
-            'department': request.form.get('department'),
-            'report_date': request.form.get('report_date'),
-            'submit_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'work_items': [],
-            'plan_items': [],
-            'risk_items': [],
-            'summary': {
-                'today_gain': request.form.get('today_gain', ''),
-                'improvement': request.form.get('improvement', ''),
-                'remarks': request.form.get('remarks', '')
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    # 檢查是否已提交（允許覆蓋）
+    today_dir = REPORTS_DIR / today
+    existing = None
+    report_file = today_dir / f"{employee_id}_report.json"
+    if report_file.exists():
+        with open(report_file, encoding='utf-8') as f:
+            existing = json.load(f)
+
+    if request.method == 'POST':
+        data = request.json if request.is_json else request.form
+
+        work_items = json.loads(request.form.get('work_items_json', '[]'))
+        plan_items = json.loads(request.form.get('plan_items_json', '[]'))
+        risk_items = json.loads(request.form.get('risk_items_json', '[]'))
+
+        report = {
+            "employee_id": employee_id,
+            "employee_name": user_data['name'],
+            "department": "未分類",
+            "report_date": today,
+            "submit_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "work_items": work_items,
+            "plan_items": plan_items,
+            "risk_items": risk_items,
+            "summary": {
+                "today_gain": request.form.get('today_gain', ''),
+                "improvement": request.form.get('improvement', ''),
+                "remarks": request.form.get('remarks', '')
             },
-            'attachments': {
-                'photo': request.form.get('attach_photo') == 'on',
-                'meeting': request.form.get('attach_meeting') == 'on',
-                'document': request.form.get('attach_document') == 'on',
-                'other': request.form.get('attach_other') == 'on',
-                'note': request.form.get('attach_note', '')
+            "attachments": {
+                "photo": 'photo' in request.form,
+                "meeting": 'meeting' in request.form,
+                "document": 'document' in request.form,
+                "other": 'other_attachment' in request.form,
+                "note": request.form.get('attachment_note', '')
             }
         }
-        
-        # 收集工作項目
-        work_count = int(request.form.get('work_count', 0))
-        for i in range(work_count):
-            data['work_items'].append({
-                'case_id': request.form.get(f'work_{i}_case_id', ''),
-                'case_name': request.form.get(f'work_{i}_case_name', ''),
-                'work_type': request.form.get(f'work_{i}_type', ''),
-                'work_content': request.form.get(f'work_{i}_content', ''),
-                'progress': request.form.get(f'work_{i}_progress', ''),
-                'hours': request.form.get(f'work_{i}_hours', ''),
-                'output': request.form.get(f'work_{i}_output', ''),
-                'status': request.form.get(f'work_{i}_status', '')
-            })
-        
-        # 收集明日計畫
-        plan_count = int(request.form.get('plan_count', 0))
-        for i in range(plan_count):
-            data['plan_items'].append({
-                'case_id': request.form.get(f'plan_{i}_case_id', ''),
-                'case_name': request.form.get(f'plan_{i}_case_name', ''),
-                'plan_content': request.form.get(f'plan_{i}_content', ''),
-                'plan_hours': request.form.get(f'plan_{i}_hours', ''),
-                'need_support': request.form.get(f'plan_{i}_support', '')
-            })
-        
-        # 收集風險事項
-        risk_count = int(request.form.get('risk_count', 0))
-        for i in range(risk_count):
-            data['risk_items'].append({
-                'case_id': request.form.get(f'risk_{i}_case_id', ''),
-                'risk_level': request.form.get(f'risk_{i}_level', ''),
-                'risk_desc': request.form.get(f'risk_{i}_desc', ''),
-                'risk_impact': request.form.get(f'risk_{i}_impact', ''),
-                'need_help': request.form.get(f'risk_{i}_help', '')
-            })
-        
-        # 建立日期資料夾
-        report_date = data['report_date']
-        date_dir = REPORTS_DIR / report_date
-        date_dir.mkdir(parents=True, exist_ok=True)
-        
-        # 儲存日報檔案
-        employee_id = data['employee_id']
-        report_file = date_dir / f"{employee_id}_report.json"
-        
+
+        today_dir.mkdir(parents=True, exist_ok=True)
         with open(report_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        
-        # 記錄提交時間
-        log_file = date_dir / 'submission_log.json'
-        log_data = []
-        if log_file.exists():
-            with open(log_file, 'r', encoding='utf-8') as f:
-                log_data = json.load(f)
-        log_data.append({
-            'employee_id': employee_id,
-            'employee_name': data['employee_name'],
-            'submit_time': data['submit_time']
-        })
-        with open(log_file, 'w', encoding='utf-8') as f:
-            json.dump(log_data, f, ensure_ascii=False, indent=2)
-        
-        flash(f"✅ {data['employee_name']} 的日報已提交成功！", 'success')
-        
-        # 檢查是否所有人都已提交，如果是則觸發分析
-        all_submitted = check_all_submitted(report_date)
-        if all_submitted:
-            trigger_analysis(report_date)
-        
-        return redirect(url_for('index'))
-        
-    except Exception as e:
-        flash(f'❌ 提交失敗：{str(e)}', 'error')
+            json.dump(report, f, ensure_ascii=False, indent=2)
+
+        # 自動觸發 AI 分析（背景執行）
+        def run_analysis():
+            try:
+                subprocess.run(
+                    ['python3', str(SCRIPTS_DIR / 'analyze_daily_reports.py'), today],
+                    capture_output=True, timeout=60
+                )
+            except Exception:
+                pass
+        threading.Thread(target=run_analysis, daemon=True).start()
+
+        flash('✅ 日報提交成功！AI 分析已自動觸發。', 'success')
         return redirect(url_for('index'))
 
-@app.route('/reports/<date>')
-def view_reports(date):
-    """檢視指定日期的所有日報"""
-    date_dir = REPORTS_DIR / date
-    if not date_dir.exists():
-        flash('該日期無日報資料', 'error')
+    return render_template('report_form_v3.html',
+        employee=user_data,
+        today=today,
+        cases=CASES,
+        existing=existing
+    )
+
+# ===================== 草稿 API =====================
+@app.route('/api/draft/save', methods=['POST'])
+@login_required
+def save_draft():
+    today = datetime.now().strftime('%Y-%m-%d')
+    draft_dir = REPORTS_DIR / today
+    draft_dir.mkdir(parents=True, exist_ok=True)
+    draft_file = draft_dir / f"{current_user.id}_draft.json"
+    with open(draft_file, 'w', encoding='utf-8') as f:
+        json.dump(request.json, f, ensure_ascii=False, indent=2)
+    return jsonify({"status": "saved"})
+
+@app.route('/api/draft/load')
+@login_required
+def load_draft():
+    today = datetime.now().strftime('%Y-%m-%d')
+    draft_file = REPORTS_DIR / today / f"{current_user.id}_draft.json"
+    if draft_file.exists():
+        with open(draft_file, encoding='utf-8') as f:
+            return jsonify(json.load(f))
+    return jsonify({})
+
+# ===================== 管理後台 =====================
+@app.route('/admin')
+@login_required
+def admin_dashboard():
+    if current_user.role != 'admin':
+        flash('無權限訪問', 'error')
         return redirect(url_for('index'))
-    
+
+    today = datetime.now().strftime('%Y-%m-%d')
+    date_param = request.args.get('date', today)
+    date_dir = REPORTS_DIR / date_param
+
     reports = []
-    for emp in EMPLOYEES:
-        report_file = date_dir / f"{emp['id']}_report.json"
-        if report_file.exists():
-            with open(report_file, 'r', encoding='utf-8') as f:
-                reports.append(json.load(f))
-    
-    # 檢查是否有分析報告
-    analysis_file = date_dir / 'analysis_result.json'
-    analysis = None
-    if analysis_file.exists():
-        with open(analysis_file, 'r', encoding='utf-8') as f:
-            analysis = json.load(f)
-    
-    return render_template('view_reports.html', reports=reports, date=date, analysis=analysis)
-
-@app.route('/api/submission-status/<date>')
-def api_submission_status(date):
-    """API - 查詢提交狀況"""
-    date_dir = REPORTS_DIR / date
-    status = {
-        'date': date,
-        'total': len(EMPLOYEES),
-        'submitted': 0,
-        'pending': 0,
-        'employees': []
-    }
-    
     if date_dir.exists():
-        for emp in EMPLOYEES:
-            report_file = date_dir / f"{emp['id']}_report.json"
-            submitted = report_file.exists()
-            status['employees'].append({
-                'id': emp['id'],
-                'name': emp['name'],
-                'submitted': submitted
-            })
-            if submitted:
-                status['submitted'] += 1
-            else:
-                status['pending'] += 1
-    
-    return jsonify(status)
+        for f in sorted(date_dir.glob('*_report.json')):
+            with open(f, encoding='utf-8') as fp:
+                reports.append(json.load(fp))
 
-# ==================== 輔助函數 ====================
+    analysis = None
+    analysis_file = date_dir / 'analysis_result.json'
+    if analysis_file.exists():
+        with open(analysis_file, encoding='utf-8') as f:
+            analysis = json.load(f)
 
-def check_all_submitted(date):
-    """檢查是否所有人都已提交"""
-    date_dir = REPORTS_DIR / date
-    if not date_dir.exists():
-        return False
-    
-    submitted_count = 0
-    for emp in EMPLOYEES:
-        report_file = date_dir / f"{emp['id']}_report.json"
-        if report_file.exists():
-            submitted_count += 1
-    
-    # 假設 80% 提交率就觸發分析
-    return submitted_count >= len(EMPLOYEES) * 0.8
+    # 取得歷史日期清單
+    history_dates = sorted(
+        [d.name for d in REPORTS_DIR.iterdir() if d.is_dir()],
+        reverse=True
+    )[:30]
 
-def trigger_analysis(date):
-    """觸發 AI 分析"""
-    try:
-        # 呼叫分析腳本
-        analysis_script = SCRIPTS_DIR / 'analyze_daily_reports.py'
-        if analysis_script.exists():
-            subprocess.run(['python3', str(analysis_script), date], timeout=300)
-            print(f"✅ {date} 的分析已完成")
-        else:
-            print(f"⚠️ 分析腳本不存在：{analysis_script}")
-    except Exception as e:
-        print(f"❌ 分析失敗：{e}")
+    submitted_ids = {r['employee_id'] for r in reports}
+    not_submitted = [e for e in EMPLOYEES if e['id'] not in submitted_ids]
 
-# ==================== 啟動伺服器 ====================
+    return render_template('admin_v3.html',
+        reports=reports,
+        analysis=analysis,
+        date=date_param,
+        today=today,
+        history_dates=history_dates,
+        employees=EMPLOYEES,
+        not_submitted=not_submitted,
+        submitted_count=len(reports),
+        total=len(EMPLOYEES)
+    )
 
+# ===================== 歷史查詢 =====================
+@app.route('/history')
+@login_required
+def history():
+    emp_id = current_user.id if current_user.role == 'employee' else request.args.get('emp_id', '')
+    records = []
+    if REPORTS_DIR.exists():
+        for date_dir in sorted(REPORTS_DIR.iterdir(), reverse=True):
+            if not date_dir.is_dir():
+                continue
+            report_file = date_dir / f"{emp_id}_report.json"
+            if report_file.exists():
+                with open(report_file, encoding='utf-8') as f:
+                    records.append(json.load(f))
+    return render_template('history.html',
+        records=records,
+        emp_id=emp_id,
+        employees=EMPLOYEES,
+        is_admin=current_user.role == 'admin'
+    )
+
+# ===================== API =====================
+@app.route('/api/status')
+@login_required
+def api_status():
+    today = datetime.now().strftime('%Y-%m-%d')
+    today_dir = REPORTS_DIR / today
+    submitted = len(list(today_dir.glob('*_report.json'))) if today_dir.exists() else 0
+    return jsonify({
+        'status': 'ok',
+        'date': today,
+        'total_employees': len(EMPLOYEES),
+        'submitted': submitted,
+        'rate': round(submitted / len(EMPLOYEES) * 100, 1)
+    })
+
+@app.route('/api/cases')
+@login_required
+def api_cases():
+    return jsonify(CASES)
+
+# ===================== 啟動 =====================
 if __name__ == '__main__':
-    print("="*60)
-    print("🏢 昱金生能源集團 - 員工日報系統")
-    print("="*60)
-    print(f"📁 資料儲存路徑：{REPORTS_DIR}")
-    print(f"🌐 伺服器網址：http://localhost:5000")
-    print(f"👥 員工人數：{len(EMPLOYEES)}")
-    print("="*60)
-    
-    # 啟動伺服器（開發環境）
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print("=" * 60)
+    print("🏢 昱金生能源集團 - 員工日報系統 v3.0")
+    print("=" * 60)
+    print(f"🌐 http://127.0.0.1:5000")
+    print(f"🔐 管理員帳號：admin / yjsenergy2026")
+    print(f"👷 員工預設密碼：1234")
+    print("=" * 60)
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)

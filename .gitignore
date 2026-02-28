@@ -6,6 +6,8 @@ reports/*.pdf
 reports/*.xlsx
 reports/*.html
 *.html
+!server/templates/*.html
+!templates/*.html
 demo-report.*
 temp-report.*
 
