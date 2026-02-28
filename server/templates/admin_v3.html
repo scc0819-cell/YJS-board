@@ -4,139 +4,301 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>管理後台 - 日報系統</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;background:#f3f4f6;color:#222}
-    .top{background:#111827;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
-    .top a{color:#c7d2fe;text-decoration:none;margin-left:14px}
-    .wrap{max-width:1200px;margin:20px auto;padding:0 16px}
-    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
-    .card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .num{font-size:34px;font-weight:800}
-    .label{color:#6b7280;font-size:13px}
-    .section{background:#fff;border-radius:10px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .section h2{font-size:18px;margin-bottom:12px}
-    .risk{padding:12px;border-left:4px solid #ef4444;background:#fef2f2;border-radius:8px;margin-bottom:8px}
-    .action{padding:12px;border-left:4px solid #6366f1;background:#eef2ff;border-radius:8px;margin-bottom:8px}
+    .top{background:#111827;color:#fff;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+    .top .brand{font-weight:700;font-size:16px}
+    .top nav a{color:#c7d2fe;text-decoration:none;margin-left:16px;font-size:14px}
+    .top nav a:hover{color:#fff}
+    .wrap{max-width:1300px;margin:0 auto;padding:20px 16px 60px}
+    /* stat cards */
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+    .stat{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-top:4px solid #6366f1}
+    .stat.green{border-top-color:#22c55e}.stat.red{border-top-color:#ef4444}.stat.amber{border-top-color:#f59e0b}
+    .stat .num{font-size:38px;font-weight:800}
+    .stat .lbl{color:#6b7280;font-size:13px;margin-top:4px}
+    /* toolbar */
+    .toolbar{background:#fff;border-radius:12px;padding:16px 20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .toolbar select,.toolbar input[type=date]{padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px}
+    .btn{padding:8px 16px;border:none;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;font-size:14px;font-weight:600;display:inline-block;transition:opacity .2s}
+    .btn:hover{opacity:.85}
+    .btn-sm{padding:5px 12px;font-size:13px}
+    .btn-grey{background:#6b7280}
+    /* date pills */
+    .date-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .date-pill{padding:4px 10px;border-radius:20px;background:#e0e7ff;color:#3730a3;font-size:12px;text-decoration:none;cursor:pointer}
+    .date-pill.active{background:#4f46e5;color:#fff}
+    /* charts */
+    .chart-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+    .chart-box{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .chart-box h3{font-size:15px;font-weight:700;color:#374151;margin-bottom:16px}
+    /* section */
+    .section{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .section h2{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    /* risk */
+    .risk-card{padding:14px;border-left:4px solid #ef4444;background:#fef2f2;border-radius:8px;margin-bottom:10px}
+    .risk-card.medium{border-left-color:#f59e0b;background:#fffbeb}
+    .risk-card .rc-title{font-weight:700;margin-bottom:4px}
+    .risk-card .rc-sub{font-size:13px;color:#6b7280;margin-top:4px}
+    /* action */
+    .action-card{padding:14px;border-left:4px solid #6366f1;background:#eef2ff;border-radius:8px;margin-bottom:10px}
+    .action-card .ac-pri{font-size:12px;font-weight:700;margin-bottom:4px}
+    .action-card .ac-sub{font-size:13px;color:#4b5563}
+    /* table */
     table{width:100%;border-collapse:collapse;font-size:14px}
-    th,td{border-bottom:1px solid #e5e7eb;padding:10px;text-align:left;vertical-align:top}
-    th{color:#6b7280;font-weight:700}
+    th{background:#f9fafb;color:#6b7280;font-weight:700;padding:10px 12px;text-align:left;border-bottom:2px solid #e5e7eb}
+    td{padding:10px 12px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+    tr:hover td{background:#fafafa}
+    .tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;margin-right:3px}
+    .tag-done{background:#dcfce7;color:#166534}
+    .tag-wip{background:#fef3c7;color:#92400e}
+    .tag-high{background:#fee2e2;color:#991b1b}
+    .tag-med{background:#fef3c7;color:#92400e}
+    .tag-low{background:#dcfce7;color:#166534}
     .muted{color:#6b7280;font-size:13px}
-    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    select,input[type=date]{padding:8px 10px;border:1px solid #d1d5db;border-radius:8px}
-    .btn{padding:8px 14px;border:none;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;display:inline-block}
-    @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+    /* edit log */
+    .edit-log{background:#f9fafb;border-radius:6px;padding:8px 12px;font-size:12px;color:#6b7280;margin-top:6px}
+    /* missing list */
+    .missing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:8px}
+    .missing-pill{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:600;color:#991b1b}
+    @media(max-width:900px){.stat-row{grid-template-columns:repeat(2,1fr)}.chart-row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="top">
-    <div>📊 管理後台（{{ date }}）</div>
-    <div>
-      <a href="/">首頁</a>
-      <a href="/history">歷史</a>
-      <a href="/logout">登出</a>
+<div class="top">
+  <div class="brand">☀️ 昱金生能源集團 · 管理後台</div>
+  <nav>
+    <a href="/">首頁</a>
+    <a href="/history">歷史</a>
+    <a href="/logout">登出</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <!-- 工具列 -->
+  <div class="toolbar">
+    <form method="GET" action="/admin" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label class="muted">查詢日期</label>
+      <input type="date" name="date" value="{{ date }}">
+      <button class="btn" type="submit">查看</button>
+    </form>
+    <span class="muted">快速跳轉：</span>
+    <div class="date-pills">
+      {% for d in history_dates[:10] %}
+      <a class="date-pill {{ 'active' if d==date else '' }}" href="/admin?date={{ d }}">{{ d[5:] }}</a>
+      {% endfor %}
     </div>
   </div>
 
-  <div class="wrap">
-    <div class="section">
-      <div class="toolbar">
-        <form method="GET" action="/admin" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <label class="muted">查詢日期</label>
-          <input type="date" name="date" value="{{ date }}">
-          <button class="btn" type="submit">查看</button>
-        </form>
-        <span class="muted">快速日期：</span>
-        {% for d in history_dates[:7] %}
-          <a class="btn" style="background:#6b7280" href="/admin?date={{ d }}">{{ d }}</a>
-        {% endfor %}
-      </div>
-    </div>
+  <!-- 統計卡片 -->
+  <div class="stat-row">
+    <div class="stat"><div class="num">{{ total }}</div><div class="lbl">👥 總員工數</div></div>
+    <div class="stat green"><div class="num">{{ submitted_count }}</div><div class="lbl">✅ 已提交</div></div>
+    <div class="stat red"><div class="num">{{ total - submitted_count }}</div><div class="lbl">⏳ 待提交</div></div>
+    <div class="stat amber"><div class="num">{{ ((submitted_count/total)*100)|round(0)|int if total else 0 }}%</div><div class="lbl">📈 提交率</div></div>
+  </div>
 
-    <div class="grid">
-      <div class="card"><div class="num">{{ total }}</div><div class="label">總員工數</div></div>
-      <div class="card"><div class="num">{{ submitted_count }}</div><div class="label">已提交</div></div>
-      <div class="card"><div class="num">{{ total - submitted_count }}</div><div class="label">待提交</div></div>
-      <div class="card"><div class="num">{{ ((submitted_count/total)*100)|round(1) if total else 0 }}%</div><div class="label">提交率</div></div>
+  <!-- 圖表區 -->
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>📊 近 7 日提交率趨勢</h3>
+      <canvas id="weeklyChart" height="100"></canvas>
     </div>
-
-    {% if not_submitted %}
-    <div class="section">
-      <h2>⏳ 未提交名單</h2>
-      <div class="muted">{{ not_submitted|length }} 人未提交</div>
-      <ul style="margin-top:10px;padding-left:18px;">
-        {% for e in not_submitted %}
-        <li>{{ e.name }} ({{ e.id }})</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
-
-    {% if analysis and analysis.risk_analysis and analysis.risk_analysis.high %}
-    <div class="section">
-      <h2>🔴 高風險事項</h2>
-      {% for r in analysis.risk_analysis.high %}
-      <div class="risk">
-        <div><strong>{{ r.case_id }}</strong>｜{{ r.employee }}</div>
-        <div>{{ r.description }}</div>
-        <div class="muted">影響：{{ r.impact }}｜需要協助：{{ r.need_help }}</div>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    {% if analysis and analysis.action_items %}
-    <div class="section">
-      <h2>💡 行動建議</h2>
-      {% for a in analysis.action_items %}
-      <div class="action">
-        <div><strong>{{ a.priority }} {{ a.type }}</strong>｜{{ a.case }}</div>
-        <div>{{ a.description }}</div>
-        <div class="muted">負責：{{ a.assignee }}｜期限：{{ a.deadline }}｜狀態：{{ a.status }}</div>
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    <div class="section">
-      <h2>📝 日報明細</h2>
-      {% if reports %}
-      <table>
-        <thead>
-          <tr>
-            <th>員工</th>
-            <th>提交時間</th>
-            <th>今日工作</th>
-            <th>明日計畫</th>
-            <th>風險</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for r in reports %}
-          <tr>
-            <td><strong>{{ r.employee_name }}</strong><br><span class="muted">{{ r.employee_id }}</span></td>
-            <td>{{ r.submit_time }}</td>
-            <td>
-              {% for w in r.work_items[:3] %}
-                • {{ w.case_id }} / {{ w.work_type }} / {{ w.progress }}%<br>
-              {% endfor %}
-              {% if r.work_items|length > 3 %}<span class="muted">...共 {{ r.work_items|length }} 項</span>{% endif %}
-            </td>
-            <td>
-              {% for p in r.plan_items[:3] %}
-                • {{ p.case_id }} / {{ p.plan_hours }}h<br>
-              {% endfor %}
-              {% if r.plan_items|length > 3 %}<span class="muted">...共 {{ r.plan_items|length }} 項</span>{% endif %}
-            </td>
-            <td>{{ r.risk_items|length }} 項</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-      <div class="muted">此日期尚無日報資料</div>
-      {% endif %}
+    <div class="chart-box">
+      <h3>⚠️ 今日風險分佈</h3>
+      <canvas id="riskChart" height="100"></canvas>
     </div>
   </div>
+
+  <!-- 未提交名單 -->
+  {% if not_submitted %}
+  <div class="section">
+    <h2>⏳ 未提交名單（{{ not_submitted|length }} 人）</h2>
+    <div class="missing-grid">
+      {% for e in not_submitted %}
+      <div class="missing-pill">{{ e.name }}</div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="section" style="text-align:center;color:#22c55e;font-weight:700;padding:14px">
+    🎉 所有員工今日均已提交！
+  </div>
+  {% endif %}
+
+  <!-- 高風險 -->
+  {% if analysis and analysis.risk_analysis and analysis.risk_analysis.high %}
+  <div class="section">
+    <h2>🔴 高風險預警</h2>
+    {% for r in analysis.risk_analysis.high %}
+    <div class="risk-card">
+      <div class="rc-title">{{ r.case_id }} — {{ r.description }}</div>
+      <div class="rc-sub">👤 {{ r.employee }}｜影響：{{ r.impact }}</div>
+      <div class="rc-sub">🆘 需要協助：{{ r.need_help }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- 中風險 -->
+  {% if analysis and analysis.risk_analysis and analysis.risk_analysis.medium %}
+  <div class="section">
+    <h2>🟠 中風險事項</h2>
+    {% for r in analysis.risk_analysis.medium %}
+    <div class="risk-card medium">
+      <div class="rc-title">{{ r.case_id }} — {{ r.description }}</div>
+      <div class="rc-sub">👤 {{ r.employee }}｜{{ r.need_help }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- 行動建議 -->
+  {% if analysis and analysis.action_items %}
+  <div class="section">
+    <h2>💡 行動建議</h2>
+    {% for a in analysis.action_items %}
+    <div class="action-card">
+      <div class="ac-pri">{{ a.priority }} · {{ a.type }} · 期限：{{ a.deadline }}</div>
+      <div>{{ a.description }}</div>
+      <div class="ac-sub">負責：{{ a.assignee }}｜行動：{{ a.action }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- 日報明細 -->
+  <div class="section">
+    <h2>📝 日報明細（{{ reports|length }} 筆）</h2>
+    {% if reports %}
+    <table>
+      <thead>
+        <tr>
+          <th>員工</th>
+          <th>提交 / 修改</th>
+          <th>今日工作摘要</th>
+          <th>風險</th>
+          <th>評分</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+        <tr>
+          <td>
+            <strong>{{ r.employee_name }}</strong><br>
+            <span class="muted">{{ r.employee_id }}</span>
+          </td>
+          <td>
+            <span class="muted">{{ r.submit_time }}</span>
+            {% if r.edit_log is defined and r.edit_log|length > 1 %}
+            <div class="edit-log">
+              {% for log in r.edit_log %}
+              {{ log.time }} {{ log.operator }} {{ log.action }}<br>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </td>
+          <td>
+            {% for w in r.work_items[:3] %}
+              <span class="tag {{ 'tag-done' if w.status=='已完成' else 'tag-wip' }}">{{ w.status }}</span>
+              {{ w.case_id }} {{ w.progress }}%<br>
+            {% endfor %}
+            {% if r.work_items|length > 3 %}
+              <span class="muted">…共 {{ r.work_items|length }} 項</span>
+            {% endif %}
+          </td>
+          <td>
+            {% for ri in r.risk_items %}
+              <span class="tag tag-{{ ri.risk_level }}">
+                {{ '🔴' if ri.risk_level=='high' else '🟠' if ri.risk_level=='medium' else '🟢' }}
+                {{ ri.case_id }}
+              </span><br>
+            {% endfor %}
+            {% if not r.risk_items %}<span class="muted">無</span>{% endif %}
+          </td>
+          <td>
+            {% if analysis %}
+              {% for s in analysis.employee_scores %}
+                {% if s.name == r.employee_name %}
+                  <strong>{{ s.score }}</strong> <span class="tag tag-done">{{ s.grade }}</span>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="muted" style="padding:20px;text-align:center">此日期尚無日報資料</div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+// ======== 週趨勢圖 ========
+async function drawWeekly() {
+  const res = await fetch('/api/chart/weekly');
+  const data = await res.json();
+  new Chart(document.getElementById('weeklyChart'), {
+    type: 'bar',
+    data: {
+      labels: data.map(d => d.date.slice(5)),
+      datasets: [
+        {
+          label: '提交率 (%)',
+          data: data.map(d => d.rate),
+          backgroundColor: data.map(d =>
+            d.rate === 100 ? '#22c55e' : d.rate >= 70 ? '#4f46e5' : '#f59e0b'
+          ),
+          borderRadius: 6,
+          yAxisID: 'y'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v + '%' } }
+      }
+    }
+  });
+}
+
+// ======== 風險圓餅圖 ========
+async function drawRisk() {
+  const res = await fetch('/api/chart/risk_summary');
+  const d = await res.json();
+  const total = d.high + d.medium + d.low;
+  if (total === 0) {
+    document.getElementById('riskChart').parentElement.innerHTML +=
+      '<div style="text-align:center;color:#22c55e;padding:20px;font-weight:700">✅ 今日無風險事項</div>';
+    return;
+  }
+  new Chart(document.getElementById('riskChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['🔴 高風險', '🟠 中風險', '🟢 低風險'],
+      datasets: [{
+        data: [d.high, d.medium, d.low],
+        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+}
+
+drawWeekly();
+drawRisk();
+</script>
 </body>
 </html>

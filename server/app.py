@@ -248,8 +248,13 @@ def report_form(employee_id=None):
         }
 
         today_dir.mkdir(parents=True, exist_ok=True)
+        is_edit = report_file.exists()
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
+
+        # 編輯留痕
+        action = '覆蓋修改' if is_edit else '初次提交'
+        append_edit_log(report_file, current_user.name, action)
 
         # 自動觸發 AI 分析（背景執行）
         def run_analysis():
@@ -379,6 +384,86 @@ def api_status():
 @login_required
 def api_cases():
     return jsonify(CASES)
+
+# ===================== 逾時未交提醒 =====================
+@app.route('/api/reminder/check')
+@login_required
+def reminder_check():
+    """檢查今天哪些員工還未提交，回傳名單（admin only）"""
+    if current_user.role != 'admin':
+        return jsonify({'error': '無權限'}), 403
+    today = datetime.now().strftime('%Y-%m-%d')
+    today_dir = REPORTS_DIR / today
+    submitted_ids = set()
+    if today_dir.exists():
+        for f in today_dir.glob('*_report.json'):
+            submitted_ids.add(f.stem.replace('_report', ''))
+    missing = [{'id': e['id'], 'name': e['name']} for e in EMPLOYEES if e['id'] not in submitted_ids]
+    hour = datetime.now().hour
+    overdue = hour >= 18  # 18:00 後算逾時
+    return jsonify({
+        'date': today,
+        'total': len(EMPLOYEES),
+        'submitted': len(submitted_ids),
+        'missing': missing,
+        'overdue': overdue,
+        'current_hour': hour
+    })
+
+# ===================== 編輯留痕 =====================
+def append_edit_log(report_file: Path, operator: str, action: str):
+    """在日報 JSON 中追加編輯記錄"""
+    if not report_file.exists():
+        return
+    with open(report_file, encoding='utf-8') as f:
+        data = json.load(f)
+    if 'edit_log' not in data:
+        data['edit_log'] = []
+    data['edit_log'].append({
+        'operator': operator,
+        'action': action,
+        'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    })
+    with open(report_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+# ===================== 圖表資料 API =====================
+@app.route('/api/chart/weekly')
+@login_required
+def chart_weekly():
+    """最近 7 天各日提交率（供圖表使用）"""
+    if current_user.role != 'admin':
+        return jsonify({'error': '無權限'}), 403
+    from datetime import timedelta
+    result = []
+    total = len(EMPLOYEES)
+    for i in range(6, -1, -1):
+        d = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
+        ddir = REPORTS_DIR / d
+        count = len(list(ddir.glob('*_report.json'))) if ddir.exists() else 0
+        result.append({'date': d, 'submitted': count, 'total': total,
+                        'rate': round(count / total * 100, 1) if total else 0})
+    return jsonify(result)
+
+@app.route('/api/chart/risk_summary')
+@login_required
+def chart_risk_summary():
+    """今日風險分佈統計"""
+    if current_user.role != 'admin':
+        return jsonify({'error': '無權限'}), 403
+    today = datetime.now().strftime('%Y-%m-%d')
+    today_dir = REPORTS_DIR / today
+    high = medium = low = 0
+    if today_dir.exists():
+        for f in today_dir.glob('*_report.json'):
+            with open(f, encoding='utf-8') as fp:
+                r = json.load(fp)
+            for risk in r.get('risk_items', []):
+                lv = risk.get('risk_level', 'low')
+                if lv == 'high': high += 1
+                elif lv == 'medium': medium += 1
+                else: low += 1
+    return jsonify({'high': high, 'medium': medium, 'low': low})
 
 # ===================== 啟動 =====================
 if __name__ == '__main__':
