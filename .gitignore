@@ -1,0 +1,103 @@
+# 昱金生能源集團 - Git Ignore 檔案
+
+# ==================== 自動生成報表 ====================
+# 這些檔案會自動生成，不需提交
+reports/*.pdf
+reports/*.xlsx
+reports/*.html
+*.html
+demo-report.*
+temp-report.*
+
+# ==================== 測試資料 ====================
+# 測試用日報資料
+daily_reports/
+test-output/
+
+# ==================== 本地設定 ====================
+# OpenClaw 本地設定
+.openclaw/
+
+# ==================== 臨時檔案 ====================
+# 工作暫存檔案
+task-board.json
+memory-system.md
+memory-dashboard.html
+memory-index/
+
+# ==================== Python ====================
+# Python 快取
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Python 虛擬環境
+venv/
+env/
+ENV/
+.venv
+
+# ==================== 日誌檔案 ====================
+logs/
+*.log
+
+# ==================== 系統檔案 ====================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ==================== 編輯器 ====================
+# VS Code
+.vscode/
+*.code-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+
+# ==================== 機密檔案 ====================
+# 環境變數與金鑰
+.env
+*.env
+!.env.example
+secrets/
+keys/
+
+# ==================== 保留必要檔案 ====================
+# 這些不忽略
+!docs/
+!server/
+!templates/
+!scripts/analyze_daily_reports.py
+!scripts/generate_excel_reports.py
+!*.md
