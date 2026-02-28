@@ -1,0 +1,26 @@
+version: "1.1"
+timezone: "Asia/Taipei"
+weather_factor:
+  sunny: 1.00
+  partly_sunny: 1.00
+  cloudy: 0.95
+  rainy: 0.90
+  unknown: 1.00
+thresholds:
+  sunny:
+    p3: -3
+    p2: -5
+    p1: -8
+  strict:
+    default_enabled: false
+    threshold: -2
+  availability:
+    p2_lt: 85
+    p1_lt: 50
+  data_gap:
+    p3_min: 10
+    p2_min: 30
+    p1_multi_site_min: 60
+notifications:
+  p1: immediate
+  p2_p3: hourly_digest

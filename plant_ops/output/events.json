@@ -1,0 +1,70 @@
+[
+  {
+    "plant_id": "CH-001",
+    "plant_name": "彰化A國中",
+    "timestamp": "2026-03-01T05:00:00+08:00",
+    "actual_gen_kwh_today": 1245.6,
+    "forecast_gen_kwh_today": 1300.0,
+    "design_offset_enabled": true,
+    "design_offset_factor": 0.95,
+    "weather_icon": "sunny",
+    "irr_today": 3.8,
+    "irr_yday_slot": 4.0,
+    "inverter_availability_pct": 99.2,
+    "data_gap_min": 3,
+    "mode": "sunny",
+    "irr_delta_pct": -5.0,
+    "adj_forecast_gen_kwh_today": 1235.0,
+    "gen_gap_pct": 0.86,
+    "gen_achievement_rate_pct": 100.86,
+    "severity": "OK",
+    "reasons": []
+  },
+  {
+    "plant_id": "CH-002",
+    "plant_name": "彰化B國小",
+    "timestamp": "2026-03-01T05:00:00+08:00",
+    "actual_gen_kwh_today": 860.0,
+    "forecast_gen_kwh_today": 980.0,
+    "design_offset_enabled": false,
+    "design_offset_factor": 1.0,
+    "weather_icon": "sunny",
+    "irr_today": 3.7,
+    "irr_yday_slot": 3.9,
+    "inverter_availability_pct": 82.0,
+    "data_gap_min": 12,
+    "mode": "sunny",
+    "irr_delta_pct": -5.13,
+    "adj_forecast_gen_kwh_today": 980.0,
+    "gen_gap_pct": -12.24,
+    "gen_achievement_rate_pct": 87.76,
+    "severity": "P1",
+    "reasons": [
+      "sunny gap=-12.24% <= -8%"
+    ]
+  },
+  {
+    "plant_id": "CH-003",
+    "plant_name": "彰化C球場",
+    "timestamp": "2026-03-01T05:00:00+08:00",
+    "actual_gen_kwh_today": 500.0,
+    "forecast_gen_kwh_today": 900.0,
+    "design_offset_enabled": true,
+    "design_offset_factor": 0.9,
+    "weather_icon": "rainy",
+    "irr_today": 2.2,
+    "irr_yday_slot": 3.8,
+    "inverter_availability_pct": 98.5,
+    "data_gap_min": 35,
+    "mode": "rainy",
+    "irr_delta_pct": -42.11,
+    "adj_forecast_gen_kwh_today": 729.0,
+    "gen_gap_pct": -31.41,
+    "gen_achievement_rate_pct": 68.59,
+    "severity": "P2",
+    "reasons": [
+      "rainy + data gap >=30m",
+      "data gap >= 30m"
+    ]
+  }
+]
