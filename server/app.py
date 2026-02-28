@@ -11,16 +11,23 @@
 7. 員工管理後台
 """
 
-from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify, session, send_file
 from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import json
 import hashlib
 from pathlib import Path
 import threading
 import subprocess
+import io
+try:
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    EXCEL_OK = True
+except ImportError:
+    EXCEL_OK = False
 
 app = Flask(__name__)
 app.secret_key = 'yjsenergy_v3_2026_ultra_secret'
@@ -384,6 +391,156 @@ def api_status():
 @login_required
 def api_cases():
     return jsonify(CASES)
+
+# ===================== Excel 匯出 =====================
+@app.route('/export/excel')
+@login_required
+def export_excel():
+    if current_user.role != 'admin':
+        flash('無權限', 'error'); return redirect(url_for('index'))
+    if not EXCEL_OK:
+        flash('伺服器未安裝 openpyxl，無法匯出', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+    date_param = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
+    date_dir = REPORTS_DIR / date_param
+    reports = []
+    if date_dir.exists():
+        for f in sorted(date_dir.glob('*_report.json')):
+            reports.append(json.loads(f.read_text(encoding='utf-8')))
+
+    wb = openpyxl.Workbook()
+
+    # ── 工作表一：摘要 ──
+    ws_sum = wb.active
+    ws_sum.title = '日報摘要'
+    header_fill = PatternFill(fill_type='solid', fgColor='4F46E5')
+    header_font = Font(bold=True, color='FFFFFF', size=11)
+    thin = Border(
+        left=Side(style='thin'), right=Side(style='thin'),
+        top=Side(style='thin'), bottom=Side(style='thin')
+    )
+    def hcell(ws, row, col, val, width=None):
+        c = ws.cell(row=row, column=col, value=val)
+        c.fill = header_fill; c.font = header_font
+        c.alignment = Alignment(horizontal='center', vertical='center')
+        c.border = thin
+        if width: ws.column_dimensions[c.column_letter].width = width
+        return c
+    def dcell(ws, row, col, val):
+        c = ws.cell(row=row, column=col, value=val)
+        c.alignment = Alignment(vertical='center', wrap_text=True)
+        c.border = thin; return c
+
+    ws_sum.row_dimensions[1].height = 30
+    hcell(ws_sum,1,1,'員工姓名',15); hcell(ws_sum,1,2,'部門',12)
+    hcell(ws_sum,1,3,'提交時間',18); hcell(ws_sum,1,4,'工作項數',10)
+    hcell(ws_sum,1,5,'計畫項數',10); hcell(ws_sum,1,6,'風險項數',10)
+    hcell(ws_sum,1,7,'高風險數',10); hcell(ws_sum,1,8,'今日收穫',30)
+
+    # 未提交員工
+    submitted_ids = {r['employee_id'] for r in reports}
+    for emp in EMPLOYEES:
+        if emp['id'] not in submitted_ids:
+            row = ws_sum.max_row + 1
+            dcell(ws_sum, row, 1, emp['name'])
+            dcell(ws_sum, row, 2, '未提交')
+            for col in range(3, 9): dcell(ws_sum, row, col, '-')
+            ws_sum.cell(row=row, column=2).font = Font(color='FF0000')
+
+    for r in reports:
+        high_count = sum(1 for ri in r.get('risk_items',[]) if ri.get('risk_level')=='high')
+        row = ws_sum.max_row + 1
+        dcell(ws_sum, row, 1, r['employee_name'])
+        dcell(ws_sum, row, 2, r.get('department',''))
+        dcell(ws_sum, row, 3, r['submit_time'])
+        dcell(ws_sum, row, 4, len(r.get('work_items',[])))
+        dcell(ws_sum, row, 5, len(r.get('plan_items',[])))
+        dcell(ws_sum, row, 6, len(r.get('risk_items',[])))
+        dcell(ws_sum, row, 7, high_count)
+        dcell(ws_sum, row, 8, r.get('summary',{}).get('today_gain',''))
+        if high_count > 0:
+            ws_sum.cell(row=row, column=7).fill = PatternFill(fill_type='solid', fgColor='FEE2E2')
+            ws_sum.cell(row=row, column=7).font = Font(color='991B1B', bold=True)
+
+    # ── 工作表二：工作明細 ──
+    ws_work = wb.create_sheet('工作明細')
+    headers = ['員工','案場','工作類型','工作內容','進度%','工時','產出物','狀態']
+    for i, h in enumerate(headers, 1):
+        hcell(ws_work, 1, i, h, [12,15,10,40,8,8,20,10][i-1])
+    ws_work.row_dimensions[1].height = 25
+    for r in reports:
+        for w in r.get('work_items', []):
+            row = ws_work.max_row + 1
+            dcell(ws_work, row, 1, r['employee_name'])
+            dcell(ws_work, row, 2, w.get('case_id',''))
+            dcell(ws_work, row, 3, w.get('work_type',''))
+            dcell(ws_work, row, 4, w.get('work_content',''))
+            dcell(ws_work, row, 5, w.get('progress',''))
+            dcell(ws_work, row, 6, w.get('hours',''))
+            dcell(ws_work, row, 7, w.get('output',''))
+            dcell(ws_work, row, 8, w.get('status',''))
+
+    # ── 工作表三：風險清單 ──
+    ws_risk = wb.create_sheet('風險清單')
+    rh = ['員工','案場','風險等級','風險說明','影響層面','需要協助']
+    for i, h in enumerate(rh, 1):
+        hcell(ws_risk, 1, i, h, [12,15,10,35,25,25][i-1])
+    ws_risk.row_dimensions[1].height = 25
+    risk_colors = {'high':'FEE2E2', 'medium':'FEF3C7', 'low':'DCFCE7'}
+    for r in reports:
+        for ri in r.get('risk_items', []):
+            row = ws_risk.max_row + 1
+            dcell(ws_risk, row, 1, r['employee_name'])
+            dcell(ws_risk, row, 2, ri.get('case_id',''))
+            lv = ri.get('risk_level','low')
+            lv_text = {'high':'🔴 高風險','medium':'🟠 中風險','low':'🟢 低風險'}.get(lv, lv)
+            c = dcell(ws_risk, row, 3, lv_text)
+            c.fill = PatternFill(fill_type='solid', fgColor=risk_colors.get(lv,'FFFFFF'))
+            dcell(ws_risk, row, 4, ri.get('risk_desc',''))
+            dcell(ws_risk, row, 5, ri.get('risk_impact',''))
+            dcell(ws_risk, row, 6, ri.get('need_help',''))
+
+    buf = io.BytesIO()
+    wb.save(buf); buf.seek(0)
+    filename = f"日報_{date_param}.xlsx"
+    return send_file(buf, as_attachment=True, download_name=filename,
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+# ===================== 員工管理頁 =====================
+@app.route('/admin/employees')
+@login_required
+def admin_employees():
+    if current_user.role != 'admin':
+        flash('無權限', 'error'); return redirect(url_for('index'))
+
+    # 近 30 天提交統計
+    today = datetime.now()
+    stats = {}
+    for emp in EMPLOYEES:
+        stats[emp['id']] = {'name': emp['name'], 'total_days': 0, 'submit_days': 0, 'avg_work': 0}
+
+    total_work_by_emp = {e['id']: [] for e in EMPLOYEES}
+    for i in range(30):
+        d = (today - timedelta(days=i)).strftime('%Y-%m-%d')
+        dd = REPORTS_DIR / d
+        if not dd.exists(): continue
+        for emp in EMPLOYEES:
+            f = dd / f"{emp['id']}_report.json"
+            stats[emp['id']]['total_days'] += 1
+            if f.exists():
+                stats[emp['id']]['submit_days'] += 1
+                r = json.loads(f.read_text(encoding='utf-8'))
+                total_work_by_emp[emp['id']].append(len(r.get('work_items', [])))
+
+    for eid, wlist in total_work_by_emp.items():
+        stats[eid]['avg_work'] = round(sum(wlist)/len(wlist), 1) if wlist else 0
+        sd = stats[eid]['submit_days']
+        td = stats[eid]['total_days']
+        stats[eid]['rate'] = round(sd/td*100, 1) if td else 0
+
+    return render_template('admin_employees.html',
+        employees=EMPLOYEES, stats=stats)
 
 # ===================== 逾時未交提醒 =====================
 @app.route('/api/reminder/check')
