@@ -1,0 +1,12 @@
+[
+  {"plant_id":"BDL020090120","plant_name":"雲林東勢_金田畜牧場","status":1,"capacity_kw":98.94,"last_report_time":"2026/02/28 06:53:55","city":"東勢鄉","state":"雲林縣"},
+  {"plant_id":"BDL020090371","plant_name":"雲林台西_祐康畜牧場","status":1,"capacity_kw":226.2,"last_report_time":"2026/02/28 19:06:10","city":"臺西鄉","state":"雲林縣"},
+  {"plant_id":"BDL021080241","plant_name":"桃園新屋_勤志企業社","status":1,"capacity_kw":180.54,"last_report_time":"2026/02/28 19:13:32","city":"新屋區","state":"桃園市"},
+  {"plant_id":"BDL021080293","plant_name":"台南永康_永仁高中一期","status":1,"capacity_kw":261.12,"last_report_time":"2026/02/28 19:05:38","city":"永康區","state":"臺南市"},
+  {"plant_id":"BDL021080294","plant_name":"台中神岡_高鋒工業(伍將)","status":1,"capacity_kw":385.56,"last_report_time":"2026/03/01 02:08:13","city":"神岡區","state":"臺中市"},
+  {"plant_id":"BDL021080295","plant_name":"台中東勢_公園路9號","status":1,"capacity_kw":72.76,"last_report_time":"2026/02/28 19:23:52","city":"東勢區","state":"臺中市"},
+  {"plant_id":"BDL221110010","plant_name":"彰化秀水_謙隆企業社","status":1,"capacity_kw":142.8,"last_report_time":"2026/02/28 19:16:27","city":"秀水鄉","state":"彰化縣"},
+  {"plant_id":"BDL221110014","plant_name":"台南東區_台南大學榮譽校區","status":1,"capacity_kw":212.38,"last_report_time":"2026/02/28 19:17:48","city":"東區","state":"臺南市"},
+  {"plant_id":"BDL221110017","plant_name":"彰化鹿港_三瀛工業","status":1,"capacity_kw":173.74,"last_report_time":"2026/02/28 19:22:10","city":"鹿港鎮","state":"彰化縣"},
+  {"plant_id":"BDL221110025","plant_name":"台南仁德_胸腔病院一期","status":1,"capacity_kw":300.24,"last_report_time":"2026/02/28 19:02:37","city":"仁德區","state":"臺南市"}
+]
