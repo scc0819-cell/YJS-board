@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>帳號與權限管理 - 日報系統</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;background:#f3f4f6;color:#111827}
+    .top{background:#111827;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+    .top a{color:#c7d2fe;text-decoration:none;margin-left:12px;font-size:14px}
+    .wrap{max-width:1250px;margin:20px auto;padding:0 16px 60px}
+    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:16px}
+    h1{font-size:20px;font-weight:900}
+    .muted{color:#6b7280;font-size:13px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    input,select{padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px}
+    .btn{padding:8px 14px;border:none;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;display:inline-block;font-weight:900;font-size:13px}
+    .btn-danger{background:#ef4444}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#f9fafb;color:#6b7280;font-weight:900;padding:10px 12px;text-align:left;border-bottom:2px solid #e5e7eb;white-space:nowrap}
+    td{padding:10px 12px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+    tr:hover td{background:#fafafa}
+    code{background:#f3f4f6;border-radius:6px;padding:2px 6px}
+    .alert{padding:12px 16px;border-radius:10px;margin-bottom:14px;font-size:14px}
+    .alert-success{background:#d4edda;color:#155724;border-left:4px solid #28a745}
+    .alert-error{background:#f8d7da;color:#721c24;border-left:4px solid #dc3545}
+    .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:900}
+    .p-green{background:#dcfce7;color:#166534}
+    .p-red{background:#fee2e2;color:#991b1b}
+    .p-blue{background:#e0f2fe;color:#075985}
+    .p-yellow{background:#fef3c7;color:#92400e}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div style="font-weight:900">👥 帳號與權限管理</div>
+    <div>
+      <a href="/">首頁</a>
+      <a href="/cases">案場總覽</a>
+      <a href="/risks">風險追蹤</a>
+      <a href="/tasks">任務追蹤</a>
+      <a href="/admin">管理後台</a>
+      <a href="/admin/audit">稽核紀錄</a>
+      <a href="/logout">登出</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+      <h1>新增使用者</h1>
+      <div class="muted" style="margin-top:6px">建立後會產生一組「臨時密碼」，首次登入會被要求立即修改。</div>
+      <form method="POST" action="/admin/users/create" class="row" style="margin-top:14px">
+        <div>
+          <div class="muted">帳號ID（英數底線）</div>
+          <input name="id" placeholder="例如：new_admin" style="width:180px" required />
+        </div>
+        <div>
+          <div class="muted">姓名</div>
+          <input name="name" placeholder="例如：王小明" style="width:180px" required />
+        </div>
+        <div>
+          <div class="muted">角色</div>
+          <select name="role">
+            <option value="employee" selected>employee</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+        <div style="align-self:flex-end">
+          <button class="btn" type="submit">建立</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h1>使用者清單</h1>
+      <div class="muted" style="margin-top:6px">可修改姓名/角色/啟用狀態；刪除前請確認資料需求。</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>姓名</th>
+            <th>角色</th>
+            <th>狀態</th>
+            <th>臨時密碼</th>
+            <th>更新</th>
+            <th>刪除</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td><code>{{ u.id }}</code></td>
+            <td>
+              <form method="POST" action="/admin/users/update/{{ u.id }}" class="row" style="gap:8px">
+                <input name="name" value="{{ u.name }}" style="width:180px" />
+            </td>
+            <td>
+                <select name="role">
+                  <option value="employee" {% if u.role=='employee' %}selected{% endif %}>employee</option>
+                  <option value="admin" {% if u.role=='admin' %}selected{% endif %}>admin</option>
+                </select>
+            </td>
+            <td>
+                {% if u.enabled %}
+                  <span class="pill p-green">啟用</span>
+                {% else %}
+                  <span class="pill p-red">停用</span>
+                {% endif %}
+                <label class="muted" style="margin-left:8px">
+                  <input type="checkbox" name="enabled" {% if u.enabled %}checked{% endif %}/> 啟用
+                </label>
+            </td>
+            <td>
+              {% if u.password_temp %}
+                <span class="pill p-yellow">是</span>
+              {% else %}
+                <span class="pill p-blue">否</span>
+              {% endif %}
+            </td>
+            <td>
+                <button class="btn" type="submit">儲存</button>
+              </form>
+            </td>
+            <td>
+              <form method="POST" action="/admin/users/delete/{{ u.id }}" onsubmit="return confirm('確定要刪除 '+ '{{ u.id }}' +' 嗎？');">
+                <button class="btn btn-danger" type="submit">刪除</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="muted" style="margin-top:10px">
+        ⚠️ 系統限制：至少需保留 1 位「啟用」的管理員；不可刪除/停用自己。
+      </div>
+    </div>
+  </div>
+</body>
+</html>

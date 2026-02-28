@@ -24,6 +24,8 @@ import threading
 import subprocess
 import io
 import sqlite3
+import re
+import secrets
 try:
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -70,31 +72,63 @@ SEED_USERS = {
         "id": "admin",
         "name": "宋董事長",
         "role": "admin",
+        "enabled": True,
         "password_hash": generate_password_hash("yjsenergy2026"),
         "password_temp": False,
     },
-    "chen_ming_de": {"id": "chen_ming_de", "name": "陳明德", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
-    "yang_zong_wei": {"id": "yang_zong_wei", "name": "楊宗衛", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
-    "li_ya_ting": {"id": "li_ya_ting", "name": "李雅婷", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
-    "hong_shu_rong": {"id": "hong_shu_rong", "name": "洪淑嫆", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
-    "chen_gu_bin": {"id": "chen_gu_bin", "name": "陳谷濱", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
-    "zhang_yi_chuan": {"id": "zhang_yi_chuan", "name": "張億峖", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
-    "lin_kun_yi": {"id": "lin_kun_yi", "name": "林坤誼", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
-    "huang_zhen_hao": {"id": "huang_zhen_hao", "name": "黃振豪", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
-    "xu_hui_ling": {"id": "xu_hui_ling", "name": "許惠玲", "role": "employee", "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "chen_ming_de": {"id": "chen_ming_de", "name": "陳明德", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "yang_zong_wei": {"id": "yang_zong_wei", "name": "楊宗衛", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "li_ya_ting": {"id": "li_ya_ting", "name": "李雅婷", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "hong_shu_rong": {"id": "hong_shu_rong", "name": "洪淑嫆", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "chen_gu_bin": {"id": "chen_gu_bin", "name": "陳谷濱", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "zhang_yi_chuan": {"id": "zhang_yi_chuan", "name": "張億峖", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "lin_kun_yi": {"id": "lin_kun_yi", "name": "林坤誼", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "huang_zhen_hao": {"id": "huang_zhen_hao", "name": "黃振豪", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
+    "xu_hui_ling": {"id": "xu_hui_ling", "name": "許惠玲", "role": "employee", "enabled": True, "password_hash": generate_password_hash("1234"), "password_temp": True},
 }
+
+
+def normalize_users(users: dict):
+    """補齊 users.json 欄位（向後相容），避免版本升級後缺欄位出錯。"""
+    changed = False
+    for uid, u in (users or {}).items():
+        if not isinstance(u, dict):
+            users[uid] = {'id': uid, 'name': uid, 'role': 'employee', 'enabled': True, 'password_temp': True}
+            changed = True
+            continue
+        if 'id' not in u:
+            u['id'] = uid; changed = True
+        if 'name' not in u:
+            u['name'] = uid; changed = True
+        if 'role' not in u:
+            u['role'] = 'employee'; changed = True
+        if 'enabled' not in u:
+            u['enabled'] = True; changed = True
+        if 'password_temp' not in u:
+            u['password_temp'] = False; changed = True
+        users[uid] = u
+    return users, changed
 
 
 def load_users():
     if USERS_FILE.exists():
         try:
-            return json.loads(USERS_FILE.read_text(encoding='utf-8'))
+            users = json.loads(USERS_FILE.read_text(encoding='utf-8'))
+            users, changed = normalize_users(users)
+            if changed:
+                save_users(users)
+            return users
         except Exception:
             # 檔案損壞時回退到 seed（避免整個系統起不來）
-            return dict(SEED_USERS)
+            users = dict(SEED_USERS)
+            users, _ = normalize_users(users)
+            return users
+
     # 首次建立
-    USERS_FILE.write_text(json.dumps(SEED_USERS, ensure_ascii=False, indent=2), encoding='utf-8')
-    return dict(SEED_USERS)
+    users = dict(SEED_USERS)
+    users, _ = normalize_users(users)
+    USERS_FILE.write_text(json.dumps(users, ensure_ascii=False, indent=2), encoding='utf-8')
+    return users
 
 
 def save_users(users: dict):
@@ -108,6 +142,7 @@ def public_user(u: dict) -> dict:
         'id': u.get('id'),
         'name': u.get('name'),
         'role': u.get('role'),
+        'enabled': bool(u.get('enabled', True)),
     }
 
 
@@ -116,7 +151,7 @@ USERS = load_users()
 
 def refresh_employee_cache():
     global EMPLOYEES
-    EMPLOYEES = [public_user(v) for v in USERS.values() if v.get('role') == 'employee']
+    EMPLOYEES = [public_user(v) for v in USERS.values() if v.get('role') == 'employee' and bool(v.get('enabled', True))]
     EMPLOYEES.sort(key=lambda x: x.get('name') or '')
 
 
@@ -341,9 +376,12 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id in USERS:
-        return User(USERS[user_id])
-    return None
+    u = USERS.get(user_id)
+    if not u:
+        return None
+    if not bool(u.get('enabled', True)):
+        return None
+    return User(u)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -373,6 +411,12 @@ def login():
             return render_template('login.html')
 
         user_data = USERS.get(username)
+
+        if user_data and not bool(user_data.get('enabled', True)):
+            audit('login_disabled', actor_id=username)
+            flash('此帳號已停用，請聯繫管理員。', 'error')
+            return render_template('login.html')
+
         ok = bool(user_data and check_password_hash(user_data.get('password_hash', ''), password))
 
         if ok:
@@ -493,6 +537,39 @@ def index():
     # 員工只能看到自己的按鈕
     is_admin = current_user.role == 'admin'
 
+    risk_top5 = []
+    overdue_tasks_top5 = []
+    if is_admin:
+        try:
+            with get_db() as db:
+                risk_top5 = db.execute(
+                    """
+                    SELECT id, case_id, category, level, risk_desc, status, owner_id, due_date, report_date, employee_id
+                    FROM risk_items
+                    WHERE status != 'closed' AND level = 'high'
+                    ORDER BY
+                      CASE WHEN due_date != '' AND due_date < ? THEN 0
+                           WHEN due_date != '' THEN 1
+                           ELSE 2 END,
+                      due_date ASC, id DESC
+                    LIMIT 5
+                    """,
+                    (today,)
+                ).fetchall()
+
+                overdue_tasks_top5 = db.execute(
+                    """
+                    SELECT id, case_id, title, priority, status, owner_id, due_date, related_risk_id
+                    FROM tasks
+                    WHERE status != 'closed' AND due_date != '' AND due_date < ?
+                    ORDER BY due_date ASC, id ASC
+                    LIMIT 5
+                    """,
+                    (today,)
+                ).fetchall()
+        except Exception:
+            pass
+
     return render_template('index_v3.html',
         employees=EMPLOYEES,
         submitted=submitted,
@@ -502,7 +579,9 @@ def index():
         submission_rate=rate,
         today=today,
         is_admin=is_admin,
-        current_user_id=current_user.id
+        current_user_id=current_user.id,
+        risk_top5=risk_top5,
+        overdue_tasks_top5=overdue_tasks_top5,
     )
 
 def safe_float(v, default=0.0):
@@ -750,6 +829,138 @@ def load_draft():
         with open(draft_file, encoding='utf-8') as f:
             return jsonify(json.load(f))
     return jsonify({})
+
+# ===================== 帳號/權限管理（管理員） =====================
+@app.route('/admin/users')
+@login_required
+def admin_users():
+    if current_user.role != 'admin':
+        flash('無權限訪問', 'error')
+        return redirect(url_for('index'))
+
+    # 排序：admin 先，其次啟用，再依 id
+    rows = list(USERS.values())
+    rows.sort(key=lambda u: (0 if u.get('role')=='admin' else 1, 0 if bool(u.get('enabled',True)) else 1, u.get('id','')))
+
+    return render_template('admin_users.html', users=rows)
+
+
+def _is_valid_user_id(uid: str) -> bool:
+    # 允許英數字底線（方便做 Owner / API）
+    return bool(re.fullmatch(r'[a-zA-Z0-9_]{3,64}', uid or ''))
+
+
+def _count_enabled_admins() -> int:
+    return sum(1 for u in USERS.values() if u.get('role')=='admin' and bool(u.get('enabled', True)))
+
+
+@app.route('/admin/users/create', methods=['POST'])
+@login_required
+def admin_users_create():
+    if current_user.role != 'admin':
+        abort(403)
+
+    uid = (request.form.get('id') or '').strip()
+    name = (request.form.get('name') or '').strip()
+    role = (request.form.get('role') or 'employee').strip()
+
+    if not _is_valid_user_id(uid):
+        flash('帳號 ID 格式不正確（需 3~64 碼英數字或底線）', 'error')
+        return redirect(url_for('admin_users'))
+    if uid in USERS:
+        flash('帳號 ID 已存在', 'error')
+        return redirect(url_for('admin_users'))
+    if not name:
+        flash('姓名不可空白', 'error')
+        return redirect(url_for('admin_users'))
+    if role not in ('admin', 'employee'):
+        role = 'employee'
+
+    temp_pw = secrets.token_urlsafe(9)
+    USERS[uid] = {
+        'id': uid,
+        'name': name,
+        'role': role,
+        'enabled': True,
+        'password_hash': generate_password_hash(temp_pw),
+        'password_temp': True,
+    }
+    save_users(USERS)
+    refresh_employee_cache()
+
+    audit('user_create', actor_id=current_user.id, target_id=uid, detail={'role': role})
+    flash(f'✅ 已建立帳號 {uid}（{name}）。臨時密碼：{temp_pw}（請轉交本人並要求首次登入立即修改）', 'success')
+    return redirect(url_for('admin_users'))
+
+
+@app.route('/admin/users/update/<user_id>', methods=['POST'])
+@login_required
+def admin_users_update(user_id):
+    if current_user.role != 'admin':
+        abort(403)
+
+    u = USERS.get(user_id)
+    if not u:
+        flash('使用者不存在', 'error')
+        return redirect(url_for('admin_users'))
+
+    name = (request.form.get('name') or u.get('name') or '').strip()
+    role = (request.form.get('role') or u.get('role') or 'employee').strip()
+    enabled = request.form.get('enabled') == 'on'
+
+    # 至少要保留 1 個啟用的 admin
+    if u.get('role') == 'admin' and (not enabled or role != 'admin'):
+        if _count_enabled_admins() <= 1 and bool(u.get('enabled', True)):
+            flash('至少需保留 1 位啟用的管理員，無法停用/降權最後一位管理員', 'error')
+            return redirect(url_for('admin_users'))
+
+    # 不允許把自己停用（避免鎖死）
+    if user_id == current_user.id and not enabled:
+        flash('不可停用自己', 'error')
+        return redirect(url_for('admin_users'))
+
+    if role not in ('admin', 'employee'):
+        role = u.get('role')
+
+    u['name'] = name
+    u['role'] = role
+    u['enabled'] = enabled
+    USERS[user_id] = u
+    save_users(USERS)
+    refresh_employee_cache()
+
+    audit('user_update', actor_id=current_user.id, target_id=user_id, detail={'role': role, 'enabled': enabled})
+    flash('✅ 使用者已更新', 'success')
+    return redirect(url_for('admin_users'))
+
+
+@app.route('/admin/users/delete/<user_id>', methods=['POST'])
+@login_required
+def admin_users_delete(user_id):
+    if current_user.role != 'admin':
+        abort(403)
+
+    if user_id == current_user.id:
+        flash('不可刪除自己', 'error')
+        return redirect(url_for('admin_users'))
+
+    u = USERS.get(user_id)
+    if not u:
+        flash('使用者不存在', 'error')
+        return redirect(url_for('admin_users'))
+
+    if u.get('role') == 'admin' and bool(u.get('enabled', True)) and _count_enabled_admins() <= 1:
+        flash('至少需保留 1 位啟用的管理員，無法刪除最後一位管理員', 'error')
+        return redirect(url_for('admin_users'))
+
+    USERS.pop(user_id, None)
+    save_users(USERS)
+    refresh_employee_cache()
+
+    audit('user_delete', actor_id=current_user.id, target_id=user_id)
+    flash('✅ 使用者已刪除', 'success')
+    return redirect(url_for('admin_users'))
+
 
 # ===================== 稽核紀錄（管理員） =====================
 @app.route('/admin/audit')

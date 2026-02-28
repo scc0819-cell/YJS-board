@@ -132,6 +132,7 @@
         <div class="topbar-right">
             <span>👤 {{ current_user.name }}</span>
             {% if is_admin %}<a href="/admin" style="color:#ffd700">📊 管理後台</a>{% endif %}
+            {% if is_admin %}<a href="/admin/users" style="color:#ffd700">👥 帳號/權限</a>{% endif %}
             <a href="/cases">🧭 案場總覽</a>
             <a href="/risks">⚠️ 風險追蹤</a>
             <a href="/tasks">✅ 任務追蹤</a>
@@ -182,6 +183,47 @@
                 </div>
             </div>
         </div>
+
+        {% if is_admin %}
+        <div class="grid-2" style="margin-bottom:25px">
+            <div class="card">
+                <div class="card-title">🔥 高風險 TOP 5（未結案）</div>
+                {% if risk_top5 and risk_top5|length > 0 %}
+                    {% for r in risk_top5 %}
+                    <div class="emp-row" style="align-items:flex-start">
+                        <div class="emp-avatar" style="background:linear-gradient(135deg,#ef4444,#b91c1c)">!</div>
+                        <div class="emp-info">
+                            <div class="emp-name">{{ r.case_id }} · {{ r.category }}</div>
+                            <div class="emp-dept" style="margin-top:4px;white-space:normal">{{ r.risk_desc }}</div>
+                            <div class="emp-dept">狀態：{{ r.status }}{% if r.owner_id %}｜Owner：{{ r.owner_id }}{% endif %}{% if r.due_date %}｜Due：{{ r.due_date }}{% endif %}</div>
+                        </div>
+                        <a class="btn" href="/cases/{{ r.case_id }}" style="margin-left:10px">查看</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color:#aaa; text-align:center; padding:20px;">目前沒有高風險未結案</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <div class="card-title">⏰ 逾期任務 TOP 5（未結案）</div>
+                {% if overdue_tasks_top5 and overdue_tasks_top5|length > 0 %}
+                    {% for t in overdue_tasks_top5 %}
+                    <div class="emp-row" style="align-items:flex-start">
+                        <div class="emp-avatar" style="background:linear-gradient(135deg,#f59e0b,#b45309)">⏰</div>
+                        <div class="emp-info">
+                            <div class="emp-name">{{ t.case_id }} · {{ t.title }}</div>
+                            <div class="emp-dept">Owner：{{ t.owner_id or '-' }}｜Due：{{ t.due_date }}</div>
+                        </div>
+                        <a class="btn" href="/cases/{{ t.case_id }}" style="margin-left:10px">查看</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color:#aaa; text-align:center; padding:20px;">目前沒有逾期任務</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
 
         <!-- 員工名單 -->
         <div class="grid-2">
