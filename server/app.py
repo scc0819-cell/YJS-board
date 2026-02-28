@@ -259,6 +259,24 @@ def init_db():
               updated_by TEXT
             )
         ''')
+
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS tasks (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              case_id TEXT,
+              title TEXT,
+              description TEXT,
+              priority TEXT DEFAULT 'medium',
+              status TEXT DEFAULT 'open',
+              owner_id TEXT DEFAULT '',
+              due_date TEXT DEFAULT '',
+              related_risk_id INTEGER,
+              created_at TEXT,
+              created_by TEXT,
+              updated_at TEXT,
+              updated_by TEXT
+            )
+        ''')
         db.commit()
 
 
@@ -869,12 +887,25 @@ def case_detail(case_id):
                 (case_id, current_user.id)
             ).fetchall()
 
+        # 任務清單（案件中心追蹤）
+        if current_user.role == 'admin':
+            tasks = db.execute(
+                "SELECT * FROM tasks WHERE case_id = ? ORDER BY CASE status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, due_date DESC, id DESC LIMIT 200",
+                (case_id,)
+            ).fetchall()
+        else:
+            tasks = db.execute(
+                "SELECT * FROM tasks WHERE case_id = ? AND owner_id = ? ORDER BY CASE status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, due_date DESC, id DESC LIMIT 200",
+                (case_id, current_user.id)
+            ).fetchall()
+
     return render_template(
         'case_detail.html',
         case=case,
         status=st,
         works=works,
         risks=risks,
+        tasks=tasks,
         is_admin=current_user.role == 'admin',
         stages=MILESTONE_STAGES,
         risk_categories=RISK_CATEGORIES,
@@ -920,6 +951,127 @@ def risks_page():
         q_cat=q_cat,
         q_status=q_status,
     )
+
+
+@app.route('/tasks')
+@login_required
+def tasks_page():
+    q_case = (request.args.get('case') or '').strip()
+    q_status = (request.args.get('status') or '').strip()
+    q_owner = (request.args.get('owner') or '').strip()
+
+    sql = "SELECT * FROM tasks WHERE 1=1"
+    params = []
+
+    if current_user.role == 'employee':
+        sql += " AND owner_id = ?"
+        params.append(current_user.id)
+    else:
+        if q_owner:
+            sql += " AND owner_id = ?"
+            params.append(q_owner)
+
+    if q_case:
+        sql += " AND case_id = ?"
+        params.append(q_case)
+
+    if q_status:
+        sql += " AND status = ?"
+        params.append(q_status)
+
+    sql += " ORDER BY CASE status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, due_date DESC, id DESC LIMIT 300"
+
+    with get_db() as db:
+        rows = db.execute(sql, tuple(params)).fetchall()
+
+    owners = EMPLOYEES
+    return render_template('tasks.html', rows=rows, cases=CASES, owners=owners,
+                           is_admin=current_user.role == 'admin', q_case=q_case, q_status=q_status, q_owner=q_owner)
+
+
+@app.route('/tasks/create', methods=['POST'])
+@login_required
+def tasks_create():
+    if current_user.role != 'admin':
+        abort(403)
+
+    case_id = (request.form.get('case_id') or '').strip()
+    title = (request.form.get('title') or '').strip()
+    description = (request.form.get('description') or '').strip()
+    priority = (request.form.get('priority') or 'medium').strip()
+    owner_id = (request.form.get('owner_id') or '').strip()
+    due_date = (request.form.get('due_date') or '').strip()
+    related_risk_id = (request.form.get('related_risk_id') or '').strip()
+
+    if not case_id or not title:
+        flash('請填寫案場與任務標題', 'error')
+        return redirect(request.headers.get('Referer') or url_for('tasks_page'))
+
+    if priority not in ('high', 'medium', 'low'):
+        priority = 'medium'
+
+    rr = None
+    if related_risk_id:
+        try:
+            rr = int(related_risk_id)
+        except Exception:
+            rr = None
+
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with get_db() as db:
+        db.execute(
+            """
+            INSERT INTO tasks(case_id, title, description, priority, status, owner_id, due_date, related_risk_id,
+                              created_at, created_by, updated_at, updated_by)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
+            """,
+            (case_id, title, description, priority, 'open', owner_id, due_date, rr, now, current_user.id, now, current_user.id)
+        )
+        db.commit()
+
+    audit('task_create', actor_id=current_user.id, target_id=case_id, detail={'title': title, 'owner': owner_id, 'due': due_date, 'priority': priority})
+    flash('✅ 任務已建立', 'success')
+    return redirect(request.headers.get('Referer') or url_for('tasks_page'))
+
+
+@app.route('/tasks/update/<int:task_id>', methods=['POST'])
+@login_required
+def tasks_update(task_id: int):
+    with get_db() as db:
+        row = db.execute('SELECT * FROM tasks WHERE id = ?', (task_id,)).fetchone()
+        if not row:
+            flash('任務不存在', 'error')
+            return redirect(url_for('tasks_page'))
+
+        # 管理員可改全部；員工只能改自己的狀態
+        if current_user.role != 'admin' and row['owner_id'] != current_user.id:
+            abort(403)
+
+        status = (request.form.get('status') or row['status'] or 'open').strip()
+        if status not in ('open', 'in_progress', 'closed'):
+            status = row['status']
+
+        owner_id = row['owner_id']
+        due_date = row['due_date']
+        priority = row['priority']
+
+        if current_user.role == 'admin':
+            owner_id = (request.form.get('owner_id') or row['owner_id'] or '').strip()
+            due_date = (request.form.get('due_date') or row['due_date'] or '').strip()
+            priority = (request.form.get('priority') or row['priority'] or 'medium').strip()
+            if priority not in ('high', 'medium', 'low'):
+                priority = row['priority']
+
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        db.execute(
+            'UPDATE tasks SET status=?, owner_id=?, due_date=?, priority=?, updated_at=?, updated_by=? WHERE id=?',
+            (status, owner_id, due_date, priority, now, current_user.id, task_id)
+        )
+        db.commit()
+
+    audit('task_update', actor_id=current_user.id, target_id=str(task_id), detail={'status': status, 'owner': owner_id, 'due': due_date, 'priority': priority})
+    flash('✅ 任務已更新', 'success')
+    return redirect(request.headers.get('Referer') or url_for('tasks_page'))
 
 
 @app.route('/risks/update/<int:risk_id>', methods=['POST'])
@@ -985,6 +1137,132 @@ def api_status():
 @login_required
 def api_cases():
     return jsonify(CASES)
+
+
+# ===================== AI 讀取 API（管理員） =====================
+@app.route('/api/ai/overview')
+@login_required
+def api_ai_overview():
+    """提供 AI 使用的案件總覽（可用於生成風險/行動建議）。管理員限定。"""
+    if current_user.role != 'admin':
+        abort(403)
+
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    with get_db() as db:
+        out_cases = []
+        for c in CASES:
+            cid = c['id']
+            st = db.execute('SELECT * FROM case_status WHERE case_id=?', (cid,)).fetchone()
+
+            risk = db.execute(
+                """
+                SELECT
+                  SUM(CASE WHEN status!='closed' THEN 1 ELSE 0 END) AS open_total,
+                  SUM(CASE WHEN status!='closed' AND level='high' THEN 1 ELSE 0 END) AS open_high,
+                  SUM(CASE WHEN status!='closed' AND level='medium' THEN 1 ELSE 0 END) AS open_medium,
+                  SUM(CASE WHEN status!='closed' AND level='low' THEN 1 ELSE 0 END) AS open_low
+                FROM risk_items WHERE case_id=?
+                """,
+                (cid,)
+            ).fetchone()
+
+            task = db.execute(
+                """
+                SELECT
+                  SUM(CASE WHEN status!='closed' THEN 1 ELSE 0 END) AS open_total,
+                  SUM(CASE WHEN status='open' THEN 1 ELSE 0 END) AS open_count,
+                  SUM(CASE WHEN status='in_progress' THEN 1 ELSE 0 END) AS in_progress_count
+                FROM tasks WHERE case_id=?
+                """,
+                (cid,)
+            ).fetchone()
+
+            last_work = db.execute(
+                """
+                SELECT MAX(r.report_date) AS last_date
+                FROM work_items w JOIN reports r ON w.report_key=r.report_key
+                WHERE w.case_id=?
+                """,
+                (cid,)
+            ).fetchone()
+
+            out_cases.append({
+                'case_id': cid,
+                'case_name': c.get('name', cid),
+                'case_type': c.get('type', ''),
+                'milestone_stage': (st['stage'] if st else ''),
+                'progress_percent': (st['percent'] if st and st['percent'] is not None else None),
+                'status_note': (st['note'] if st else ''),
+                'status_updated_at': (st['updated_at'] if st else ''),
+                'last_work_date': last_work['last_date'] if last_work else '',
+                'open_risks': {
+                    'total': risk['open_total'] or 0,
+                    'high': risk['open_high'] or 0,
+                    'medium': risk['open_medium'] or 0,
+                    'low': risk['open_low'] or 0,
+                },
+                'open_tasks': {
+                    'total': task['open_total'] or 0,
+                    'open': task['open_count'] or 0,
+                    'in_progress': task['in_progress_count'] or 0,
+                }
+            })
+
+        overdue = db.execute(
+            """
+            SELECT * FROM tasks
+            WHERE status!='closed' AND due_date!='' AND due_date < ?
+            ORDER BY due_date ASC, id ASC
+            LIMIT 200
+            """,
+            (today,)
+        ).fetchall()
+
+        overdue_tasks = [dict(r) for r in overdue]
+
+    return jsonify({
+        'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'cases': out_cases,
+        'overdue_tasks': overdue_tasks,
+    })
+
+
+@app.route('/api/ai/case/<case_id>')
+@login_required
+def api_ai_case(case_id):
+    """提供單一案場的工作/風險/任務明細（管理員限定）。"""
+    if current_user.role != 'admin':
+        abort(403)
+
+    with get_db() as db:
+        st = db.execute('SELECT * FROM case_status WHERE case_id=?', (case_id,)).fetchone()
+        works = db.execute(
+            """
+            SELECT r.report_date, r.employee_id, w.*
+            FROM work_items w JOIN reports r ON w.report_key=r.report_key
+            WHERE w.case_id=?
+            ORDER BY r.report_date DESC, w.id DESC
+            LIMIT 80
+            """,
+            (case_id,)
+        ).fetchall()
+        risks = db.execute(
+            "SELECT * FROM risk_items WHERE case_id=? ORDER BY id DESC LIMIT 120",
+            (case_id,)
+        ).fetchall()
+        tasks = db.execute(
+            "SELECT * FROM tasks WHERE case_id=? ORDER BY CASE status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, due_date DESC, id DESC LIMIT 200",
+            (case_id,)
+        ).fetchall()
+
+    return jsonify({
+        'case_id': case_id,
+        'status': dict(st) if st else {},
+        'works': [dict(r) for r in works],
+        'risks': [dict(r) for r in risks],
+        'tasks': [dict(r) for r in tasks],
+    })
 
 # ===================== Excel 匯出 =====================
 @app.route('/export/excel')

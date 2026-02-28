@@ -40,6 +40,7 @@
     <div>
       <a href="/cases">案場總覽</a>
       <a href="/risks">風險追蹤</a>
+      <a href="/tasks">任務追蹤</a>
       <a href="/">首頁</a>
       {% if is_admin %}<a href="/admin">管理後台</a>{% endif %}
       <a href="/change-password">修改密碼</a>
@@ -160,7 +161,85 @@
       {% endif %}
     </div>
 
+    
     <div class="card">
+      <h2 style="font-size:16px;font-weight:900;margin-bottom:10px">🧩 任務（最新 200 筆）</h2>
+
+      {% if is_admin %}
+      <form method="POST" action="/tasks/create" class="row" style="margin-bottom:12px">
+        <input type="hidden" name="case_id" value="{{ case.id }}"/>
+        <input name="title" placeholder="任務標題（必填）" style="min-width:240px;flex:1" required />
+        <select name="priority">
+          <option value="high">high</option>
+          <option value="medium" selected>medium</option>
+          <option value="low">low</option>
+        </select>
+        <input name="owner_id" placeholder="Owner（例如：chen_ming_de）" style="width:170px" />
+        <input name="due_date" placeholder="YYYY-MM-DD" style="width:130px" />
+        <input name="related_risk_id" placeholder="關聯風險ID(選填)" style="width:150px" />
+        <button class="btn" type="submit">新增</button>
+      </form>
+      <div class="muted" style="margin-bottom:10px">Owner 下拉目前先提供 admin（下一輪會做完整 owner 名單與部門/角色管理）。</div>
+      {% endif %}
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>標題</th>
+            <th>優先度</th>
+            <th>狀態</th>
+            <th>Owner</th>
+            <th>Due</th>
+            <th>更新</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in tasks %}
+          <tr>
+            <td><code>{{ t.id }}</code></td>
+            <td style="max-width:520px">
+              <div><strong>{{ t.title }}</strong></div>
+              {% if t.description %}<div class="muted">{{ t.description }}</div>{% endif %}
+              {% if t.related_risk_id %}<div class="muted">關聯風險：<code>{{ t.related_risk_id }}</code></div>{% endif %}
+            </td>
+            <td>
+              {% if t.priority=='high' %}<span class="pill p-high">high</span>
+              {% elif t.priority=='low' %}<span class="pill p-low">low</span>
+              {% else %}<span class="pill p-mid">medium</span>{% endif %}
+            </td>
+            <td><code>{{ t.status }}</code></td>
+            <td><code>{{ t.owner_id }}</code></td>
+            <td style="white-space:nowrap"><code>{{ t.due_date }}</code></td>
+            <td>
+              <form method="POST" action="/tasks/update/{{ t.id }}" class="row" style="gap:6px">
+                <select name="status">
+                  <option value="open" {% if t.status=='open' %}selected{% endif %}>open</option>
+                  <option value="in_progress" {% if t.status=='in_progress' %}selected{% endif %}>in_progress</option>
+                  <option value="closed" {% if t.status=='closed' %}selected{% endif %}>closed</option>
+                </select>
+                {% if is_admin %}
+                <select name="priority">
+                  <option value="high" {% if t.priority=='high' %}selected{% endif %}>high</option>
+                  <option value="medium" {% if t.priority=='medium' %}selected{% endif %}>medium</option>
+                  <option value="low" {% if t.priority=='low' %}selected{% endif %}>low</option>
+                </select>
+                <input name="owner_id" value="{{ t.owner_id }}" placeholder="owner" style="width:110px"/>
+                <input name="due_date" value="{{ t.due_date }}" placeholder="YYYY-MM-DD" style="width:120px"/>
+                {% endif %}
+                <button class="btn" type="submit">存</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if not tasks %}
+        <div class="muted" style="padding:14px;text-align:center">目前沒有任務</div>
+      {% endif %}
+    </div>
+<div class="card">
       <h2 style="font-size:16px;font-weight:900;margin-bottom:10px">🧱 近期工作（最新 60 筆）</h2>
       <table>
         <thead>

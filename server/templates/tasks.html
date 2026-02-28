@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>任務追蹤 - 員工日報系統</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;background:#f3f4f6;color:#111827}
+    .top{background:#111827;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+    .top a{color:#c7d2fe;text-decoration:none;margin-left:12px;font-size:14px}
+    .wrap{max-width:1250px;margin:20px auto;padding:0 16px 60px}
+    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:16px}
+    h1{font-size:20px;font-weight:900}
+    .muted{color:#6b7280;font-size:13px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    select,input,textarea{padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px}
+    textarea{min-height:64px;resize:vertical}
+    .btn{padding:8px 14px;border:none;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;display:inline-block;font-weight:900;font-size:13px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#f9fafb;color:#6b7280;font-weight:900;padding:10px 12px;text-align:left;border-bottom:2px solid #e5e7eb;white-space:nowrap}
+    td{padding:10px 12px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+    tr:hover td{background:#fafafa}
+    .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:900}
+    .p-high{background:#fee2e2;color:#991b1b}
+    .p-mid{background:#fef3c7;color:#92400e}
+    .p-low{background:#dcfce7;color:#166534}
+    code{background:#f3f4f6;border-radius:6px;padding:2px 6px}
+    .alert{padding:12px 16px;border-radius:10px;margin-bottom:14px;font-size:14px}
+    .alert-success{background:#d4edda;color:#155724;border-left:4px solid #28a745}
+    .alert-error{background:#f8d7da;color:#721c24;border-left:4px solid #dc3545}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div style="font-weight:900">✅ 任務追蹤</div>
+    <div>
+      <a href="/cases">案場總覽</a>
+      <a href="/risks">風險追蹤</a>
+      <a href="/">首頁</a>
+      {% if is_admin %}<a href="/admin">管理後台</a>{% endif %}
+      <a href="/history">歷史</a>
+      <a href="/change-password">修改密碼</a>
+      <a href="/logout">登出</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+      <h1>任務清單</h1>
+      <div class="muted" style="margin-top:6px">用於追蹤每個案場的行動項（Owner / Due / 狀態）。</div>
+
+      <form method="GET" action="/tasks" class="row" style="margin-top:14px">
+        <label class="muted">案場</label>
+        <select name="case">
+          <option value="">全部</option>
+          {% for c in cases %}
+            <option value="{{ c.id }}" {% if q_case==c.id %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+
+        <label class="muted">狀態</label>
+        <select name="status">
+          <option value="">全部</option>
+          <option value="open" {% if q_status=='open' %}selected{% endif %}>open</option>
+          <option value="in_progress" {% if q_status=='in_progress' %}selected{% endif %}>in_progress</option>
+          <option value="closed" {% if q_status=='closed' %}selected{% endif %}>closed</option>
+        </select>
+
+        {% if is_admin %}
+        <label class="muted">Owner</label>
+        <select name="owner">
+          <option value="">全部</option>
+          {% for o in owners %}
+            <option value="{{ o.id }}" {% if q_owner==o.id %}selected{% endif %}>{{ o.name }}</option>
+          {% endfor %}
+        </select>
+        {% endif %}
+
+        <button class="btn" type="submit">篩選</button>
+        <a class="btn" href="/tasks" style="background:#374151">清除</a>
+      </form>
+    </div>
+
+    {% if is_admin %}
+    <div class="card">
+      <h2 style="font-size:16px;font-weight:900;margin-bottom:10px">➕ 新增任務（管理員）</h2>
+      <form method="POST" action="/tasks/create" class="row">
+        <div>
+          <label>案場</label><br>
+          <select name="case_id">
+            {% for c in cases %}
+              <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div style="min-width:220px;flex:1">
+          <label>標題 *</label><br>
+          <input name="title" placeholder="例如：確認送審補件期限" style="width:100%" required />
+        </div>
+        <div>
+          <label>優先度</label><br>
+          <select name="priority">
+            <option value="high">high</option>
+            <option value="medium" selected>medium</option>
+            <option value="low">low</option>
+          </select>
+        </div>
+        <div>
+          <label>Owner</label><br>
+          <select name="owner_id">
+            <option value="">-- 未指定 --</option>
+            {% for o in owners %}
+              <option value="{{ o.id }}">{{ o.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Due</label><br>
+          <input name="due_date" placeholder="YYYY-MM-DD" style="width:130px" />
+        </div>
+        <div style="flex-basis:100%">
+          <label>描述</label><br>
+          <textarea name="description" placeholder="補充說明（可留空）" style="width:100%"></textarea>
+        </div>
+        <div>
+          <button class="btn" type="submit">建立</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>案場</th>
+            <th>標題</th>
+            <th>優先度</th>
+            <th>狀態</th>
+            <th>Owner</th>
+            <th>Due</th>
+            <th>更新</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in rows %}
+          <tr>
+            <td><code>{{ t.id }}</code></td>
+            <td style="white-space:nowrap"><a href="/cases/{{ t.case_id }}" style="text-decoration:none;color:#4f46e5;font-weight:900">{{ t.case_id }}</a></td>
+            <td style="max-width:420px">
+              <div><strong>{{ t.title }}</strong></div>
+              {% if t.description %}<div class="muted">{{ t.description }}</div>{% endif %}
+            </td>
+            <td>
+              {% if t.priority=='high' %}<span class="pill p-high">high</span>
+              {% elif t.priority=='low' %}<span class="pill p-low">low</span>
+              {% else %}<span class="pill p-mid">medium</span>{% endif %}
+            </td>
+            <td><code>{{ t.status }}</code></td>
+            <td><code>{{ t.owner_id }}</code></td>
+            <td style="white-space:nowrap"><code>{{ t.due_date }}</code></td>
+            <td>
+              <form method="POST" action="/tasks/update/{{ t.id }}" class="row" style="gap:6px">
+                <select name="status">
+                  <option value="open" {% if t.status=='open' %}selected{% endif %}>open</option>
+                  <option value="in_progress" {% if t.status=='in_progress' %}selected{% endif %}>in_progress</option>
+                  <option value="closed" {% if t.status=='closed' %}selected{% endif %}>closed</option>
+                </select>
+                {% if is_admin %}
+                <select name="priority">
+                  <option value="high" {% if t.priority=='high' %}selected{% endif %}>high</option>
+                  <option value="medium" {% if t.priority=='medium' %}selected{% endif %}>medium</option>
+                  <option value="low" {% if t.priority=='low' %}selected{% endif %}>low</option>
+                </select>
+                <input name="owner_id" value="{{ t.owner_id }}" placeholder="owner" style="width:110px"/>
+                <input name="due_date" value="{{ t.due_date }}" placeholder="YYYY-MM-DD" style="width:120px"/>
+                {% endif %}
+                <button class="btn" type="submit">存</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if not rows %}
+        <div class="muted" style="padding:14px;text-align:center">沒有符合條件的任務</div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
