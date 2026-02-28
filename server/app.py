@@ -297,6 +297,26 @@ def init_db():
             )
         ''')
         db.execute('''
+            CREATE TABLE IF NOT EXISTS cases (
+              case_id TEXT PRIMARY KEY,
+              name TEXT,
+              type TEXT,
+              enabled INTEGER DEFAULT 1,
+              created_at TEXT,
+              updated_at TEXT
+            )
+        ''')
+
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS case_aliases (
+              alias TEXT PRIMARY KEY,
+              case_id TEXT,
+              created_at TEXT,
+              created_by TEXT
+            )
+        ''')
+
+        db.execute('''
             CREATE TABLE IF NOT EXISTS case_status (
               case_id TEXT PRIMARY KEY,
               stage TEXT,
@@ -328,15 +348,17 @@ def init_db():
 
 
 def ensure_case_status_seed():
-    """把 CASES 清單 seed 到 case_status（若尚未有記錄）。"""
+    """把 cases table seed 到 case_status（若尚未有記錄）。"""
     try:
         with get_db() as db:
-            for c in CASES:
-                row = db.execute('SELECT case_id FROM case_status WHERE case_id=?', (c['id'],)).fetchone()
+            rows = db.execute('SELECT case_id FROM cases WHERE enabled = 1').fetchall()
+            for r in rows:
+                cid = r['case_id']
+                row = db.execute('SELECT case_id FROM case_status WHERE case_id=?', (cid,)).fetchone()
                 if not row:
                     db.execute(
                         'INSERT INTO case_status(case_id, stage, percent, note, updated_at, updated_by) VALUES(?,?,?,?,?,?)',
-                        (c['id'], '', None, '', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'system')
+                        (cid, '', None, '', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'system')
                     )
             db.commit()
     except Exception:
@@ -360,9 +382,62 @@ CASES = [
     {"id": "其他", "name": "其他/行政事務", "type": "行政"},
 ]
 
+
+def seed_cases_from_constant():
+    """把內建 CASES seed 到 cases table（僅補齊，不覆寫管理者自行修改的名稱）。"""
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    try:
+        with get_db() as db:
+            for c in CASES:
+                cid = c.get('id')
+                if not cid:
+                    continue
+                # 若已存在就不覆寫 name/type（讓管理者可在 DB 維護）
+                db.execute(
+                    "INSERT OR IGNORE INTO cases(case_id, name, type, enabled, created_at, updated_at) VALUES(?,?,?,?,?,?)",
+                    (cid, c.get('name', cid), c.get('type', ''), 1, now, now)
+                )
+            db.commit()
+    except Exception:
+        pass
+
+
+def resolve_case_id(raw: str, db=None) -> str:
+    """把自由輸入的案場名稱/別名，轉成 canonical case_id。"""
+    s = (raw or '').strip()
+    if not s:
+        return ''
+
+    if db is None:
+        try:
+            with get_db() as _db:
+                return resolve_case_id(s, db=_db)
+        except Exception:
+            return s
+
+    # 1) alias
+    try:
+        row = db.execute('SELECT case_id FROM case_aliases WHERE alias = ?', (s,)).fetchone()
+        if row and row['case_id']:
+            return row['case_id']
+    except Exception:
+        pass
+
+    # 2) exact case_id exists
+    try:
+        row = db.execute('SELECT case_id FROM cases WHERE case_id = ? AND enabled = 1', (s,)).fetchone()
+        if row and row['case_id']:
+            return row['case_id']
+    except Exception:
+        pass
+
+    return s
+
+
 # 初始化資料庫
 try:
     init_db()
+    seed_cases_from_constant()
     ensure_case_status_seed()
 except Exception:
     pass
@@ -600,10 +675,16 @@ def safe_float(v, default=0.0):
 
 def normalize_report_items(work_items, plan_items, risk_items):
     """清理空資料、修正欄位缺失，避免資料庫被垃圾資料污染。"""
+    db = None
+    try:
+        db = get_db()
+    except Exception:
+        db = None
+
     # work: 至少要有案場 + 工作內容
     clean_work = []
     for w in (work_items or []):
-        case_id = (w.get('case_id') or '').strip()
+        case_id = resolve_case_id((w.get('case_id') or '').strip(), db=db)
         content = (w.get('work_content') or '').strip()
         if not case_id or not content:
             continue
@@ -620,7 +701,7 @@ def normalize_report_items(work_items, plan_items, risk_items):
     # plan: 至少要有案場 + 計畫內容
     clean_plan = []
     for p in (plan_items or []):
-        case_id = (p.get('case_id') or '').strip()
+        case_id = resolve_case_id((p.get('case_id') or '').strip(), db=db)
         content = (p.get('plan_content') or '').strip()
         if not case_id or not content:
             continue
@@ -634,7 +715,7 @@ def normalize_report_items(work_items, plan_items, risk_items):
     # risk: 至少要有案場 + 風險說明
     clean_risk = []
     for r in (risk_items or []):
-        case_id = (r.get('case_id') or '').strip()
+        case_id = resolve_case_id((r.get('case_id') or '').strip(), db=db)
         desc = (r.get('risk_desc') or '').strip()
         if not case_id or not desc:
             continue
@@ -652,6 +733,12 @@ def normalize_report_items(work_items, plan_items, risk_items):
             'risk_impact': (r.get('risk_impact') or '').strip(),
             'need_help': (r.get('need_help') or '').strip(),
         })
+
+    try:
+        if db:
+            db.close()
+    except Exception:
+        pass
 
     return clean_work, clean_plan, clean_risk
 
@@ -829,6 +916,144 @@ def load_draft():
         with open(draft_file, encoding='utf-8') as f:
             return jsonify(json.load(f))
     return jsonify({})
+
+# ===================== 案場字典（管理員） =====================
+@app.route('/admin/cases')
+@login_required
+def admin_cases():
+    if current_user.role != 'admin':
+        flash('無權限訪問', 'error')
+        return redirect(url_for('index'))
+
+    with get_db() as db:
+        canonical = db.execute('SELECT case_id, name, type, enabled FROM cases ORDER BY enabled DESC, case_id ASC').fetchall()
+        aliases = db.execute('SELECT alias, case_id, created_at, created_by FROM case_aliases ORDER BY alias ASC').fetchall()
+
+        # 找出 DB 中出現過但尚未登錄在 cases table 的案場（通常是自由輸入或舊資料）
+        unknown = db.execute(
+            """
+            SELECT case_id FROM (
+              SELECT DISTINCT case_id FROM work_items WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM risk_items WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM tasks WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM plan_items WHERE case_id!=''
+            )
+            WHERE case_id NOT IN (SELECT case_id FROM cases)
+            ORDER BY case_id ASC
+            """
+        ).fetchall()
+
+    return render_template('admin_cases.html', canonical=canonical, aliases=aliases, unknown=unknown)
+
+
+@app.route('/admin/cases/create', methods=['POST'])
+@login_required
+def admin_cases_create():
+    if current_user.role != 'admin':
+        abort(403)
+
+    case_id = (request.form.get('case_id') or '').strip()
+    name = (request.form.get('name') or '').strip()
+    ctype = (request.form.get('type') or '').strip()
+
+    if not case_id or not name:
+        flash('案場代碼與名稱不可空白', 'error')
+        return redirect(url_for('admin_cases'))
+
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with get_db() as db:
+        exists = db.execute('SELECT case_id FROM cases WHERE case_id=?', (case_id,)).fetchone()
+        if exists:
+            flash('案場代碼已存在', 'error')
+            return redirect(url_for('admin_cases'))
+
+        db.execute('INSERT INTO cases(case_id, name, type, enabled, created_at, updated_at) VALUES(?,?,?,?,?,?)',
+                   (case_id, name, ctype, 1, now, now))
+        db.execute('INSERT OR IGNORE INTO case_status(case_id, stage, percent, note, updated_at, updated_by) VALUES(?,?,?,?,?,?)',
+                   (case_id, '', None, '', now, current_user.id))
+        db.commit()
+
+    audit('case_create', actor_id=current_user.id, target_id=case_id)
+    flash('✅ 案場已新增', 'success')
+    return redirect(url_for('admin_cases'))
+
+
+@app.route('/admin/cases/update/<case_id>', methods=['POST'])
+@login_required
+def admin_cases_update(case_id):
+    if current_user.role != 'admin':
+        abort(403)
+
+    name = (request.form.get('name') or '').strip()
+    ctype = (request.form.get('type') or '').strip()
+    enabled = request.form.get('enabled') == 'on'
+
+    if not name:
+        flash('案場名稱不可空白', 'error')
+        return redirect(url_for('admin_cases'))
+
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with get_db() as db:
+        db.execute('UPDATE cases SET name=?, type=?, enabled=?, updated_at=? WHERE case_id=?',
+                   (name, ctype, 1 if enabled else 0, now, case_id))
+        db.commit()
+
+    audit('case_update', actor_id=current_user.id, target_id=case_id, detail={'enabled': enabled})
+    flash('✅ 案場已更新', 'success')
+    return redirect(url_for('admin_cases'))
+
+
+@app.route('/admin/cases/alias/add', methods=['POST'])
+@login_required
+def admin_case_alias_add():
+    if current_user.role != 'admin':
+        abort(403)
+
+    alias = (request.form.get('alias') or '').strip()
+    case_id = (request.form.get('case_id') or '').strip()
+    if not alias or not case_id:
+        flash('別名與對應案場不可空白', 'error')
+        return redirect(url_for('admin_cases'))
+
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with get_db() as db:
+        ok = db.execute('SELECT case_id FROM cases WHERE case_id=?', (case_id,)).fetchone()
+        if not ok:
+            flash('對應的案場不存在，請先新增案場', 'error')
+            return redirect(url_for('admin_cases'))
+
+        # alias 不允許覆蓋 canonical case_id 本身（避免混淆）
+        exists = db.execute('SELECT case_id FROM cases WHERE case_id=?', (alias,)).fetchone()
+        if exists:
+            flash('此別名與既有案場代碼相同，請改用其他別名', 'error')
+            return redirect(url_for('admin_cases'))
+
+        db.execute('REPLACE INTO case_aliases(alias, case_id, created_at, created_by) VALUES(?,?,?,?)',
+                   (alias, case_id, now, current_user.id))
+        db.commit()
+
+    audit('case_alias_add', actor_id=current_user.id, target_id=alias, detail={'case_id': case_id})
+    flash('✅ 別名已新增/更新', 'success')
+    return redirect(url_for('admin_cases'))
+
+
+@app.route('/admin/cases/alias/delete/<alias>', methods=['POST'])
+@login_required
+def admin_case_alias_delete(alias):
+    if current_user.role != 'admin':
+        abort(403)
+
+    with get_db() as db:
+        db.execute('DELETE FROM case_aliases WHERE alias=?', (alias,))
+        db.commit()
+
+    audit('case_alias_delete', actor_id=current_user.id, target_id=alias)
+    flash('✅ 別名已刪除', 'success')
+    return redirect(url_for('admin_cases'))
+
 
 # ===================== 帳號/權限管理（管理員） =====================
 @app.route('/admin/users')
@@ -1060,15 +1285,50 @@ def history():
 # ===================== 案場 / 風險（案件中心管理） =====================
 
 def get_case_catalog(db=None):
-    """回傳案場清單（包含 CASES 內建清單 + DB 中實際出現過的案場 ID）。"""
-    base = {c['id']: {'id': c['id'], 'name': c.get('name', c['id']), 'type': c.get('type', '')} for c in CASES}
+    """回傳案場清單（canonical cases + DB 中實際出現過但未登錄的案場）。"""
 
     if db is None:
         try:
             with get_db() as _db:
                 return get_case_catalog(_db)
         except Exception:
-            return list(base.values())
+            # fallback: 使用內建 CASES
+            return [{'id': c['id'], 'name': c.get('name', c['id']), 'type': c.get('type', '')} for c in CASES]
+
+    base = {}
+
+    # 1) canonical cases
+    try:
+        rows = db.execute('SELECT case_id, name, type FROM cases WHERE enabled = 1').fetchall()
+        for r in rows:
+            base[r['case_id']] = {'id': r['case_id'], 'name': r['name'] or r['case_id'], 'type': r['type'] or ''}
+    except Exception:
+        for c in CASES:
+            base[c['id']] = {'id': c['id'], 'name': c.get('name', c['id']), 'type': c.get('type', '')}
+
+    # 2) 追加 DB 中出現過但未登錄的案場（標記未登錄，方便管理者收斂）
+    try:
+        rows = db.execute(
+            """
+            SELECT case_id FROM (
+              SELECT DISTINCT case_id FROM work_items WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM risk_items WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM tasks WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM plan_items WHERE case_id!=''
+            )
+            """
+        ).fetchall()
+        for r in rows:
+            cid = r['case_id']
+            if cid and cid not in base:
+                base[cid] = {'id': cid, 'name': cid, 'type': '未登錄'}
+    except Exception:
+        pass
+
+    return list(base.values())
 
     try:
         rows = db.execute(
