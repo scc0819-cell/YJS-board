@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>稽核紀錄 - 日報系統</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;background:#f3f4f6;color:#111827}
+    .top{background:#111827;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+    .top a{color:#c7d2fe;text-decoration:none;margin-left:12px;font-size:14px}
+    .wrap{max-width:1200px;margin:20px auto;padding:0 16px 60px}
+    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:16px}
+    h1{font-size:20px;font-weight:900}
+    .muted{color:#6b7280;font-size:13px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    select,input{padding:8px 10px;border:1px solid #d1d5db;border-radius:8px}
+    .btn{padding:8px 14px;border:none;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;display:inline-block;font-weight:700}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#f9fafb;color:#6b7280;font-weight:800;padding:10px 12px;text-align:left;border-bottom:2px solid #e5e7eb;white-space:nowrap}
+    td{padding:10px 12px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+    tr:hover td{background:#fafafa}
+    .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:900}
+    .b-blue{background:#e0f2fe;color:#075985}
+    .b-green{background:#dcfce7;color:#166534}
+    .b-red{background:#fee2e2;color:#991b1b}
+    .b-yellow{background:#fef3c7;color:#92400e}
+    code{background:#f3f4f6;border-radius:6px;padding:2px 6px}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div style="font-weight:900">☀️ 昱金生能源集團 · 稽核紀錄</div>
+    <div>
+      <a href="/">首頁</a>
+      <a href="/admin">管理後台</a>
+      <a href="/admin/employees">員工管理</a>
+      <a href="/history">歷史</a>
+      <a href="/change-password">修改密碼</a>
+      <a href="/logout">登出</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h1>🧾 稽核紀錄</h1>
+          <div class="muted">顯示最近 300 筆（來源：audit.jsonl）。可用於追查登入失敗、重設密碼、日報提交、匯出等操作。</div>
+        </div>
+      </div>
+
+      <form class="row" method="GET" action="/admin/audit" style="margin-top:14px">
+        <label class="muted">事件</label>
+        <select name="event">
+          <option value="">全部</option>
+          {% for e in events %}
+          <option value="{{ e }}" {% if q_event==e %}selected{% endif %}>{{ e }}</option>
+          {% endfor %}
+        </select>
+
+        <label class="muted">操作者</label>
+        <select name="actor">
+          <option value="">全部</option>
+          {% for a in actors %}
+          <option value="{{ a }}" {% if q_actor==a %}selected{% endif %}>{{ a }}</option>
+          {% endfor %}
+        </select>
+
+        <button class="btn" type="submit">篩選</button>
+        <a class="btn" href="/admin/audit" style="background:#374151">清除</a>
+      </form>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>時間</th>
+            <th>事件</th>
+            <th>操作者</th>
+            <th>目標</th>
+            <th>IP</th>
+            <th>路徑</th>
+            <th>細節</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td style="white-space:nowrap"><strong>{{ r.time }}</strong></td>
+            <td>
+              {% set ev = r.event %}
+              {% if 'success' in ev %}
+                <span class="badge b-green">{{ ev }}</span>
+              {% elif 'fail' in ev or 'locked' in ev %}
+                <span class="badge b-red">{{ ev }}</span>
+              {% elif 'password' in ev or 'export' in ev %}
+                <span class="badge b-yellow">{{ ev }}</span>
+              {% else %}
+                <span class="badge b-blue">{{ ev }}</span>
+              {% endif %}
+            </td>
+            <td><code>{{ r.actor_id }}</code></td>
+            <td><code>{{ r.target_id }}</code></td>
+            <td style="white-space:nowrap">{{ r.ip }}</td>
+            <td style="white-space:nowrap"><code>{{ r.path }}</code></td>
+            <td class="muted" style="max-width:420px">
+              {% if r.detail %}
+                <code>{{ r.detail | tojson }}</code>
+              {% else %}-{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if not rows %}
+        <div class="muted" style="padding:14px;text-align:center">目前沒有紀錄</div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

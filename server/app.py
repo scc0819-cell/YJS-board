@@ -122,6 +122,72 @@ def refresh_employee_cache():
 refresh_employee_cache()
 
 
+# ===================== 安全與稽核 =====================
+AUTH_STATE_FILE = DATA_DIR / 'auth_state.json'
+AUDIT_LOG_FILE = DATA_DIR / 'audit.jsonl'
+
+
+def _now_ts():
+    return int(datetime.now().timestamp())
+
+
+def load_auth_state():
+    if AUTH_STATE_FILE.exists():
+        try:
+            return json.loads(AUTH_STATE_FILE.read_text(encoding='utf-8'))
+        except Exception:
+            return {}
+    return {}
+
+
+def save_auth_state(state: dict):
+    tmp = AUTH_STATE_FILE.with_suffix('.json.tmp')
+    tmp.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding='utf-8')
+    tmp.replace(AUTH_STATE_FILE)
+
+
+def client_ip():
+    xf = request.headers.get('X-Forwarded-For', '')
+    if xf:
+        return xf.split(',')[0].strip()
+    return request.remote_addr or 'unknown'
+
+
+def audit(event: str, actor_id: str = '', target_id: str = '', detail: dict | None = None):
+    """寫入稽核紀錄（JSONL）。避免寫入密碼等敏感資訊。"""
+    rec = {
+        'ts': _now_ts(),
+        'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'event': event,
+        'actor_id': actor_id,
+        'target_id': target_id,
+        'ip': client_ip(),
+        'path': request.path,
+        'detail': detail or {},
+    }
+    try:
+        with open(AUDIT_LOG_FILE, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
+def tail_jsonl(p: Path, max_lines: int = 400):
+    if not p.exists():
+        return []
+    try:
+        lines = p.read_text(encoding='utf-8', errors='ignore').splitlines()[-max_lines:]
+        out = []
+        for ln in lines:
+            try:
+                out.append(json.loads(ln))
+            except Exception:
+                continue
+        return out
+    except Exception:
+        return []
+
+
 # ===================== 案場清單 =====================
 CASES = [
     {"id": "馬偕護專", "name": "馬偕護專停車場", "type": "停車場"},
@@ -156,21 +222,59 @@ def load_user(user_id):
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+
+    # 登入失敗鎖定（避免暴力破解）
+    MAX_FAILS = 5
+    WINDOW_SEC = 15 * 60
+    LOCK_SEC = 15 * 60
+
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
+        ip = client_ip()
+
+        key = f"{username}|{ip}"
+        st = load_auth_state()
+        entry = st.get(key, {'fails': [], 'locked_until': 0})
+        now = _now_ts()
+
+        if entry.get('locked_until', 0) > now:
+            remain = int(entry['locked_until'] - now)
+            mins = max(1, (remain + 59) // 60)
+            audit('login_locked', actor_id=username, detail={'mins': mins})
+            flash(f'此帳號嘗試次數過多，已暫時鎖定 {mins} 分鐘，請稍後再試或聯繫管理員。', 'error')
+            return render_template('login.html')
+
         user_data = USERS.get(username)
-        if user_data and check_password_hash(user_data.get('password_hash',''), password):
+        ok = bool(user_data and check_password_hash(user_data.get('password_hash', ''), password))
+
+        if ok:
+            st[key] = {'fails': [], 'locked_until': 0}
+            save_auth_state(st)
+
             user = User(user_data)
             login_user(user)
+            session.permanent = True
+            audit('login_success', actor_id=user.id)
             flash(f'歡迎回來，{user.name}！', 'success')
             return redirect(url_for('index'))
+
+        fails = [t for t in entry.get('fails', []) if isinstance(t, int) and now - t <= WINDOW_SEC]
+        fails.append(now)
+        locked_until = 0
+        if len(fails) >= MAX_FAILS:
+            locked_until = now + LOCK_SEC
+        st[key] = {'fails': fails, 'locked_until': locked_until}
+        save_auth_state(st)
+        audit('login_fail', actor_id=username, detail={'fail_count': len(fails), 'locked': bool(locked_until)})
         flash('帳號或密碼錯誤', 'error')
+
     return render_template('login.html')
 
 @app.route('/logout')
 @login_required
 def logout():
+    audit('logout', actor_id=current_user.id if current_user.is_authenticated else '')
     logout_user()
     flash('已登出', 'info')
     return redirect(url_for('login'))
@@ -235,6 +339,7 @@ def change_password():
         USERS[current_user.id] = u
         save_users(USERS)
         refresh_employee_cache()
+        audit('password_change', actor_id=current_user.id)
         flash('✅ 密碼已更新', 'success')
         return redirect(url_for('index'))
 
@@ -332,6 +437,8 @@ def report_form(employee_id=None):
         with open(report_file, 'w', encoding='utf-8') as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
 
+        audit('report_submit', actor_id=current_user.id, target_id=employee_id, detail={'date': today, 'edit': bool(is_edit)})
+
         # 編輯留痕
         action = '覆蓋修改' if is_edit else '初次提交'
         append_edit_log(report_file, current_user.name, action)
@@ -378,6 +485,35 @@ def load_draft():
         with open(draft_file, encoding='utf-8') as f:
             return jsonify(json.load(f))
     return jsonify({})
+
+# ===================== 稽核紀錄（管理員） =====================
+@app.route('/admin/audit')
+@login_required
+def admin_audit():
+    if current_user.role != 'admin':
+        flash('無權限訪問', 'error')
+        return redirect(url_for('index'))
+
+    q_event = request.args.get('event', '').strip()
+    q_actor = request.args.get('actor', '').strip()
+
+    rows = tail_jsonl(AUDIT_LOG_FILE, max_lines=500)
+    rows.sort(key=lambda r: r.get('ts', 0), reverse=True)
+
+    def ok(r):
+        if q_event and r.get('event') != q_event:
+            return False
+        if q_actor and r.get('actor_id') != q_actor:
+            return False
+        return True
+
+    filtered = [r for r in rows if ok(r)][:300]
+
+    events = sorted({r.get('event') for r in rows if r.get('event')})
+    actors = sorted({r.get('actor_id') for r in rows if r.get('actor_id')})
+
+    return render_template('admin_audit.html', rows=filtered, events=events, actors=actors, q_event=q_event, q_actor=q_actor)
+
 
 # ===================== 管理後台 =====================
 @app.route('/admin')
@@ -444,6 +580,11 @@ def history():
         employees=EMPLOYEES,
         is_admin=current_user.role == 'admin'
     )
+
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok', 'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+
 
 # ===================== API =====================
 @app.route('/api/status')
@@ -576,6 +717,7 @@ def export_excel():
 
     buf = io.BytesIO()
     wb.save(buf); buf.seek(0)
+    audit('export_excel', actor_id=current_user.id, detail={'date': date_param})
     filename = f"日報_{date_param}.xlsx"
     return send_file(buf, as_attachment=True, download_name=filename,
                      mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -603,6 +745,7 @@ def admin_reset_password(user_id):
     save_users(USERS)
     refresh_employee_cache()
 
+    audit('admin_reset_password', actor_id=current_user.id, target_id=user_id)
     flash(f'已重設 {u.get("name")} 的密碼。臨時密碼：{temp_pw}（請轉交本人並提醒登入後立即修改）', 'success')
     return redirect(url_for('admin_employees'))
 
