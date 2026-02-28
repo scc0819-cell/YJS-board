@@ -17,12 +17,39 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
-## Memory
+## Memory — 三層記憶系統
 
 You wake up fresh each session. These files are your continuity:
 
-- **Daily notes:** `memory/YYYY-MM-DD.md` (create `memory/` if needed) — raw logs of what happened
-- **Long-term:** `MEMORY.md` — your curated memories, like a human's long-term memory
+### 三層架構
+
+| 層級 | 檔案 | 用途 | 更新頻率 |
+|------|------|------|----------|
+| **L1 策略層** | `MEMORY.md` | 長期記憶：人物、決策、偏好、教訓 | 每次重要決策後 |
+| **L2 每日層** | `memory/YYYY-MM-DD.md` | 當日原始記錄：對話摘要、事件 | 每次對話結束時 |
+| **L3 檢索層** | `memory_search` 工具 | 跨所有記憶的語意搜尋 | 即時（系統內建） |
+
+### 每次 Session 必做
+
+1. 讀 `MEMORY.md`（策略記憶）
+2. 讀 `memory/今天.md` + `memory/昨天.md`（近期脈絡）
+3. 如果用戶提到過去的事 → 用 `memory_search` 搜尋確認
+4. 對話結束前 → 更新 `memory/今天.md` 記錄重點
+5. 如果有重大決策或新發現 → 更新 `MEMORY.md`
+
+### 記憶寫入規則
+
+**一定要記的：**
+- 重要決策及其原因
+- 用戶偏好和要求
+- 專案進度和里程碑
+- 犯的錯誤和教訓
+- 人物關係和組織資訊
+
+**不需要記的：**
+- 純技術操作步驟（可重新搜尋）
+- 閒聊內容
+- 已完成且無後續的一次性任務
 
 Capture what matters. Decisions, context, things to remember. Skip the secrets unless asked to keep them.
 
