@@ -58,6 +58,7 @@
             <th>里程碑</th>
             <th class="progress">進度%</th>
             <th>風險（未結案）</th>
+            <th>任務</th>
             <th>最近活動</th>
             <th>操作</th>
           </tr>
@@ -86,6 +87,10 @@
               <span class="pill p-mid">中 {{ c.risk_medium }}</span>
               <span class="pill p-low">低 {{ c.risk_low }}</span>
               <span class="muted">合計 {{ c.risk_total }}</span>
+            </td>
+            <td>
+              <span class="pill p-mid">未結案 {{ c.task_open_total }}</span>
+              <span class="pill p-high">逾期 {{ c.task_overdue }}</span>
             </td>
             <td>{{ c.last_date or c.updated_at or '-' }}</td>
             <td><a class="btn" href="/cases/{{ c.id }}">查看</a></td>

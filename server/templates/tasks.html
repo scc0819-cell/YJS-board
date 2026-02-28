@@ -58,12 +58,18 @@
       <h1>任務清單</h1>
       <div class="muted" style="margin-top:6px">用於追蹤每個案場的行動項（Owner / Due / 狀態）。</div>
 
+      {% set STATUS_LABEL = {'open':'待處理','in_progress':'處理中','closed':'已結案'} %}
+      <div class="row" style="margin-top:12px">
+        <span class="pill p-mid">未結案任務 {{ stats.open_total }}</span>
+        <span class="pill p-high">逾期任務 {{ stats.overdue }}</span>
+      </div>
+
       <form method="GET" action="/tasks" class="row" style="margin-top:14px">
         <label class="muted">案場</label>
         <select name="case">
           <option value="">全部</option>
           {% for c in cases %}
-            <option value="{{ c.id }}" {% if q_case==c.id %}selected{% endif %}>{{ c.name }}</option>
+            <option value="{{ c.id }}" {% if q_case==c.id %}selected{% endif %}>{{ c.name }} ({{ c.id }})</option>
           {% endfor %}
         </select>
 
@@ -80,7 +86,7 @@
         <select name="owner">
           <option value="">全部</option>
           {% for o in owners %}
-            <option value="{{ o.id }}" {% if q_owner==o.id %}selected{% endif %}>{{ o.name }}</option>
+            <option value="{{ o.id }}" {% if q_owner==o.id %}selected{% endif %}>{{ o.name }} ({{ o.id }})</option>
           {% endfor %}
         </select>
         {% endif %}
@@ -98,7 +104,7 @@
           <label>案場</label><br>
           <select name="case_id">
             {% for c in cases %}
-              <option value="{{ c.id }}">{{ c.name }}</option>
+              <option value="{{ c.id }}">{{ c.name }} ({{ c.id }})</option>
             {% endfor %}
           </select>
         </div>
@@ -119,13 +125,17 @@
           <select name="owner_id">
             <option value="">-- 未指定 --</option>
             {% for o in owners %}
-              <option value="{{ o.id }}">{{ o.name }}</option>
+              <option value="{{ o.id }}">{{ o.name }} ({{ o.id }})</option>
             {% endfor %}
           </select>
         </div>
         <div>
           <label>Due</label><br>
-          <input name="due_date" placeholder="YYYY-MM-DD" style="width:130px" />
+          <input type="date" name="due_date" style="width:145px" />
+        </div>
+        <div>
+          <label>關聯風險ID</label><br>
+          <input name="related_risk_id" placeholder="選填" style="width:120px" />
         </div>
         <div style="flex-basis:100%">
           <label>描述</label><br>
@@ -149,6 +159,7 @@
             <th>狀態</th>
             <th>Owner</th>
             <th>Due</th>
+            <th>關聯風險</th>
             <th>更新</th>
           </tr>
         </thead>
@@ -166,9 +177,16 @@
               {% elif t.priority=='low' %}<span class="pill p-low">low</span>
               {% else %}<span class="pill p-mid">medium</span>{% endif %}
             </td>
-            <td><code>{{ t.status }}</code></td>
+            <td><code>{{ STATUS_LABEL.get(t.status, t.status) }}</code></td>
             <td><code>{{ t.owner_id }}</code></td>
-            <td style="white-space:nowrap"><code>{{ t.due_date }}</code></td>
+            <td style="white-space:nowrap">
+              {% if t.due_date and t.status != 'closed' %}
+                <code style="color:{{ '#dc2626' if t.due_date < today else '#111827' }}">{{ t.due_date }}</code>
+              {% else %}
+                <code>{{ t.due_date }}</code>
+              {% endif %}
+            </td>
+            <td>{% if t.related_risk_id %}<code>{{ t.related_risk_id }}</code>{% else %}<span class="muted">-</span>{% endif %}</td>
             <td>
               <form method="POST" action="/tasks/update/{{ t.id }}" class="row" style="gap:6px">
                 <select name="status">
@@ -183,7 +201,7 @@
                   <option value="low" {% if t.priority=='low' %}selected{% endif %}>low</option>
                 </select>
                 <input name="owner_id" value="{{ t.owner_id }}" placeholder="owner" style="width:110px"/>
-                <input name="due_date" value="{{ t.due_date }}" placeholder="YYYY-MM-DD" style="width:120px"/>
+                <input type="date" name="due_date" value="{{ t.due_date }}" style="width:145px"/>
                 {% endif %}
                 <button class="btn" type="submit">存</button>
               </form>

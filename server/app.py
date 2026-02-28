@@ -231,6 +231,18 @@ def init_db():
               status TEXT
             )
         ''')
+
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS plan_items (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              report_key TEXT,
+              case_id TEXT,
+              plan_content TEXT,
+              plan_hours REAL,
+              need_support TEXT
+            )
+        ''')
+
         db.execute('''
             CREATE TABLE IF NOT EXISTS risk_items (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -493,6 +505,78 @@ def index():
         current_user_id=current_user.id
     )
 
+def safe_float(v, default=0.0):
+    try:
+        if v is None:
+            return default
+        if isinstance(v, (int, float)):
+            return float(v)
+        s = str(v).strip()
+        if s == '':
+            return default
+        return float(s)
+    except Exception:
+        return default
+
+
+def normalize_report_items(work_items, plan_items, risk_items):
+    """清理空資料、修正欄位缺失，避免資料庫被垃圾資料污染。"""
+    # work: 至少要有案場 + 工作內容
+    clean_work = []
+    for w in (work_items or []):
+        case_id = (w.get('case_id') or '').strip()
+        content = (w.get('work_content') or '').strip()
+        if not case_id or not content:
+            continue
+        clean_work.append({
+            'case_id': case_id,
+            'work_type': (w.get('work_type') or '').strip(),
+            'progress': min(100.0, max(0.0, safe_float(w.get('progress'), 0.0))),
+            'hours': max(0.0, safe_float(w.get('hours'), 0.0)),
+            'work_content': content,
+            'output': (w.get('output') or '').strip(),
+            'status': (w.get('status') or '').strip(),
+        })
+
+    # plan: 至少要有案場 + 計畫內容
+    clean_plan = []
+    for p in (plan_items or []):
+        case_id = (p.get('case_id') or '').strip()
+        content = (p.get('plan_content') or '').strip()
+        if not case_id or not content:
+            continue
+        clean_plan.append({
+            'case_id': case_id,
+            'plan_content': content,
+            'plan_hours': max(0.0, safe_float(p.get('plan_hours'), 0.0)),
+            'need_support': (p.get('need_support') or '').strip(),
+        })
+
+    # risk: 至少要有案場 + 風險說明
+    clean_risk = []
+    for r in (risk_items or []):
+        case_id = (r.get('case_id') or '').strip()
+        desc = (r.get('risk_desc') or '').strip()
+        if not case_id or not desc:
+            continue
+        cat = (r.get('category') or '協調').strip()
+        if cat not in RISK_CATEGORIES:
+            cat = '其他'
+        lv = (r.get('risk_level') or 'low').strip()
+        if lv not in ('high','medium','low'):
+            lv = 'low'
+        clean_risk.append({
+            'case_id': case_id,
+            'category': cat,
+            'risk_level': lv,
+            'risk_desc': desc,
+            'risk_impact': (r.get('risk_impact') or '').strip(),
+            'need_help': (r.get('need_help') or '').strip(),
+        })
+
+    return clean_work, clean_plan, clean_risk
+
+
 # ===================== 填寫表單 =====================
 @app.route('/report', methods=['GET', 'POST'])
 @app.route('/report/<employee_id>', methods=['GET', 'POST'])
@@ -523,6 +607,13 @@ def report_form(employee_id=None):
         work_items = json.loads(request.form.get('work_items_json', '[]'))
         plan_items = json.loads(request.form.get('plan_items_json', '[]'))
         risk_items = json.loads(request.form.get('risk_items_json', '[]'))
+
+        # 清理與正規化（避免空白資料/不合法值）
+        work_items, plan_items, risk_items = normalize_report_items(work_items, plan_items, risk_items)
+
+        if not work_items:
+            flash('請至少填寫 1 筆「今日工作」（需包含案場與工作內容）', 'error')
+            return redirect(request.url)
 
         report = {
             "employee_id": employee_id,
@@ -559,6 +650,7 @@ def report_form(employee_id=None):
                 db.execute('REPLACE INTO reports(report_key, report_date, employee_id, submitted_at, report_json) VALUES(?,?,?,?,?)',
                            (report_key, today, employee_id, report['submit_time'], json.dumps(report, ensure_ascii=False)))
                 db.execute('DELETE FROM work_items WHERE report_key=?', (report_key,))
+                db.execute('DELETE FROM plan_items WHERE report_key=?', (report_key,))
                 db.execute('DELETE FROM risk_items WHERE report_key=?', (report_key,))
 
                 for w in work_items:
@@ -568,11 +660,24 @@ def report_form(employee_id=None):
                             report_key,
                             (w.get('case_id') or '').strip(),
                             (w.get('work_type') or '').strip(),
-                            float(w.get('progress') or 0),
-                            float(w.get('hours') or 0),
+                            safe_float(w.get('progress'), 0.0),
+                            safe_float(w.get('hours'), 0.0),
                             (w.get('work_content') or '').strip(),
                             (w.get('output') or '').strip(),
                             (w.get('status') or '').strip(),
+                        )
+                    )
+
+                
+                for p in plan_items:
+                    db.execute(
+                        'INSERT INTO plan_items(report_key, case_id, plan_content, plan_hours, need_support) VALUES(?,?,?,?,?)',
+                        (
+                            report_key,
+                            (p.get('case_id') or '').strip(),
+                            (p.get('plan_content') or '').strip(),
+                            safe_float(p.get('plan_hours'), 0.0),
+                            (p.get('need_support') or '').strip(),
                         )
                     )
 
@@ -743,19 +848,58 @@ def history():
 
 # ===================== 案場 / 風險（案件中心管理） =====================
 
-def case_by_id(case_id: str):
-    for c in CASES:
+def get_case_catalog(db=None):
+    """回傳案場清單（包含 CASES 內建清單 + DB 中實際出現過的案場 ID）。"""
+    base = {c['id']: {'id': c['id'], 'name': c.get('name', c['id']), 'type': c.get('type', '')} for c in CASES}
+
+    if db is None:
+        try:
+            with get_db() as _db:
+                return get_case_catalog(_db)
+        except Exception:
+            return list(base.values())
+
+    try:
+        rows = db.execute(
+            """
+            SELECT case_id FROM (
+              SELECT DISTINCT case_id FROM work_items WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM risk_items WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM tasks WHERE case_id!=''
+              UNION
+              SELECT DISTINCT case_id FROM plan_items WHERE case_id!=''
+            )
+            """
+        ).fetchall()
+        for r in rows:
+            cid = r['case_id'] if isinstance(r, dict) else r[0]
+            if cid and cid not in base:
+                base[cid] = {'id': cid, 'name': cid, 'type': '未登錄'}
+    except Exception:
+        pass
+
+    return list(base.values())
+
+
+def case_by_id(case_id: str, db=None):
+    for c in get_case_catalog(db=db):
         if c.get('id') == case_id:
             return c
-    return {'id': case_id, 'name': case_id, 'type': ''}
+    return {'id': case_id, 'name': case_id, 'type': '未登錄'}
 
 
 @app.route('/cases')
 @login_required
 def cases_dashboard():
+    today = datetime.now().strftime('%Y-%m-%d')
+
     with get_db() as db:
+        catalog = get_case_catalog(db)
+
         # 員工只看到自己碰過的案場；管理員看到全部
-        visible_cases = list(CASES)
+        visible = catalog
         if current_user.role == 'employee':
             rows = db.execute(
                 """
@@ -767,13 +911,34 @@ def cases_dashboard():
                 (current_user.id,)
             ).fetchall()
             touched = {r['case_id'] for r in rows}
-            visible_cases = [c for c in CASES if c['id'] in touched]
+
+            rows2 = db.execute(
+                "SELECT DISTINCT case_id FROM risk_items WHERE employee_id=? AND case_id!=''",
+                (current_user.id,)
+            ).fetchall()
+            touched |= {r['case_id'] for r in rows2}
+
+            rows3 = db.execute(
+                "SELECT DISTINCT case_id FROM tasks WHERE owner_id=? AND case_id!=''",
+                (current_user.id,)
+            ).fetchall()
+            touched |= {r['case_id'] for r in rows3}
+
+            visible = [c for c in catalog if c['id'] in touched]
+
+        # 補齊 case_status（若 DB 新出現了未登錄案場，也要能被管理）
+        for c in visible:
+            db.execute(
+                'INSERT OR IGNORE INTO case_status(case_id, stage, percent, note, updated_at, updated_by) VALUES(?,?,?,?,?,?)',
+                (c['id'], '', None, '', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'system')
+            )
+        db.commit()
 
         status_rows = db.execute('SELECT * FROM case_status').fetchall()
         status_map = {r['case_id']: r for r in status_rows}
 
         summaries = []
-        for c in visible_cases:
+        for c in visible:
             cid = c['id']
             st = status_map.get(cid)
 
@@ -788,6 +953,10 @@ def cases_dashboard():
             ).fetchone()
             r2 = db.execute(
                 "SELECT MAX(report_date) AS last_date FROM risk_items WHERE case_id = ?",
+                (cid,)
+            ).fetchone()
+            r3 = db.execute(
+                "SELECT MAX(due_date) AS last_due FROM tasks WHERE case_id = ?",
                 (cid,)
             ).fetchone()
             last_date = max((r1['last_date'] or ''), (r2['last_date'] or ''))
@@ -805,6 +974,17 @@ def cases_dashboard():
                 (cid,)
             ).fetchone()
 
+            tc = db.execute(
+                """
+                SELECT
+                  SUM(CASE WHEN status != 'closed' THEN 1 ELSE 0 END) AS open_total,
+                  SUM(CASE WHEN status != 'closed' AND due_date != '' AND due_date < ? THEN 1 ELSE 0 END) AS overdue
+                FROM tasks
+                WHERE case_id = ?
+                """,
+                (today, cid)
+            ).fetchone()
+
             summaries.append({
                 'id': cid,
                 'name': c.get('name', cid),
@@ -812,12 +992,18 @@ def cases_dashboard():
                 'stage': (st['stage'] if st else ''),
                 'percent': (st['percent'] if st and st['percent'] is not None else ''),
                 'updated_at': (st['updated_at'] if st else ''),
+                'updated_by': (st['updated_by'] if st else ''),
                 'last_date': last_date,
                 'risk_total': rc['total'] or 0,
                 'risk_high': rc['high'] or 0,
                 'risk_medium': rc['medium'] or 0,
                 'risk_low': rc['low'] or 0,
+                'task_open_total': tc['open_total'] or 0,
+                'task_overdue': tc['overdue'] or 0,
             })
+
+    # 預設排序：高風險多 → 逾期多 → 未結案風險總量
+    summaries.sort(key=lambda x: (x['risk_high'], x['task_overdue'], x['risk_total']), reverse=True)
 
     return render_template('cases.html', cases=summaries, is_admin=current_user.role == 'admin')
 
@@ -825,9 +1011,15 @@ def cases_dashboard():
 @app.route('/cases/<case_id>', methods=['GET', 'POST'])
 @login_required
 def case_detail(case_id):
-    case = case_by_id(case_id)
-
     with get_db() as db:
+        case = case_by_id(case_id, db=db)
+
+        # 確保此案場在 case_status 內可被管理
+        db.execute(
+            'INSERT OR IGNORE INTO case_status(case_id, stage, percent, note, updated_at, updated_by) VALUES(?,?,?,?,?,?)',
+            (case_id, '', None, '', datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'system')
+        )
+        db.commit()
         if request.method == 'POST':
             if current_user.role != 'admin':
                 abort(403)
@@ -887,6 +1079,19 @@ def case_detail(case_id):
                 (case_id, current_user.id)
             ).fetchall()
 
+        # 明日計畫（最近 60 筆）
+        plans = db.execute(
+            """
+            SELECT r.report_date, r.employee_id, p.*
+            FROM plan_items p
+            JOIN reports r ON p.report_key = r.report_key
+            WHERE p.case_id = ?
+            ORDER BY r.report_date DESC, p.id DESC
+            LIMIT 60
+            """,
+            (case_id,)
+        ).fetchall()
+
         # 任務清單（案件中心追蹤）
         if current_user.role == 'admin':
             tasks = db.execute(
@@ -899,16 +1104,21 @@ def case_detail(case_id):
                 (case_id, current_user.id)
             ).fetchall()
 
+        owners = [{'id': 'admin', 'name': '管理員'}] + list(EMPLOYEES)
+
     return render_template(
         'case_detail.html',
         case=case,
         status=st,
         works=works,
+        plans=plans,
         risks=risks,
         tasks=tasks,
+        owners=owners,
         is_admin=current_user.role == 'admin',
         stages=MILESTONE_STAGES,
         risk_categories=RISK_CATEGORIES,
+        today=datetime.now().strftime('%Y-%m-%d'),
     )
 
 
@@ -917,6 +1127,7 @@ def case_detail(case_id):
 def risks_page():
     q_case = (request.args.get('case') or '').strip()
     q_cat = (request.args.get('cat') or '').strip()
+    q_level = (request.args.get('level') or '').strip()
     q_status = (request.args.get('status') or '').strip()
 
     sql = "SELECT * FROM risk_items WHERE 1=1"
@@ -932,6 +1143,9 @@ def risks_page():
     if q_cat:
         sql += " AND category = ?"
         params.append(q_cat)
+    if q_level:
+        sql += " AND level = ?"
+        params.append(q_level)
     if q_status:
         sql += " AND status = ?"
         params.append(q_status)
@@ -940,16 +1154,34 @@ def risks_page():
 
     with get_db() as db:
         rows = db.execute(sql, tuple(params)).fetchall()
+        case_catalog = get_case_catalog(db)
+
+        # 統計（供頁面頂部顯示）
+        stats = db.execute(
+            """
+            SELECT
+              SUM(CASE WHEN status!='closed' THEN 1 ELSE 0 END) AS open_total,
+              SUM(CASE WHEN status!='closed' AND level='high' THEN 1 ELSE 0 END) AS open_high,
+              SUM(CASE WHEN status!='closed' AND level='medium' THEN 1 ELSE 0 END) AS open_medium,
+              SUM(CASE WHEN status!='closed' AND level='low' THEN 1 ELSE 0 END) AS open_low
+            FROM risk_items
+            """
+        ).fetchone()
+
+    today = datetime.now().strftime('%Y-%m-%d')
 
     return render_template(
         'risks.html',
         rows=rows,
-        cases=CASES,
+        cases=case_catalog,
         categories=RISK_CATEGORIES,
         is_admin=current_user.role == 'admin',
         q_case=q_case,
         q_cat=q_cat,
+        q_level=q_level,
         q_status=q_status,
+        stats=stats,
+        today=today,
     )
 
 
@@ -981,12 +1213,26 @@ def tasks_page():
 
     sql += " ORDER BY CASE status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, due_date DESC, id DESC LIMIT 300"
 
+    today = datetime.now().strftime('%Y-%m-%d')
+
     with get_db() as db:
         rows = db.execute(sql, tuple(params)).fetchall()
+        case_catalog = get_case_catalog(db)
 
-    owners = EMPLOYEES
-    return render_template('tasks.html', rows=rows, cases=CASES, owners=owners,
-                           is_admin=current_user.role == 'admin', q_case=q_case, q_status=q_status, q_owner=q_owner)
+        stats = db.execute(
+            """
+            SELECT
+              SUM(CASE WHEN status!='closed' THEN 1 ELSE 0 END) AS open_total,
+              SUM(CASE WHEN status!='closed' AND due_date!='' AND due_date < ? THEN 1 ELSE 0 END) AS overdue
+            FROM tasks
+            """,
+            (today,)
+        ).fetchone()
+
+    owners = [{'id': 'admin', 'name': '管理員'}] + list(EMPLOYEES)
+    return render_template('tasks.html', rows=rows, cases=case_catalog, owners=owners,
+                           is_admin=current_user.role == 'admin', q_case=q_case, q_status=q_status, q_owner=q_owner,
+                           stats=stats, today=today)
 
 
 @app.route('/tasks/create', methods=['POST'])
@@ -1151,7 +1397,8 @@ def api_ai_overview():
 
     with get_db() as db:
         out_cases = []
-        for c in CASES:
+        case_catalog = get_case_catalog(db)
+        for c in case_catalog:
             cid = c['id']
             st = db.execute('SELECT * FROM case_status WHERE case_id=?', (cid,)).fetchone()
 
@@ -1247,6 +1494,17 @@ def api_ai_case(case_id):
             """,
             (case_id,)
         ).fetchall()
+
+        plans = db.execute(
+            """
+            SELECT r.report_date, r.employee_id, p.*
+            FROM plan_items p JOIN reports r ON p.report_key=r.report_key
+            WHERE p.case_id=?
+            ORDER BY r.report_date DESC, p.id DESC
+            LIMIT 80
+            """,
+            (case_id,)
+        ).fetchall()
         risks = db.execute(
             "SELECT * FROM risk_items WHERE case_id=? ORDER BY id DESC LIMIT 120",
             (case_id,)
@@ -1260,6 +1518,7 @@ def api_ai_case(case_id):
         'case_id': case_id,
         'status': dict(st) if st else {},
         'works': [dict(r) for r in works],
+        'plans': [dict(r) for r in plans],
         'risks': [dict(r) for r in risks],
         'tasks': [dict(r) for r in tasks],
     })

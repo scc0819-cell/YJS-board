@@ -92,6 +92,36 @@
     {% endif %}
 
     <div class="card">
+      <h2 style="font-size:16px;font-weight:900;margin-bottom:10px">📅 明日計畫（最新 60 筆）</h2>
+      <div class="muted" style="margin-bottom:10px">來自員工日報的「明日計畫」，可用於提前掌握下一步工作重點。</div>
+      <table>
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>員工</th>
+            <th>內容</th>
+            <th>工時</th>
+            <th>需要支援</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in plans %}
+          <tr>
+            <td style="white-space:nowrap">{{ p.report_date }}</td>
+            <td><code>{{ p.employee_id }}</code></td>
+            <td style="max-width:560px"><strong>{{ p.plan_content }}</strong></td>
+            <td>{{ p.plan_hours }}</td>
+            <td class="muted">{{ p.need_support }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if not plans %}
+        <div class="muted" style="padding:14px;text-align:center">目前沒有明日計畫紀錄</div>
+      {% endif %}
+    </div>
+
+    <div class="card">
       <h2 style="font-size:16px;font-weight:900;margin-bottom:10px">⚠️ 風險（最新 80 筆）</h2>
       <table>
         <thead>
@@ -147,7 +177,7 @@
                   <option value="low" {% if r.level=='low' %}selected{% endif %}>low</option>
                 </select>
                 <input name="owner_id" value="{{ r.owner_id }}" placeholder="owner" style="width:110px"/>
-                <input name="due_date" value="{{ r.due_date }}" placeholder="YYYY-MM-DD" style="width:120px"/>
+                <input type="date" name="due_date" value="{{ r.due_date }}" style="width:145px"/>
                 <button class="btn" type="submit">存</button>
               </form>
             </td>
@@ -174,16 +204,22 @@
           <option value="medium" selected>medium</option>
           <option value="low">low</option>
         </select>
-        <input name="owner_id" placeholder="Owner（例如：chen_ming_de）" style="width:170px" />
-        <input name="due_date" placeholder="YYYY-MM-DD" style="width:130px" />
+        <input name="owner_id" list="owner-list" placeholder="Owner（可選）" style="width:190px" />
+        <datalist id="owner-list">
+          {% for o in owners %}
+            <option value="{{ o.id }}">{{ o.name }}</option>
+          {% endfor %}
+        </datalist>
+        <input type="date" name="due_date" style="width:145px" />
         <input name="related_risk_id" placeholder="關聯風險ID(選填)" style="width:150px" />
         <button class="btn" type="submit">新增</button>
       </form>
-      <div class="muted" style="margin-bottom:10px">Owner 下拉目前先提供 admin（下一輪會做完整 owner 名單與部門/角色管理）。</div>
+      <div class="muted" style="margin-bottom:10px">Owner 目前以「輸入員工 ID」為主（例如：chen_ming_de）。下一輪會做成可搜尋下拉選單，降低輸入錯誤。</div>
       {% endif %}
 
       <table>
         <thead>
+          {% set STATUS_LABEL = {'open':'待處理','in_progress':'處理中','closed':'已結案'} %}
           <tr>
             <th>ID</th>
             <th>標題</th>
@@ -191,6 +227,7 @@
             <th>狀態</th>
             <th>Owner</th>
             <th>Due</th>
+            <th>關聯風險</th>
             <th>更新</th>
           </tr>
         </thead>
@@ -208,9 +245,16 @@
               {% elif t.priority=='low' %}<span class="pill p-low">low</span>
               {% else %}<span class="pill p-mid">medium</span>{% endif %}
             </td>
-            <td><code>{{ t.status }}</code></td>
+            <td><code>{{ STATUS_LABEL.get(t.status, t.status) }}</code></td>
             <td><code>{{ t.owner_id }}</code></td>
-            <td style="white-space:nowrap"><code>{{ t.due_date }}</code></td>
+            <td style="white-space:nowrap">
+              {% if t.due_date and t.status != 'closed' %}
+                <code style="color:{{ '#dc2626' if t.due_date < today else '#111827' }}">{{ t.due_date }}</code>
+              {% else %}
+                <code>{{ t.due_date }}</code>
+              {% endif %}
+            </td>
+            <td>{% if t.related_risk_id %}<code>{{ t.related_risk_id }}</code>{% else %}<span class="muted">-</span>{% endif %}</td>
             <td>
               <form method="POST" action="/tasks/update/{{ t.id }}" class="row" style="gap:6px">
                 <select name="status">
@@ -225,7 +269,7 @@
                   <option value="low" {% if t.priority=='low' %}selected{% endif %}>low</option>
                 </select>
                 <input name="owner_id" value="{{ t.owner_id }}" placeholder="owner" style="width:110px"/>
-                <input name="due_date" value="{{ t.due_date }}" placeholder="YYYY-MM-DD" style="width:120px"/>
+                <input type="date" name="due_date" value="{{ t.due_date }}" style="width:145px"/>
                 {% endif %}
                 <button class="btn" type="submit">存</button>
               </form>

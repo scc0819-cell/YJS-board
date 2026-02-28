@@ -57,6 +57,14 @@
       <h1>風險清單</h1>
       <div class="muted" style="margin-top:6px">風險來源：員工日報表單（已新增分類：工期/成本/協調/合約/品質）。管理員可在此更新狀態、Owner、Due。</div>
 
+      {% set STATUS_LABEL = {'open':'待處理','in_progress':'處理中','closed':'已結案'} %}
+      <div class="row" style="margin-top:12px">
+        <span class="pill p-high">未結案高風險 {{ stats.open_high }}</span>
+        <span class="pill p-mid">未結案中風險 {{ stats.open_medium }}</span>
+        <span class="pill p-low">未結案低風險 {{ stats.open_low }}</span>
+        <span class="muted">未結案合計 {{ stats.open_total }}</span>
+      </div>
+
       <form method="GET" action="/risks" class="row" style="margin-top:14px">
         <label class="muted">案場</label>
         <select name="case">
@@ -72,6 +80,14 @@
           {% for c in categories %}
             <option value="{{ c }}" {% if q_cat==c %}selected{% endif %}>{{ c }}</option>
           {% endfor %}
+        </select>
+
+        <label class="muted">等級</label>
+        <select name="level">
+          <option value="">全部</option>
+          <option value="high" {% if q_level=='high' %}selected{% endif %}>high</option>
+          <option value="medium" {% if q_level=='medium' %}selected{% endif %}>medium</option>
+          <option value="low" {% if q_level=='low' %}selected{% endif %}>low</option>
         </select>
 
         <label class="muted">狀態</label>
@@ -122,9 +138,15 @@
               {% if r.risk_impact %}<div class="muted">影響：{{ r.risk_impact }}</div>{% endif %}
               {% if r.need_help %}<div class="muted">協助：{{ r.need_help }}</div>{% endif %}
             </td>
-            <td><code>{{ r.status }}</code></td>
+            <td><code>{{ STATUS_LABEL.get(r.status, r.status) }}</code></td>
             <td><code>{{ r.owner_id }}</code></td>
-            <td style="white-space:nowrap"><code>{{ r.due_date }}</code></td>
+            <td style="white-space:nowrap">
+              {% if r.due_date and r.status != 'closed' %}
+                <code style="color:{{ '#dc2626' if r.due_date < today else '#111827' }}">{{ r.due_date }}</code>
+              {% else %}
+                <code>{{ r.due_date }}</code>
+              {% endif %}
+            </td>
             {% if is_admin %}
             <td>
               <form method="POST" action="/risks/update/{{ r.id }}" class="row" style="gap:6px">
@@ -144,7 +166,7 @@
                   <option value="low" {% if r.level=='low' %}selected{% endif %}>low</option>
                 </select>
                 <input name="owner_id" value="{{ r.owner_id }}" placeholder="owner" style="width:110px"/>
-                <input name="due_date" value="{{ r.due_date }}" placeholder="YYYY-MM-DD" style="width:120px"/>
+                <input type="date" name="due_date" value="{{ r.due_date }}" style="width:145px"/>
                 <button class="btn" type="submit">存</button>
               </form>
             </td>
