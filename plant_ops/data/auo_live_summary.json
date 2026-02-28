@@ -1,0 +1,10 @@
+{
+  "source": "AUO SunVeillance Systems",
+  "url": "https://gms.auo.com/MvcWebPortal/Allsystem/index?page=allsystem",
+  "captured_at": "2026-03-01T05:16:00+08:00",
+  "plant_count": 88,
+  "device_capacity_mwp": 23.29,
+  "today_unit_gen_kwh_kwp": 0.0,
+  "all_energy_gwh": 43.28,
+  "today_gen_kwh": 1.0
+}

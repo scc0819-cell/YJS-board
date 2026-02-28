@@ -1,0 +1,16 @@
+[
+  {
+    "plant_id": "AUO-GROUP",
+    "plant_name": "昱金生_全集團",
+    "timestamp": "2026-03-01T05:16:00+08:00",
+    "actual_gen_kwh_today": 1.0,
+    "forecast_gen_kwh_today": 1.0,
+    "design_offset_enabled": false,
+    "design_offset_factor": 1.0,
+    "weather_icon": "unknown",
+    "irr_today": 0.0,
+    "irr_yday_slot": 0.0,
+    "inverter_availability_pct": 100.0,
+    "data_gap_min": 0
+  }
+]

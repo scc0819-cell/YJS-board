@@ -67,6 +67,13 @@ def run(input_path, rules_path, output_path):
     return out
 
 if __name__ == '__main__':
+    import argparse
+    p = argparse.ArgumentParser()
+    p.add_argument('--input', default='data/sample_plants_hourly.json')
+    p.add_argument('--rules', default='config/rules_v1_1.yaml')
+    p.add_argument('--out', default='output/events.json')
+    args = p.parse_args()
+
     base = Path(__file__).resolve().parent
-    out = run(base/'data/sample_plants_hourly.json', base/'config/rules_v1_1.yaml', base/'output/events.json')
-    print(f'generated events: {len(out)} -> {base / "output/events.json"}')
+    out = run(base/args.input, base/args.rules, base/args.out)
+    print(f'generated events: {len(out)} -> {base / args.out}')
