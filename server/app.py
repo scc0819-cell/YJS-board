@@ -15,6 +15,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, jso
 from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 import os
 import json
@@ -40,6 +41,8 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=timedelta(hours=12),
+    # 限制單次請求大小（含表單欄位 + 附件），避免意外上傳過大檔案拖垮服務
+    MAX_CONTENT_LENGTH=100 * 1024 * 1024,  # 100MB
 )
 CORS(app)
 
@@ -51,8 +54,10 @@ login_manager.login_message = '請先登入'
 # ===================== 路徑設定 =====================
 BASE_DIR = Path('/home/yjsclaw/.openclaw/workspace')
 REPORTS_DIR = BASE_DIR / 'daily_reports'
+ATTACHMENTS_DIR = BASE_DIR / 'daily_report_attachments'
 SCRIPTS_DIR = BASE_DIR / 'scripts'
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+ATTACHMENTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ===================== 帳號資料 =====================
 # ✅ 改善重點：
@@ -275,6 +280,21 @@ def init_db():
               plan_content TEXT,
               plan_hours REAL,
               need_support TEXT
+            )
+        ''')
+
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS attachments (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              report_key TEXT,
+              report_date TEXT,
+              employee_id TEXT,
+              kind TEXT,
+              original_name TEXT,
+              stored_name TEXT,
+              rel_path TEXT,
+              size_bytes INTEGER,
+              uploaded_at TEXT
             )
         ''')
 
@@ -743,6 +763,67 @@ def normalize_report_items(work_items, plan_items, risk_items):
     return clean_work, clean_plan, clean_risk
 
 
+ALLOWED_EXTENSIONS = {
+    'jpg','jpeg','png','gif','webp',
+    'pdf','txt',
+    'doc','docx',
+    'xls','xlsx',
+    'ppt','pptx',
+    'zip'
+}
+
+
+def allowed_file(filename: str) -> bool:
+    if not filename:
+        return False
+    if '.' not in filename:
+        return False
+    ext = filename.rsplit('.', 1)[1].lower()
+    return ext in ALLOWED_EXTENSIONS
+
+
+def save_uploaded_files(employee_id: str, report_date: str, submit_time: str, kind: str, files) -> list[dict]:
+    """儲存上傳附件到磁碟，回傳檔案 metadata 清單。"""
+    saved = []
+    if not files:
+        return saved
+
+    year = report_date[:4]
+    # 依 年份 / 日期 / 人員 / 提交時間 分類，方便日後歸檔備份
+    batch = submit_time.replace('-', '').replace(':', '').replace(' ', '_')  # YYYYMMDD_HHMMSS
+    base_dir = ATTACHMENTS_DIR / year / report_date / employee_id / batch / kind
+    base_dir.mkdir(parents=True, exist_ok=True)
+
+    for f in files:
+        if not f or not getattr(f, 'filename', ''):
+            continue
+        orig = f.filename
+        if not allowed_file(orig):
+            continue
+        safe = secure_filename(orig)
+        # 再加一層隨機字串避免撞名
+        token = secrets.token_hex(4)
+        stored = f"{token}__{safe}" if safe else f"{token}"
+        out_path = base_dir / stored
+        f.save(out_path)
+
+        rel = str(out_path.relative_to(BASE_DIR))
+        try:
+            size = out_path.stat().st_size
+        except Exception:
+            size = None
+
+        saved.append({
+            'kind': kind,
+            'original_name': orig,
+            'stored_name': stored,
+            'rel_path': rel,
+            'size_bytes': size,
+        })
+
+    return saved
+
+
 # ===================== 填寫表單 =====================
 @app.route('/report', methods=['GET', 'POST'])
 @app.route('/report/<employee_id>', methods=['GET', 'POST'])
@@ -781,12 +862,25 @@ def report_form(employee_id=None):
             flash('請至少填寫 1 筆「今日工作」（需包含案場與工作內容）', 'error')
             return redirect(request.url)
 
+        submit_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # 附件上傳（依 年份/日期/人員/提交時間/類型 分類儲存）
+        uploaded_files = []
+        try:
+            uploaded_files += save_uploaded_files(employee_id, today, submit_time, 'photo', request.files.getlist('files_photo'))
+            uploaded_files += save_uploaded_files(employee_id, today, submit_time, 'meeting', request.files.getlist('files_meeting'))
+            uploaded_files += save_uploaded_files(employee_id, today, submit_time, 'document', request.files.getlist('files_document'))
+            uploaded_files += save_uploaded_files(employee_id, today, submit_time, 'other', request.files.getlist('files_other'))
+        except Exception:
+            # 附件失敗不應阻擋日報主流程
+            uploaded_files = []
+
         report = {
             "employee_id": employee_id,
             "employee_name": user_data['name'],
             "department": "未分類",
             "report_date": today,
-            "submit_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "submit_time": submit_time,
             "work_items": work_items,
             "plan_items": plan_items,
             "risk_items": risk_items,
@@ -796,10 +890,11 @@ def report_form(employee_id=None):
                 "remarks": request.form.get('remarks', '')
             },
             "attachments": {
-                "photo": 'photo' in request.form,
-                "meeting": 'meeting' in request.form,
-                "document": 'document' in request.form,
-                "other": 'other_attachment' in request.form,
+                "photo": any(f.get('kind')=='photo' for f in uploaded_files),
+                "meeting": any(f.get('kind')=='meeting' for f in uploaded_files),
+                "document": any(f.get('kind')=='document' for f in uploaded_files),
+                "other": any(f.get('kind')=='other' for f in uploaded_files),
+                "files": uploaded_files,
                 "note": request.form.get('attachment_note', '')
             }
         }
@@ -864,6 +959,23 @@ def report_form(employee_id=None):
                         )
                     )
 
+                # 附件 metadata（不刪舊檔，以提交時間分批保存）
+                for a in uploaded_files:
+                    db.execute(
+                        'INSERT INTO attachments(report_key, report_date, employee_id, kind, original_name, stored_name, rel_path, size_bytes, uploaded_at) VALUES(?,?,?,?,?,?,?,?,?)',
+                        (
+                            report_key,
+                            today,
+                            employee_id,
+                            a.get('kind',''),
+                            a.get('original_name',''),
+                            a.get('stored_name',''),
+                            a.get('rel_path',''),
+                            a.get('size_bytes'),
+                            report['submit_time'],
+                        )
+                    )
+
                 db.commit()
         except Exception:
             pass
@@ -891,7 +1003,7 @@ def report_form(employee_id=None):
     return render_template('report_form_v3.html',
         employee=user_data,
         today=today,
-        cases=CASES,
+        cases=get_case_catalog(),
         existing=existing
     )
 
@@ -1853,7 +1965,7 @@ def api_status():
 @app.route('/api/cases')
 @login_required
 def api_cases():
-    return jsonify(CASES)
+    return jsonify(get_case_catalog())
 
 
 # ===================== AI 讀取 API（管理員） =====================
@@ -1985,6 +2097,19 @@ def api_ai_case(case_id):
             (case_id,)
         ).fetchall()
 
+        # 附件：以「有關聯到此案場的 report_key」回推出該些日報的附件
+        keys = set([r['report_key'] for r in db.execute('SELECT DISTINCT report_key FROM work_items WHERE case_id=?', (case_id,)).fetchall()])
+        keys |= set([r['report_key'] for r in db.execute('SELECT DISTINCT report_key FROM plan_items WHERE case_id=?', (case_id,)).fetchall()])
+        keys |= set([r['report_key'] for r in db.execute('SELECT DISTINCT report_key FROM risk_items WHERE case_id=?', (case_id,)).fetchall()])
+
+        attachments = []
+        if keys:
+            ph = ','.join(['?'] * len(keys))
+            attachments = db.execute(
+                f'SELECT * FROM attachments WHERE report_key IN ({ph}) ORDER BY id DESC LIMIT 200',
+                tuple(keys)
+            ).fetchall()
+
     return jsonify({
         'case_id': case_id,
         'status': dict(st) if st else {},
@@ -1992,6 +2117,7 @@ def api_ai_case(case_id):
         'plans': [dict(r) for r in plans],
         'risks': [dict(r) for r in risks],
         'tasks': [dict(r) for r in tasks],
+        'attachments': [dict(r) for r in attachments],
     })
 
 # ===================== Excel 匯出 =====================

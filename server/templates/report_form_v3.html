@@ -120,7 +120,7 @@
         <div class="alert-warning">⚠️ 您今天已提交過日報（{{ existing.submit_time }}），再次提交將覆蓋原有記錄。</div>
         {% endif %}
 
-        <form method="POST" id="mainForm">
+        <form method="POST" id="mainForm" enctype="multipart/form-data">
             <input type="hidden" name="work_items_json" id="work_items_json">
             <input type="hidden" name="plan_items_json" id="plan_items_json">
             <input type="hidden" name="risk_items_json" id="risk_items_json">
@@ -165,16 +165,36 @@
 
             <!-- 附件 -->
             <div class="section">
-                <div class="section-title">📎 五、附件</div>
-                <div class="checkbox-row">
-                    <label class="checkbox-label"><input type="checkbox" name="photo"> 📷 現場照片</label>
-                    <label class="checkbox-label"><input type="checkbox" name="meeting"> 📋 會議記錄</label>
-                    <label class="checkbox-label"><input type="checkbox" name="document"> 📄 文件檔案</label>
-                    <label class="checkbox-label"><input type="checkbox" name="other_attachment"> 📎 其他</label>
+                <div class="section-title">📎 五、附件上傳</div>
+                <div class="alert-warning" style="margin-bottom:14px">
+                    建議：照片請壓縮後上傳。若檔案較大，可先放雲端/NAS，並在下方「附件說明」貼連結。
                 </div>
-                <div class="form-group" style="margin-top:15px;">
-                    <label>附件說明</label>
-                    <textarea name="attachment_note" id="attachment_note" placeholder="說明附件內容或雲端連結..."></textarea>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📷 現場照片（可多選）</label>
+                        <input type="file" name="files_photo" multiple accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>📋 會議記錄（可多選）</label>
+                        <input type="file" name="files_meeting" multiple accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📄 文件檔案（可多選）</label>
+                        <input type="file" name="files_document" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg">
+                    </div>
+                    <div class="form-group">
+                        <label>📎 其他附件（可多選）</label>
+                        <input type="file" name="files_other" multiple>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top:12px;">
+                    <label>附件說明（可貼連結）</label>
+                    <textarea name="attachment_note" id="attachment_note" placeholder="說明附件內容、雲端連結、NAS 路徑..."></textarea>
                 </div>
             </div>
 
