@@ -1,0 +1,136 @@
+{
+  "version": "2.0",
+  "lastUpdated": "2026-03-01T20:32:09.372335",
+  "agents": {
+    "jenny": {
+      "name": "Jenny",
+      "role": "主助理",
+      "specialties": [
+        "綜合任務",
+        "決策協調",
+        "任務分派"
+      ],
+      "status": "active",
+      "tasks_assigned": 8,
+      "emoji": "🎯"
+    },
+    "argus": {
+      "name": "Argus",
+      "role": "監控專家",
+      "specialties": [
+        "系統監控",
+        "異常偵測",
+        "告警通知"
+      ],
+      "status": "active",
+      "tasks_assigned": 4,
+      "emoji": "👁️"
+    },
+    "scribe": {
+      "name": "Scribe",
+      "role": "報告專家",
+      "specialties": [
+        "報表生成",
+        "文件整理",
+        "數據匯出"
+      ],
+      "status": "active",
+      "tasks_assigned": 6,
+      "emoji": "📝"
+    },
+    "chronos": {
+      "name": "Chronos",
+      "role": "排程專家",
+      "specialties": [
+        "排程管理",
+        "任務分配",
+        "時間優化"
+      ],
+      "status": "active",
+      "tasks_assigned": 3,
+      "emoji": "⏰"
+    },
+    "athena": {
+      "name": "Athena",
+      "role": "分析專家",
+      "specialties": [
+        "數據分析",
+        "決策支援",
+        "趨勢預測"
+      ],
+      "status": "active",
+      "tasks_assigned": 3,
+      "emoji": "🧠"
+    },
+    "hermes": {
+      "name": "Hermes",
+      "role": "通訊專家",
+      "specialties": [
+        "郵件處理",
+        "訊息通知",
+        "對外通訊"
+      ],
+      "status": "active",
+      "tasks_assigned": 2,
+      "emoji": "📧"
+    }
+  },
+  "improvements": [],
+  "taskChains": [],
+  "stats": {
+    "total_tasks": 26,
+    "active": 26,
+    "pending": 0,
+    "completed": 0
+  },
+  "agents_list": [
+    {
+      "id": "jenny",
+      "name": "Jenny",
+      "role": "主助理",
+      "tasks": 8,
+      "status": "active",
+      "emoji": "🎯"
+    },
+    {
+      "id": "argus",
+      "name": "Argus",
+      "role": "監控專家",
+      "tasks": 4,
+      "status": "active",
+      "emoji": "👁️"
+    },
+    {
+      "id": "scribe",
+      "name": "Scribe",
+      "role": "報告專家",
+      "tasks": 6,
+      "status": "active",
+      "emoji": "📝"
+    },
+    {
+      "id": "chronos",
+      "name": "Chronos",
+      "role": "排程專家",
+      "tasks": 3,
+      "status": "active",
+      "emoji": "⏰"
+    },
+    {
+      "id": "athena",
+      "name": "Athena",
+      "role": "分析專家",
+      "tasks": 3,
+      "status": "active",
+      "emoji": "🧠"
+    },
+    {
+      "id": "hermes",
+      "name": "Hermes",
+      "role": "通訊專家",
+      "tasks": 2,
+      "status": "active",
+      "emoji": "📧"
+    }
+  ]
+}
