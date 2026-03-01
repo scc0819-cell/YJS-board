@@ -1,0 +1,152 @@
+{
+  "admin": {
+    "id": "admin",
+    "employee_code": "20101",
+    "name": "宋啓綸",
+    "role": "admin",
+    "department": "管理部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$WnE46571uYKrq0j7$68d877cfb90ea6a91c3ac80ca479754a735095af4f33e47c6a466c7227e855570bc86757abd20225ef9cc5cd7f31ba5e13c0da38e9e774eda5b4884315e295c2"
+  },
+  "you_ruo_yi": {
+    "id": "you_ruo_yi",
+    "employee_code": "20102",
+    "name": "游若誼",
+    "role": "manager",
+    "department": "管理部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "hong_shu_rong": {
+    "id": "hong_shu_rong",
+    "employee_code": "22104",
+    "name": "洪淑嫆",
+    "role": "employee",
+    "department": "管理部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "yang_zong_wei": {
+    "id": "yang_zong_wei",
+    "employee_code": "23102",
+    "name": "楊宗衛",
+    "role": "employee",
+    "department": "工程部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "yang_jie_lin": {
+    "id": "yang_jie_lin",
+    "employee_code": "24106",
+    "name": "楊傑麟",
+    "role": "employee",
+    "department": "管理部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "chu_pei_yu": {
+    "id": "chu_pei_yu",
+    "employee_code": "24108",
+    "name": "褚佩瑜",
+    "role": "employee",
+    "department": "管理部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "chen_ming_de": {
+    "id": "chen_ming_de",
+    "employee_code": "25105",
+    "name": "陳明德",
+    "role": "employee",
+    "department": "工程部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "lin_tian_jing": {
+    "id": "lin_tian_jing",
+    "employee_code": "25106",
+    "name": "林天睛",
+    "role": "employee",
+    "department": "行政部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "yan_cheng_xi": {
+    "id": "yan_cheng_xi",
+    "employee_code": "25107",
+    "name": "顏呈晞",
+    "role": "employee",
+    "department": "設計部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "chen_jing_ru": {
+    "id": "chen_jing_ru",
+    "employee_code": "25108",
+    "name": "陳靜儒",
+    "role": "employee",
+    "department": "維運部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "gao_zhu_yu": {
+    "id": "gao_zhu_yu",
+    "employee_code": "25110",
+    "name": "高竹妤",
+    "role": "employee",
+    "department": "設計部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "zhang_yi_chuan": {
+    "id": "zhang_yi_chuan",
+    "employee_code": "24302",
+    "name": "張億峖",
+    "role": "employee",
+    "department": "工程部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "li_ya_ting": {
+    "id": "li_ya_ting",
+    "employee_code": "25305",
+    "name": "李雅婷",
+    "role": "employee",
+    "department": "工程部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "chen_gu_bin": {
+    "id": "chen_gu_bin",
+    "employee_code": "25308",
+    "name": "陳谷濱",
+    "role": "employee",
+    "department": "工程部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  },
+  "lu_yi_qin": {
+    "id": "lu_yi_qin",
+    "employee_code": "25311",
+    "name": "呂宜芹",
+    "role": "employee",
+    "department": "行政部",
+    "enabled": true,
+    "password_temp": false,
+    "password_hash": "scrypt:32768:8:1$7N2irskFmv7l25Mt$1a41238fab4da97d8389c3c3210b4761011db3eb57581ba27e281144231e571656b26f980039780159f5172932f8b226e38905e173525e15a92b919c664ad283"
+  }
+}

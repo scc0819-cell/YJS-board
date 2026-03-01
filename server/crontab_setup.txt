@@ -1,0 +1,14 @@
+# 昱金生能源 - AI 管理系統 Crontab 設定
+
+# 董事長專屬報告 - 每日 08:00 自動生成並發送
+0 8 * * * cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/chairman_report.py --auto >> /tmp/chairman_report.log 2>&1
+
+# AI 即時反饋系統 - 持續運行（每 5 分鐘檢查新日報）
+# 注意：這個需要背景運行，不適合 crontab
+# 請使用：nohup python3 scripts/ai_feedback_system.py > /tmp/ai_feedback.log 2>&1 &
+
+# 郵件分析系統 - 每週一 02:00 執行（分析過去 7 天）
+0 2 * * 1 cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/email_analyzer.py 7 >> /tmp/email_analysis.log 2>&1
+
+# 績效報告 - 每月 1 號 08:30 生成
+30 8 1 * * cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/performance_tracker.py team >> /tmp/performance_report.log 2>&1

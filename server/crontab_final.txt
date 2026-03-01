@@ -1,0 +1,20 @@
+# 昱金生能源 - AI 管理系統 Crontab 設定
+# 更新日期：2026-03-01
+
+# 每日 08:00 - 董事長專屬報告
+0 8 * * * cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/chairman_report.py --auto >> /tmp/chairman_report.log 2>&1
+
+# 每日 08:00 - 系統健康檢查
+0 8 * * * cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/system_monitor.py >> /tmp/system_monitor.log 2>&1
+
+# 每日 08:00 - 補充請求逾期檢查
+0 8 * * * cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/supplement_tracker.py check >> /tmp/supplement_check.log 2>&1
+
+# 每日 22:00 - 系統備份
+0 22 * * * cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/backup.py >> /tmp/backup.log 2>&1
+
+# 每週一 02:00 - 郵件分析（過去 7 天）
+0 2 * * 1 cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/email_analyzer.py 7 >> /tmp/email_analysis.log 2>&1
+
+# 每月 1 號 08:30 - 月度績效考核
+30 8 1 * * cd /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server && python3 scripts/performance_tracker.py team >> /tmp/performance_report.log 2>&1

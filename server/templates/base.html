@@ -1,0 +1,144 @@
+{# 
+  基礎模板
+  用法：{% extends "base.html" %}
+  
+  區塊：
+  - title: 頁面標題
+  - content: 頁面內容
+  - styles: 額外樣式（選用）
+  - scripts: 額外腳本（選用）
+#}
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>{% block title %}昱金生能源 - 員工日報系統{% endblock %}</title>
+  
+  <!-- 統一基礎樣式 -->
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;background:#f3f4f6;color:#111827}
+    
+    <!-- 頂部導航 -->
+    .top{
+      background:#111827;
+      color:#fff;
+      padding:14px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      position:sticky;
+      top:0;
+      z-index:50;
+      box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .wrap{max-width:1400px;margin:20px auto;padding:0 16px 60px}
+    
+    <!-- 卡片樣式 -->
+    .card{
+      background:#fff;
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom:20px;
+    }
+    
+    <!-- 按鈕樣式 -->
+    .btn{
+      padding:8px 14px;
+      border:none;
+      border-radius:8px;
+      background:#4f46e5;
+      color:#fff;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-block;
+      font-weight:900;
+      font-size:13px;
+    }
+    .btn:hover{background:#4338ca}
+    .btn-sm{padding:4px 8px;font-size:12px}
+    .btn-success{background:#22c55e}
+    .btn-success:hover{background:#16a34a}
+    .btn-danger{background:#ef4444}
+    .btn-danger:hover{background:#dc2626}
+    
+    <!-- 表單樣式 -->
+    input,select,textarea{
+      padding:8px 10px;
+      border:1px solid #d1d5db;
+      border-radius:8px;
+      font-size:14px;
+      width:100%;
+    }
+    input:focus,select:focus,textarea:focus{
+      outline:none;
+      border-color:#4f46e5;
+      box-shadow:0 0 0 3px rgba(79,70,229,0.1);
+    }
+    
+    <!-- 表格樣式 -->
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{
+      background:#f9fafb;
+      color:#6b7280;
+      font-weight:900;
+      padding:10px 12px;
+      text-align:left;
+      border-bottom:2px solid #e5e7eb;
+      white-space:nowrap;
+    }
+    td{
+      padding:10px 12px;
+      border-bottom:1px solid #f3f4f6;
+      vertical-align:top;
+    }
+    tr:hover td{background:#fafafa}
+    
+    <!-- 徽章樣式 -->
+    .pill{
+      display:inline-block;
+      padding:3px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+    }
+    .p-blue{background:#e0f2fe;color:#075985}
+    .p-green{background:#dcfce7;color:#166534}
+    .p-yellow{background:#fef3c7;color:#92400e}
+    .p-purple{background:#f3e8ff;color:#7e22ce}
+    .p-red{background:#fee2e2;color:#991b1b}
+    
+    <!-- 提示訊息 -->
+    .alert{
+      padding:12px 16px;
+      border-radius:10px;
+      margin-bottom:14px;
+      font-size:14px;
+      border-left:4px solid;
+    }
+    .alert-success{background:#d4edda;color:#155724;border-left-color:#28a745}
+    .alert-error{background:#f8d7da;color:#721c24;border-left-color:#dc3545}
+    .alert-warning{background:#fff3cd;color:#856404;border-left-color:#ffc107}
+    .alert-info{background:#d1ecf1;color:#0c5460;border-left-color:#17a2b8}
+    
+    <!-- 靜音文字 -->
+    .muted{color:#6b7280;font-size:13px}
+    
+    <!-- 網格系統 -->
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:repeat(auto-fit,minmax(400px,1fr))}
+    .grid-3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+    .grid-4{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  </style>
+  
+  {% block styles %}{% endblock %}
+</head>
+<body>
+  {% block body %}{% endblock %}
+  
+  {% block scripts %}{% endblock %}
+</body>
+</html>

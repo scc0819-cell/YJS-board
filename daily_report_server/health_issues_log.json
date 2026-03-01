@@ -1,0 +1,119 @@
+{
+  "issues": [
+    {
+      "timestamp": "2026-03-01T13:30:39.053790",
+      "issues": [
+        "頁面 登入頁 (/login) HTTP 302"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T13:40:20.808199",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T13:45:01.099122",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T14:15:01.861398",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T14:43:21.480427",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T14:45:01.844792",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T15:01:35.415264",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T15:03:06.763558",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T15:15:01.345488",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T15:45:01.517773",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T16:15:01.982537",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T16:45:01.356133",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T17:15:01.432226",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T17:45:01.655963",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T18:15:01.991960",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T18:45:01.756250",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T19:15:02.050340",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T19:45:01.152719",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    },
+    {
+      "timestamp": "2026-03-01T20:15:00.735869",
+      "issues": [
+        "員工資料 檢查失敗：name 'employee_count' is not defined"
+      ]
+    }
+  ],
+  "resolved": []
+}

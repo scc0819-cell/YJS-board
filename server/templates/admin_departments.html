@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>部門與主管管理 - 日報系統</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;background:#f3f4f6;color:#111827}
+    .top{background:#111827;color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+    .top a{color:#c7d2fe;text-decoration:none;margin-left:12px;font-size:14px}
+    .wrap{max-width:1400px;margin:20px auto;padding:0 16px 60px}
+    .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:20px}
+    h1{font-size:20px;font-weight:900;margin-bottom:10px}
+    h2{font-size:18px;font-weight:800;margin:20px 0 12px;color:#374151}
+    .muted{color:#6b7280;font-size:13px}
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:repeat(auto-fit,minmax(400px,1fr))}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    input,select,textarea{padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px}
+    .btn{padding:8px 14px;border:none;border-radius:8px;background:#4f46e5;color:#fff;cursor:pointer;text-decoration:none;display:inline-block;font-weight:900;font-size:13px}
+    .btn:hover{background:#4338ca}
+    .btn-sm{padding:4px 8px;font-size:12px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#f9fafb;color:#6b7280;font-weight:900;padding:10px 12px;text-align:left;border-bottom:2px solid #e5e7eb;white-space:nowrap}
+    td{padding:10px 12px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+    tr:hover td{background:#fafafa}
+    .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:900}
+    .p-blue{background:#e0f2fe;color:#075985}
+    .p-green{background:#dcfce7;color:#166534}
+    .p-yellow{background:#fef3c7;color:#92400e}
+    .p-purple{background:#f3e8ff;color:#7e22ce}
+    .alert{padding:12px 16px;border-radius:10px;margin-bottom:14px;font-size:14px}
+    .alert-success{background:#d4edda;color:#155724;border-left:4px solid #28a745}
+    .org-chart{border-left:3px solid #e5e7eb;padding-left:20px;margin-left:10px}
+    .dept-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:12px}
+    .dept-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .dept-name{font-weight:900;color:#1f2937}
+    .user-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;margin:2px}
+    .mgr-badge{background:#fbbf24;color:#000;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:900}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div style="font-weight:900">🏢 部門與主管管理</div>
+    <div>
+      <a href="/">首頁</a>
+      <a href="/cases">案場總覽</a>
+      <a href="/admin/users">👥 帳號管理</a>
+      <a href="/admin/audit">稽核紀錄</a>
+      <a href="/logout">登出</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="grid grid-2">
+      <!-- 左側：組織架構 -->
+      <div class="card">
+        <h1>🏢 集團組織架構</h1>
+        <div class="muted" style="margin-bottom:16px">點擊部門名稱可編輯主管設定</div>
+        
+        {% for dept, members in org_structure.items() %}
+        <div class="dept-box">
+          <div class="dept-header">
+            <span class="dept-name">{{ dept }}</span>
+            <span class="pill p-blue">{{ members|length }}人</span>
+          </div>
+          <div style="margin-bottom:8px">
+            {% for member_id in members %}
+              {% set user = users.get(member_id, {}) %}
+              {% set is_mgr = user.get('role') == 'manager' %}
+              <span class="user-tag">
+                {% if is_mgr %}<span class="mgr-badge">👑 主管</span>{% endif %}
+                {{ user.get('name', member_id) }}
+              </span>
+            {% endfor %}
+          </div>
+          {% if managers.get(dept) %}
+          <div class="muted" style="font-size:12px;border-top:1px solid #e5e7eb;padding-top:8px;margin-top:8px">
+            <strong>主管：</strong>{{ managers[dept].name }}
+            {% if managers[dept].manage_users %}
+            <br/><strong>管理員工：</strong>{{ managers[dept].manage_users|join(', ') }}
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- 右側：主管設定 -->
+      <div class="card">
+        <h1>👑 主管權限設定</h1>
+        <div class="muted" style="margin-bottom:16px">設定中間主管可管理的部門與員工</div>
+        
+        <form method="POST" action="/admin/departments/update-manager" style="margin-bottom:20px">
+          <div class="row" style="margin-bottom:12px">
+            <div>
+              <div class="muted">選擇主管</div>
+              <select name="manager_id" required style="width:200px">
+                <option value="">請選擇...</option>
+                {% for uid, user in users.items() %}
+                  {% if user.get('role') == 'manager' %}
+                  <option value="{{ uid }}">{{ user.name }} ({{ user.department }})</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+            <div style="align-self:flex-end">
+              <button class="btn" type="button" onclick="loadManagerSettings()">載入設定</button>
+            </div>
+          </div>
+          
+          <div id="manager-settings" style="display:none">
+            <div class="row" style="margin-bottom:12px">
+              <div>
+                <div class="muted">可管理部門</div>
+                <select name="manage_departments" multiple size="4" style="width:200px">
+                  {% for dept in org_structure.keys() %}
+                  <option value="{{ dept }}">{{ dept }}</option>
+                  {% endfor %}
+                </select>
+                <div class="muted" style="font-size:11px;margin-top:4px">Ctrl+Click 多選</div>
+              </div>
+              <div>
+                <div class="muted">可管理員工（跨部門）</div>
+                <select name="manage_users" multiple size="4" style="width:200px">
+                  {% for uid, user in users.items() %}
+                    {% if user.get('role') == 'employee' %}
+                    <option value="{{ uid }}">{{ user.name }} ({{ user.department }})</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <button class="btn" type="submit">儲存設定</button>
+          </div>
+        </form>
+
+        <h2>權限說明</h2>
+        <div class="muted" style="line-height:1.8">
+          <div>✅ <strong>admin：</strong>可見全部部門與員工</div>
+          <div>✅ <strong>manager：</strong>可見所屬部門 + 指定管理部門的所有員工</div>
+          <div>✅ <strong>employee：</strong>只看自己</div>
+        </div>
+
+        <h2 style="margin-top:20px">績效管考介面</h2>
+        <div class="muted">
+          此模組已預留介面，可與未來績效管考系統連動：
+          <ul style="margin:8px 0 0 20px;line-height:1.8">
+            <li>部門別績效統計</li>
+            <li>個人績效追蹤</li>
+            <li>主管管理成效分析</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 權限範圍預覽 -->
+    <div class="card">
+      <h1>🔍 權限範圍預覽</h1>
+      <div class="muted" style="margin-bottom:16px">查看各角色可查看的員工範圍</div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>角色</th>
+            <th>可查看員工</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pill p-purple">admin</span></td>
+            <td>{{ users|length }}人</td>
+            <td>全部啟用的員工</td>
+          </tr>
+          {% for dept, members in org_structure.items() %}
+          <tr>
+            <td><span class="pill p-blue">{{ dept }}</span></td>
+            <td>{{ members|length }}人</td>
+            <td>{{ dept }}的所有員工</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function loadManagerSettings() {
+      const mgrId = document.querySelector('select[name="manager_id"]').value;
+      if (!mgrId) {
+        alert('請先選擇主管');
+        return;
+      }
+      
+      // TODO: 載入主管設定（需要後端 API 支援）
+      document.getElementById('manager-settings').style.display = 'block';
+      alert('請手動設定管理部門與員工（此功能需後端 API 支援）');
+    }
+  </script>
+</body>
+</html>

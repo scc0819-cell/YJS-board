@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-03-01T02:49:33.799308",
+  "total_issues": 4,
+  "issues": [
+    {
+      "category": "資料庫",
+      "issue": "缺少必要表格：['users']",
+      "severity": "critical",
+      "suggestion": "執行資料庫初始化腳本"
+    },
+    {
+      "category": "腳本系統",
+      "issue": "缺少必要腳本：['create_ai_views.py']",
+      "severity": "medium",
+      "suggestion": "複製腳本到 /mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_server/scripts"
+    },
+    {
+      "category": "安全性",
+      "issue": "可能缺少登入失敗鎖定機制",
+      "severity": "high",
+      "suggestion": "實作 5 次失敗鎖定 15 分鐘"
+    },
+    {
+      "category": "備份系統",
+      "issue": "備份目錄不存在",
+      "severity": "low",
+      "suggestion": "建立 attachments_backup 目錄"
+    }
+  ]
+}

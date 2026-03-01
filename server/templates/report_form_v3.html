@@ -100,6 +100,11 @@
         .risk-opt[data-val="low"] { color: #28a745; }
         .risk-opt.active { border-width: 3px; background: #f8f9fa; }
     </style>
+
+    <script>
+    // 案場資料（從後端載入）
+    const CASE_LIST = {{ cases_json | safe }};
+    </script>
 </head>
 <body>
     <div class="topbar">
@@ -165,7 +170,13 @@
 
             <!-- 附件 -->
             <div class="section">
-                <div class="section-title">📎 五、附件上傳</div>
+                <div class="section-title">📎 五、附件上傳（可選）
+<div style="background:#f0f9ff; padding:12px; border-radius:8px; margin:10px 0; border-left:4px solid #0284c7">
+    <strong style="color:#0369a1">✅ 支援格式：</strong>jpg, png, gif, pdf, xlsx, docx, pptx, txt, zip<br/>
+    <strong style="color:#0369a1">⚠️ 大小限制：</strong>每個檔案最大 10MB<br/>
+    <strong style="color:#0369a1">🔒 安全檢查：</strong>自動進行副檔名驗證與病毒掃描
+</div>
+<span style="font-size:12px;color:#888">支援拖曳上傳，或點擊選擇檔案<br/>允許類型：jpg, png, pdf, xlsx, docx | 最大 10MB</span></div>
                 <div class="alert-warning" style="margin-bottom:14px">
                     建議：照片請壓縮後上傳。若檔案較大，可先放雲端/NAS，並在下方「附件說明」貼連結。
                 </div>
@@ -208,13 +219,18 @@ const CASE_OPTIONS = CASES.map(c => `<option value="${c.id}">${c.name}</option>`
 
 let workItems = [], planItems = [], riskItems = [];
 
-// ========== 案場選單 ==========
-function caseSelect(name) {
-    return `<select name="${name}" onchange="syncData()" style="background:white">
-        <option value="">-- 選擇案場 --</option>
-        ${CASE_OPTIONS}
-        <option value="其他">其他（手動輸入）</option>
-    </select>`;
+// ========== 案場選單（核心） ==========
+function caseSelect(name, currentValue = '') {
+    return `
+    <div style="margin-bottom:8px">
+        <label style="display:block;margin-bottom:4px;font-weight:600;color:#1e3a5f">🏭 案場名稱 *</label>
+        <select name="${name}" onchange="syncData()" style="background:white;width:100%;padding:8px;border:2px solid #0ea5e9;border-radius:6px;font-size:14px">
+            <option value="">-- 請選擇案場 --</option>
+            ${CASE_OPTIONS}
+            <option value="其他" ${currentValue==='其他'?'selected':''}>其他（非案場相關事項）</option>
+        </select>
+        <small style="color:#666;display:block;margin-top:4px">💡 所有工作都應圍繞案場，除非是申請獎項、辦公室清潔等非案場事項才選擇「其他」</small>
+    </div>`;
 }
 
 // ========== 今日工作 ==========
@@ -228,18 +244,44 @@ function addWork(data = {}) {
         <span class="item-num">工作 #${workItems.length}</span>
         <button type="button" class="btn-remove" onclick="removeItem('work',${id})">✕ 移除</button>
         <div class="form-row">
-            <div class="form-group"><label>案場</label>${caseSelect(`w_case_${id}`)}</div>
-            <div class="form-group"><label>工作類型</label>
-                <select name="w_type_${id}" onchange="syncData()">
-                    <option>現勘</option><option>設計</option><option>施工</option>
-                    <option>驗收</option><option>會議</option><option>行政</option><option>其他</option>
+            <div class="form-group" style="flex:2">${caseSelect(`w_case_${id}`, data.case_id||'')}</div>
+            <div class="form-group" style="flex:1">
+                <label style="display:block;margin-bottom:4px;font-weight:600;color:#1e3a5f">📋 工作類型</label>
+                <select name="w_type_${id}" onchange="syncData()" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px">
+                    <option value="">-- 選擇類型 --</option>
+                    <optgroup label="🏗️ 電廠建置階段">
+                        <option value="現勘">📍 現勘評估</option>
+                        <option value="設計">📐 規劃設計</option>
+                        <option value="採購">🛒 物料採購</option>
+                        <option value="施工">🔨 施工建置</option>
+                        <option value="測試">⚡ 測試調試</option>
+                        <option value="驗收">✅ 驗收作業</option>
+                    </optgroup>
+                    <optgroup label="🔧 維運管理">
+                        <option value="維運">🔍 維運管理</option>
+                        <option value="檢修">🔧 故障檢修</option>
+                        <option value="監控">📊 監控分析</option>
+                    </optgroup>
+                    <optgroup label="💼 商務行政">
+                        <option value="融資">💰 銀行融資</option>
+                        <option value="撥款">💵 撥款作業</option>
+                        <option value="法律">⚖️ 法律訴訟</option>
+                        <option value="會議">👥 會議協調</option>
+                        <option value="行政">📝 行政事務</option>
+                        <option value="公關">🎉 公關活動</option>
+                    </optgroup>
+                    <optgroup label="📦 其他">
+                        <option value="其他">📦 其他（非案場）</option>
+                    </optgroup>
                 </select>
             </div>
-            <div class="form-group"><label>進度 (%)</label>
-                <input type="number" name="w_prog_${id}" value="${data.progress||0}" min="0" max="100" oninput="syncData()">
+            <div class="form-group" style="flex:1">
+                <label style="display:block;margin-bottom:4px;font-weight:600;color:#1e3a5f">📊 進度 (%)</label>
+                <input type="number" name="w_prog_${id}" value="${data.progress||0}" min="0" max="100" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px" oninput="syncData()">
             </div>
-            <div class="form-group"><label>工時</label>
-                <input type="number" name="w_hours_${id}" value="${data.hours||0}" min="0" max="24" step="0.5" oninput="syncData()">
+            <div class="form-group" style="flex:1">
+                <label style="display:block;margin-bottom:4px;font-weight:600;color:#1e3a5f">⏱️ 工時</label>
+                <input type="number" name="w_hours_${id}" value="${data.hours||0}" min="0" max="24" step="0.5" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px" oninput="syncData()">
             </div>
         </div>
         <div class="form-group"><label>工作內容 *</label>
@@ -493,5 +535,118 @@ async function loadDraft() {
 
 loadDraft();
 </script>
+
+    <script>
+    // 草稿自動儲存（每 30 秒）
+    let draftTimer = null;
+    function saveDraft() {
+        const formData = {
+            work: [],
+            plan: [],
+            risk: []
+        };
+        // 儲存工作項目
+        document.querySelectorAll('.work-item').forEach(card => {
+            formData.work.push({
+                case_id: card.querySelector('[name^="w_case_"]')?.value || '',
+                work_type: card.querySelector('[name^="w_type_"]')?.value || '',
+                progress: card.querySelector('[name^="w_progress_"]')?.value || '',
+                hours: card.querySelector('[name^="w_hours_"]')?.value || '',
+                work_content: card.querySelector('[name^="w_content_"]')?.value || '',
+                output: card.querySelector('[name^="w_output_"]')?.value || '',
+            });
+        });
+        localStorage.setItem('daily_report_draft', JSON.stringify(formData));
+        
+        // 顯示儲存提示
+        const status = document.querySelector('.draft-status');
+        if (status) {
+            status.textContent = '✓ 已自動儲存';
+            status.classList.add('saved');
+            setTimeout(() => {
+                status.textContent = '草稿';
+                status.classList.remove('saved');
+            }, 2000);
+        }
+    }
+    
+    // 載入草稿
+    function loadDraft() {
+        const saved = localStorage.getItem('daily_report_draft');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                console.log('載入草稿:', data);
+                // 可以在這裡自動回填表單
+            } catch(e) {
+                console.error('草稿載入失敗', e);
+            }
+        }
+    }
+    
+    // 啟動自動儲存
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDraft();
+        draftTimer = setInterval(saveDraft, 30000); // 30 秒
+        
+        // 提交前清除草稿
+        document.querySelector('form').addEventListener('submit', () => {
+            localStorage.removeItem('daily_report_draft');
+            if (draftTimer) clearInterval(draftTimer);
+        });
+    });
+    </script>
+
+    <script>
+    // 動態更新所有案場下拉選單
+    function updateCaseSelects() {
+        document.querySelectorAll('.case-select').forEach(select => {
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">請選擇案場</option>' + 
+                CASE_LIST.map(c => 
+                    `<option value="${c.case_id}" ${currentValue===c.case_id?'selected':''}>${c.case_code || c.case_id} - ${c.name}</option>`
+                ).join('');
+        });
+    }
+    
+    // 頁面載入時更新
+    document.addEventListener('DOMContentLoaded', () => {
+        updateCaseSelects();
+    });
+    </script>
+
+    <script>
+    // 顯示選擇的檔案大小
+    function showFileSize(input, displayId) {
+        const display = document.getElementById(displayId);
+        if (!display) return;
+        
+        const files = input.files;
+        if (files.length === 0) {
+            display.textContent = '';
+            return;
+        }
+        
+        let totalSize = 0;
+        let overLimit = false;
+        const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+        
+        for (let i = 0; i < files.length; i++) {
+            totalSize += files[i].size;
+            if (files[i].size > MAX_SIZE) {
+                overLimit = true;
+            }
+        }
+        
+        const sizeMB = (totalSize / 1024 / 1024).toFixed(2);
+        const fileCount = files.length;
+        
+        if (overLimit) {
+            display.innerHTML = `<span style="color:#dc3545">⚠️ 有檔案超過 10MB 限制！</span> (${fileCount} 個檔案，共 ${sizeMB} MB)`;
+        } else {
+            display.innerHTML = `<span style="color:#28a745">✓</span> ${fileCount} 個檔案，共 ${sizeMB} MB`;
+        }
+    }
+    </script>
 </body>
 </html>

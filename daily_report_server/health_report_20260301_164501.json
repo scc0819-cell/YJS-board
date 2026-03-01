@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-03-01T16:45:01.356133",
+  "status": "issues_found",
+  "total_checks": 12,
+  "issues_found": 1,
+  "issues_fixed": 0,
+  "critical_issues": 0,
+  "verified_items": 5,
+  "issues": [
+    "員工資料 檢查失敗：name 'employee_count' is not defined"
+  ],
+  "fixed_issues": []
+}

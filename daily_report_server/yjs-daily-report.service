@@ -1,0 +1,16 @@
+[Unit]
+Description=昱金生能源員工日報系統
+After=network.target
+
+[Service]
+Type=simple
+User=yjsclaw
+WorkingDirectory=/home/yjsclaw/.openclaw/workspace/daily_report_server
+ExecStart=/usr/bin/python3 app.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/tmp/server.log
+StandardError=append:/tmp/server_error.log
+
+[Install]
+WantedBy=multi-user.target

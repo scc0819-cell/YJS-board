@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-03-01T13:30:39.053790",
+  "status": "issues_found",
+  "total_checks": 0,
+  "issues_found": 1,
+  "issues_fixed": 0,
+  "critical_issues": 0,
+  "verified_items": 4,
+  "issues": [
+    "頁面 登入頁 (/login) HTTP 302"
+  ],
+  "fixed_issues": []
+}

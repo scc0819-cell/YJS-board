@@ -1,0 +1,206 @@
+{
+  "timestamp": "2026-03-01T02:50:42.148115",
+  "total_issues": 26,
+  "by_category": {
+    "員工系統": 6,
+    "附件系統": 2,
+    "資料庫": 4,
+    "API": 2,
+    "UX": 1,
+    "監控": 3,
+    "效能": 1,
+    "合規": 2,
+    "災難恢復": 3,
+    "文件": 2
+  },
+  "by_severity": {
+    "high": 5,
+    "medium": 13,
+    "low": 7,
+    "critical": 1
+  },
+  "issues": [
+    {
+      "category": "員工系統",
+      "issue": "缺少密碼強度政策",
+      "severity": "high",
+      "suggestion": "實作密碼政策：至少 8 碼，含大小寫、數字、特殊字",
+      "detail": "目前預設密碼為 1234，過於簡單"
+    },
+    {
+      "category": "員工系統",
+      "issue": "缺少密碼過期機制",
+      "severity": "medium",
+      "suggestion": "實作 90 天強制更換密碼",
+      "detail": "目前密碼永久有效，有安全風險"
+    },
+    {
+      "category": "員工系統",
+      "issue": "缺少員工離職處理流程",
+      "severity": "medium",
+      "suggestion": "實作員工離職時帳號停用和任務轉移",
+      "detail": "離職員工帳號可能仍可使用"
+    },
+    {
+      "category": "員工系統",
+      "issue": "主管 陳明德 未設定管理員工",
+      "severity": "low",
+      "suggestion": "設定 manage_users 清單",
+      "detail": "主管權限可能不完整"
+    },
+    {
+      "category": "員工系統",
+      "issue": "主管 陳谷濱 未設定管理員工",
+      "severity": "low",
+      "suggestion": "設定 manage_users 清單",
+      "detail": "主管權限可能不完整"
+    },
+    {
+      "category": "員工系統",
+      "issue": "主管 張億峖 未設定管理員工",
+      "severity": "low",
+      "suggestion": "設定 manage_users 清單",
+      "detail": "主管權限可能不完整"
+    },
+    {
+      "category": "附件系統",
+      "issue": "缺少檔案內容驗證",
+      "severity": "medium",
+      "suggestion": "使用 python-magic 驗證真實檔案類型",
+      "detail": "可能有人上傳假副檔名的惡意檔案"
+    },
+    {
+      "category": "附件系統",
+      "issue": "缺少儲存空間監控",
+      "severity": "medium",
+      "suggestion": "實作磁碟空間監控和警告",
+      "detail": "磁碟滿了會導致系統失敗"
+    },
+    {
+      "category": "資料庫",
+      "issue": "缺少效能索引：['idx_reports_date', 'idx_risks_status', 'idx_tasks_status']",
+      "severity": "medium",
+      "suggestion": "建立索引提升查詢效能",
+      "detail": "大量數據時查詢會變慢"
+    },
+    {
+      "category": "資料庫",
+      "issue": "外鍵約束未啟用",
+      "severity": "medium",
+      "suggestion": "啟用 PRAGMA foreign_keys = ON",
+      "detail": "可能產生孤兒記錄"
+    },
+    {
+      "category": "資料庫",
+      "issue": "users 表不存在",
+      "severity": "critical",
+      "suggestion": "執行資料庫初始化腳本",
+      "detail": "資料庫未正確初始化"
+    },
+    {
+      "category": "資料庫",
+      "issue": "缺少審計日誌表",
+      "severity": "high",
+      "suggestion": "建立 audit_logs 表記錄所有操作",
+      "detail": "無法追溯誰做了什麼"
+    },
+    {
+      "category": "API",
+      "issue": "缺少 API 文件",
+      "severity": "low",
+      "suggestion": "建立 Swagger 或 ReDoc 文件",
+      "detail": "開發者難以使用 API"
+    },
+    {
+      "category": "API",
+      "issue": "缺少 API 速率限制",
+      "severity": "medium",
+      "suggestion": "實作速率限制防止濫用",
+      "detail": "可能被惡意大量呼叫"
+    },
+    {
+      "category": "UX",
+      "issue": "缺少全域搜尋功能",
+      "severity": "medium",
+      "suggestion": "實作搜尋功能（案件、日報、風險、任務）",
+      "detail": "用戶難以快速找到資料"
+    },
+    {
+      "category": "監控",
+      "issue": "缺少錯誤通知機制",
+      "severity": "high",
+      "suggestion": "實作錯誤發生時發送 Email 或 Telegram 通知",
+      "detail": "系統錯誤時管理員不知情"
+    },
+    {
+      "category": "監控",
+      "issue": "缺少日誌輪替機制",
+      "severity": "low",
+      "suggestion": "實作日誌輪替防止日誌檔過大",
+      "detail": "日誌檔可能佔滿磁碟"
+    },
+    {
+      "category": "監控",
+      "issue": "備份腳本缺少驗證步驟",
+      "severity": "medium",
+      "suggestion": "增加備份後驗證（解壓縮測試）",
+      "detail": "備份檔可能損毀無法還原"
+    },
+    {
+      "category": "效能",
+      "issue": "缺少資料庫連接池",
+      "severity": "medium",
+      "suggestion": "使用 SQLAlchemy QueuePool 或自訂連接池",
+      "detail": "高併發時效能差"
+    },
+    {
+      "category": "合規",
+      "issue": "缺少個資保護政策",
+      "severity": "medium",
+      "suggestion": "實作個資查詢、修改、刪除功能",
+      "detail": "可能違反個資法"
+    },
+    {
+      "category": "合規",
+      "issue": "缺少資料保留政策",
+      "severity": "low",
+      "suggestion": "定義資料保留期限（如：日報保留 5 年）",
+      "detail": "可能保留過多不必要的資料"
+    },
+    {
+      "category": "災難恢復",
+      "issue": "缺少還原腳本",
+      "severity": "high",
+      "suggestion": "建立 restore_from_backup.sh 腳本",
+      "detail": "備份存在但無法快速還原"
+    },
+    {
+      "category": "災難恢復",
+      "issue": "缺少災難恢復計畫文件",
+      "severity": "medium",
+      "suggestion": "撰寫災難恢復計畫（RTO/RPO、步驟、聯絡人）",
+      "detail": "災難發生時手忙腳亂"
+    },
+    {
+      "category": "災難恢復",
+      "issue": "缺少異地備份機制",
+      "severity": "high",
+      "suggestion": "實作異地備份（NAS + 雲端）",
+      "detail": "本地災難（火災、水災）會導致資料全毀"
+    },
+    {
+      "category": "文件",
+      "issue": "缺少必要文件：['README.md', 'INSTALL.md', 'USER_GUIDE.md', 'ADMIN_GUIDE.md', 'API_REFERENCE.md', 'TROUBLESHOOTING.md']",
+      "severity": "medium",
+      "suggestion": "建立文件到 /home/yjsclaw/.openclaw/workspace/docs",
+      "detail": "用戶和管理員難以使用系統"
+    },
+    {
+      "category": "文件",
+      "issue": "程式碼註解不足（4.5%）",
+      "severity": "low",
+      "suggestion": "增加程式碼註解，目標 10% 以上",
+      "detail": "維護困難"
+    }
+  ]
+}

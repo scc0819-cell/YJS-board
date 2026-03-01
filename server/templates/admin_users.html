@@ -68,9 +68,19 @@
           <input name="name" placeholder="例如：王小明" style="width:180px" required />
         </div>
         <div>
+          <div>
+          <div class="muted">工號</div>
+          <input name="employee_code" placeholder="例如：EMP-003" style="width:160px" pattern="EMP-[0-9]{3}" title="格式：EMP-XXX" />
+          <div class="muted" style="font-size:11px;margin-top:4px">格式：EMP-XXX</div>
+        </div>
+        <div class="muted">部門</div>
+          <input name="department" placeholder="例如：行政部" style="width:160px" />
+        </div>
+        <div>
           <div class="muted">角色</div>
           <select name="role">
             <option value="employee" selected>employee</option>
+            <option value="manager">manager</option>
             <option value="admin">admin</option>
           </select>
         </div>
@@ -88,8 +98,11 @@
         <thead>
           <tr>
             <th>ID</th>
+            <th>工號</th>
+            <th>部門</th>
             <th>姓名</th>
             <th>角色</th>
+            <th>部門</th>
             <th>狀態</th>
             <th>臨時密碼</th>
             <th>更新</th>
@@ -107,8 +120,12 @@
             <td>
                 <select name="role">
                   <option value="employee" {% if u.role=='employee' %}selected{% endif %}>employee</option>
+                  <option value="manager" {% if u.role=='manager' %}selected{% endif %}>manager</option>
                   <option value="admin" {% if u.role=='admin' %}selected{% endif %}>admin</option>
                 </select>
+            </td>
+            <td>
+                <input name="department" value="{{ u.department or '未分類' }}" style="width:140px" />
             </td>
             <td>
                 {% if u.enabled %}

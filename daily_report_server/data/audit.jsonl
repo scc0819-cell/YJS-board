@@ -1,0 +1,45 @@
+{"ts": 1772271316, "time": "2026-02-28 17:35:16", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772271316, "time": "2026-02-28 17:35:16", "event": "case_status_update", "actor_id": "admin", "target_id": "馬偕護專", "ip": "127.0.0.1", "path": "/cases/馬偕護專", "detail": {"stage": "設計", "percent": 35.0}}
+{"ts": 1772271332, "time": "2026-02-28 17:35:32", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772271332, "time": "2026-02-28 17:35:32", "event": "report_submit", "actor_id": "admin", "target_id": "chen_ming_de", "ip": "127.0.0.1", "path": "/report/chen_ming_de", "detail": {"date": "2026-02-28", "edit": true}}
+{"ts": 1772271342, "time": "2026-02-28 17:35:42", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772271342, "time": "2026-02-28 17:35:42", "event": "risk_update", "actor_id": "admin", "target_id": "1", "ip": "127.0.0.1", "path": "/risks/update/1", "detail": {"status": "in_progress", "owner": "chen_ming_de", "due": "2026-03-03", "cat": "工期", "level": "high"}}
+{"ts": 1772271596, "time": "2026-02-28 17:39:56", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772271596, "time": "2026-02-28 17:39:56", "event": "task_create", "actor_id": "admin", "target_id": "馬偕護專", "ip": "127.0.0.1", "path": "/tasks/create", "detail": {"title": "測試：確認送審補件期限", "owner": "chen_ming_de", "due": "2026-03-03", "priority": "high"}}
+{"ts": 1772271596, "time": "2026-02-28 17:39:56", "event": "task_update", "actor_id": "admin", "target_id": "1", "ip": "127.0.0.1", "path": "/tasks/update/1", "detail": {"status": "closed", "owner": "chen_ming_de", "due": "2026-03-03", "priority": "high"}}
+{"ts": 1772271650, "time": "2026-02-28 17:40:50", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772277574, "time": "2026-02-28 19:19:34", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772277588, "time": "2026-02-28 19:19:48", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772277588, "time": "2026-02-28 19:19:48", "event": "report_submit", "actor_id": "admin", "target_id": "li_ya_ting", "ip": "127.0.0.1", "path": "/report/li_ya_ting", "detail": {"date": "2026-02-28", "edit": true}}
+{"ts": 1772277753, "time": "2026-02-28 19:22:33", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772277765, "time": "2026-02-28 19:22:45", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772279132, "time": "2026-02-28 19:45:32", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772281760, "time": "2026-02-28 20:29:20", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772281760, "time": "2026-02-28 20:29:20", "event": "case_alias_add", "actor_id": "admin", "target_id": "3/3 掛錶", "ip": "127.0.0.1", "path": "/admin/cases/alias/add", "detail": {"case_id": "仁豐國小"}}
+{"ts": 1772281796, "time": "2026-02-28 20:29:56", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772281796, "time": "2026-02-28 20:29:56", "event": "report_submit", "actor_id": "admin", "target_id": "chen_ming_de", "ip": "127.0.0.1", "path": "/report/chen_ming_de", "detail": {"date": "2026-02-28", "edit": true}}
+{"ts": 1772283469, "time": "2026-02-28 20:57:49", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772283469, "time": "2026-02-28 20:57:49", "event": "report_submit", "actor_id": "admin", "target_id": "chen_ming_de", "ip": "127.0.0.1", "path": "/report/chen_ming_de", "detail": {"date": "2026-02-28", "edit": true}}
+{"ts": 1772287423, "time": "2026-02-28 22:03:43", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "172.29.0.1", "path": "/login", "detail": {}}
+{"ts": 1772287466, "time": "2026-02-28 22:04:26", "event": "password_change", "actor_id": "admin", "target_id": "", "ip": "172.29.0.1", "path": "/change-password", "detail": {}}
+{"ts": 1772287469, "time": "2026-02-28 22:04:29", "event": "logout", "actor_id": "admin", "target_id": "", "ip": "172.29.0.1", "path": "/logout", "detail": {}}
+{"ts": 1772287481, "time": "2026-02-28 22:04:41", "event": "login_fail", "actor_id": "admin", "target_id": "", "ip": "172.29.0.1", "path": "/login", "detail": {"fail_count": 1, "locked": false}}
+{"ts": 1772287490, "time": "2026-02-28 22:04:50", "event": "login_fail", "actor_id": "scc0819", "target_id": "", "ip": "172.29.0.1", "path": "/login", "detail": {"fail_count": 1, "locked": false}}
+{"ts": 1772287530, "time": "2026-02-28 22:05:30", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "172.29.0.1", "path": "/login", "detail": {}}
+{"ts": 1772301259, "time": "2026-03-01 01:54:19", "event": "login_fail", "actor_id": "", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {"fail_count": 1, "locked": false}}
+{"ts": 1772301282, "time": "2026-03-01 01:54:42", "event": "login_fail", "actor_id": "", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {"fail_count": 2, "locked": false}}
+{"ts": 1772301287, "time": "2026-03-01 01:54:47", "event": "login_fail", "actor_id": "", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {"fail_count": 3, "locked": false}}
+{"ts": 1772301338, "time": "2026-03-01 01:55:38", "event": "login_fail", "actor_id": "", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {"fail_count": 4, "locked": false}}
+{"ts": 1772301370, "time": "2026-03-01 01:56:10", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772301406, "time": "2026-03-01 01:56:46", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772301474, "time": "2026-03-01 01:57:54", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772301670, "time": "2026-03-01 02:01:10", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772301670, "time": "2026-03-01 02:01:10", "event": "login_success", "actor_id": "chen_ming_de", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772302072, "time": "2026-03-01 02:07:52", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772302479, "time": "2026-03-01 02:14:39", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772302722, "time": "2026-03-01 02:18:42", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772303090, "time": "2026-03-01 02:24:50", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772303460, "time": "2026-03-01 02:31:00", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772303861, "time": "2026-03-01 02:37:41", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "127.0.0.1", "path": "/login", "detail": {}}
+{"ts": 1772305325, "time": "2026-03-01 03:02:05", "event": "login_success", "actor_id": "admin", "target_id": "", "ip": "172.29.0.1", "path": "/login", "detail": {}}
+{"ts": 1772311649, "time": "2026-03-01 04:47:29", "event": "logout", "actor_id": "admin", "target_id": "", "ip": "172.29.0.1", "path": "/logout", "detail": {}}

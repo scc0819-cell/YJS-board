@@ -1,0 +1,502 @@
+[
+  {
+    "case_id": "01-1001",
+    "case_name": "測試案場 1號",
+    "capacity_kw": 110,
+    "location": "彰化縣測試區 1路",
+    "status": "active",
+    "commissioning_date": "2021-02-01",
+    "email_count": 11,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "02-1002",
+    "case_name": "測試案場 2號",
+    "capacity_kw": 120,
+    "location": "彰化縣測試區 2路",
+    "status": "active",
+    "commissioning_date": "2022-03-01",
+    "email_count": 12,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "03-1003",
+    "case_name": "測試案場 3號",
+    "capacity_kw": 130,
+    "location": "彰化縣測試區 3路",
+    "status": "active",
+    "commissioning_date": "2023-04-01",
+    "email_count": 13,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "04-1004",
+    "case_name": "測試案場 4號",
+    "capacity_kw": 140,
+    "location": "彰化縣測試區 4路",
+    "status": "active",
+    "commissioning_date": "2024-05-01",
+    "email_count": 14,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "05-1005",
+    "case_name": "測試案場 5號",
+    "capacity_kw": 150,
+    "location": "彰化縣測試區 5路",
+    "status": "active",
+    "commissioning_date": "2020-06-01",
+    "email_count": 15,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "06-1006",
+    "case_name": "測試案場 6號",
+    "capacity_kw": 160,
+    "location": "彰化縣測試區 6路",
+    "status": "active",
+    "commissioning_date": "2021-07-01",
+    "email_count": 16,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "07-1007",
+    "case_name": "測試案場 7號",
+    "capacity_kw": 170,
+    "location": "彰化縣測試區 7路",
+    "status": "active",
+    "commissioning_date": "2022-08-01",
+    "email_count": 17,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "08-1008",
+    "case_name": "測試案場 8號",
+    "capacity_kw": 180,
+    "location": "彰化縣測試區 8路",
+    "status": "active",
+    "commissioning_date": "2023-09-01",
+    "email_count": 18,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "09-1009",
+    "case_name": "測試案場 9號",
+    "capacity_kw": 190,
+    "location": "彰化縣測試區 9路",
+    "status": "active",
+    "commissioning_date": "2024-01-01",
+    "email_count": 19,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "10-1010",
+    "case_name": "測試案場 10號",
+    "capacity_kw": 200,
+    "location": "彰化縣測試區 10路",
+    "status": "active",
+    "commissioning_date": "2020-02-01",
+    "email_count": 20,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "11-1011",
+    "case_name": "",
+    "capacity_kw": 210,
+    "location": "彰化縣測試區 11路",
+    "status": "active",
+    "commissioning_date": "2021-03-01",
+    "email_count": 21,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "12-1012",
+    "case_name": "",
+    "capacity_kw": 220,
+    "location": "彰化縣測試區 12路",
+    "status": "active",
+    "commissioning_date": "2022-04-01",
+    "email_count": 22,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "13-1013",
+    "case_name": "",
+    "capacity_kw": 230,
+    "location": "彰化縣測試區 13路",
+    "status": "active",
+    "commissioning_date": "2023-05-01",
+    "email_count": 23,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "14-1014",
+    "case_name": "",
+    "capacity_kw": 240,
+    "location": "彰化縣測試區 14路",
+    "status": "active",
+    "commissioning_date": "2024-06-01",
+    "email_count": 24,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "15-1015",
+    "case_name": "",
+    "capacity_kw": 250,
+    "location": "彰化縣測試區 15路",
+    "status": "active",
+    "commissioning_date": "2020-07-01",
+    "email_count": 25,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "16-1016",
+    "case_name": "",
+    "capacity_kw": 260,
+    "location": "彰化縣測試區 16路",
+    "status": "active",
+    "commissioning_date": "2021-08-01",
+    "email_count": 26,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "17-1017",
+    "case_name": "",
+    "capacity_kw": 270,
+    "location": "彰化縣測試區 17路",
+    "status": "active",
+    "commissioning_date": "2022-09-01",
+    "email_count": 27,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "18-1018",
+    "case_name": "",
+    "capacity_kw": 280,
+    "location": "彰化縣測試區 18路",
+    "status": "active",
+    "commissioning_date": "2023-01-01",
+    "email_count": 28,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "19-1019",
+    "case_name": "",
+    "capacity_kw": 290,
+    "location": "彰化縣測試區 19路",
+    "status": "active",
+    "commissioning_date": "2024-02-01",
+    "email_count": 29,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "20-1020",
+    "case_name": "",
+    "capacity_kw": 300,
+    "location": "彰化縣測試區 20路",
+    "status": "active",
+    "commissioning_date": "2020-03-01",
+    "email_count": 30,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "21-1021",
+    "case_name": "",
+    "capacity_kw": 310,
+    "location": "彰化縣測試區 21路",
+    "status": "active",
+    "commissioning_date": "2021-04-01",
+    "email_count": 31,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "22-1022",
+    "case_name": "",
+    "capacity_kw": 320,
+    "location": "彰化縣測試區 22路",
+    "status": "active",
+    "commissioning_date": "2022-05-01",
+    "email_count": 32,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "23-1023",
+    "case_name": "",
+    "capacity_kw": 330,
+    "location": "彰化縣測試區 23路",
+    "status": "active",
+    "commissioning_date": "2023-06-01",
+    "email_count": 33,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "24-1024",
+    "case_name": "",
+    "capacity_kw": 340,
+    "location": "彰化縣測試區 24路",
+    "status": "active",
+    "commissioning_date": "2024-07-01",
+    "email_count": 34,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "25-1025",
+    "case_name": "",
+    "capacity_kw": 350,
+    "location": "彰化縣測試區 25路",
+    "status": "active",
+    "commissioning_date": "2020-08-01",
+    "email_count": 35,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "26-1026",
+    "case_name": "",
+    "capacity_kw": 360,
+    "location": "彰化縣測試區 26路",
+    "status": "active",
+    "commissioning_date": "2021-09-01",
+    "email_count": 36,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "27-1027",
+    "case_name": "",
+    "capacity_kw": 370,
+    "location": "彰化縣測試區 27路",
+    "status": "active",
+    "commissioning_date": "2022-01-01",
+    "email_count": 37,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "28-1028",
+    "case_name": "",
+    "capacity_kw": 380,
+    "location": "彰化縣測試區 28路",
+    "status": "active",
+    "commissioning_date": "2023-02-01",
+    "email_count": 38,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "29-1029",
+    "case_name": "",
+    "capacity_kw": 390,
+    "location": "彰化縣測試區 29路",
+    "status": "active",
+    "commissioning_date": "2024-03-01",
+    "email_count": 39,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "30-1030",
+    "case_name": "",
+    "capacity_kw": 400,
+    "location": "彰化縣測試區 30路",
+    "status": "active",
+    "commissioning_date": "2020-04-01",
+    "email_count": 40,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "31-1031",
+    "case_name": "",
+    "capacity_kw": 410,
+    "location": "彰化縣測試區 31路",
+    "status": "active",
+    "commissioning_date": "2021-05-01",
+    "email_count": 41,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "32-1032",
+    "case_name": "",
+    "capacity_kw": 420,
+    "location": "彰化縣測試區 32路",
+    "status": "active",
+    "commissioning_date": "2022-06-01",
+    "email_count": 42,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "33-1033",
+    "case_name": "",
+    "capacity_kw": 430,
+    "location": "彰化縣測試區 33路",
+    "status": "active",
+    "commissioning_date": "2023-07-01",
+    "email_count": 43,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "34-1034",
+    "case_name": "",
+    "capacity_kw": 440,
+    "location": "彰化縣測試區 34路",
+    "status": "active",
+    "commissioning_date": "2024-08-01",
+    "email_count": 44,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "35-1035",
+    "case_name": "",
+    "capacity_kw": 450,
+    "location": "彰化縣測試區 35路",
+    "status": "active",
+    "commissioning_date": "2020-09-01",
+    "email_count": 45,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "36-1036",
+    "case_name": "",
+    "capacity_kw": 460,
+    "location": "彰化縣測試區 36路",
+    "status": "active",
+    "commissioning_date": "2021-01-01",
+    "email_count": 46,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "37-1037",
+    "case_name": "",
+    "capacity_kw": 470,
+    "location": "彰化縣測試區 37路",
+    "status": "active",
+    "commissioning_date": "2022-02-01",
+    "email_count": 47,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "38-1038",
+    "case_name": "",
+    "capacity_kw": 480,
+    "location": "彰化縣測試區 38路",
+    "status": "active",
+    "commissioning_date": "2023-03-01",
+    "email_count": 48,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "39-1039",
+    "case_name": "",
+    "capacity_kw": 490,
+    "location": "彰化縣測試區 39路",
+    "status": "active",
+    "commissioning_date": "2024-04-01",
+    "email_count": 49,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "40-1040",
+    "case_name": "",
+    "capacity_kw": 500,
+    "location": "彰化縣測試區 40路",
+    "status": "active",
+    "commissioning_date": "2020-05-01",
+    "email_count": 50,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "41-1041",
+    "case_name": "",
+    "capacity_kw": 510,
+    "location": "彰化縣測試區 41路",
+    "status": "active",
+    "commissioning_date": "2021-06-01",
+    "email_count": 51,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "42-1042",
+    "case_name": "",
+    "capacity_kw": 520,
+    "location": "彰化縣測試區 42路",
+    "status": "active",
+    "commissioning_date": "2022-07-01",
+    "email_count": 52,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "43-1043",
+    "case_name": "",
+    "capacity_kw": 530,
+    "location": "彰化縣測試區 43路",
+    "status": "active",
+    "commissioning_date": "2023-08-01",
+    "email_count": 53,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "44-1044",
+    "case_name": "",
+    "capacity_kw": 540,
+    "location": "彰化縣測試區 44路",
+    "status": "active",
+    "commissioning_date": "2024-09-01",
+    "email_count": 54,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "45-1045",
+    "case_name": "",
+    "capacity_kw": 550,
+    "location": "彰化縣測試區 45路",
+    "status": "active",
+    "commissioning_date": "2020-01-01",
+    "email_count": 55,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "46-1046",
+    "case_name": "",
+    "capacity_kw": 560,
+    "location": "彰化縣測試區 46路",
+    "status": "active",
+    "commissioning_date": "2021-02-01",
+    "email_count": 56,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "47-1047",
+    "case_name": "",
+    "capacity_kw": 570,
+    "location": "彰化縣測試區 47路",
+    "status": "active",
+    "commissioning_date": "2022-03-01",
+    "email_count": 57,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "48-1048",
+    "case_name": "",
+    "capacity_kw": 580,
+    "location": "彰化縣測試區 48路",
+    "status": "active",
+    "commissioning_date": "2023-04-01",
+    "email_count": 58,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "49-1049",
+    "case_name": "",
+    "capacity_kw": 590,
+    "location": "彰化縣測試區 49路",
+    "status": "active",
+    "commissioning_date": "2024-05-01",
+    "email_count": 59,
+    "last_report_date": "2026-03-01"
+  },
+  {
+    "case_id": "50-1050",
+    "case_name": "",
+    "capacity_kw": 600,
+    "location": "彰化縣測試區 50路",
+    "status": "active",
+    "commissioning_date": "2020-06-01",
+    "email_count": 60,
+    "last_report_date": "2026-03-01"
+  }
+]

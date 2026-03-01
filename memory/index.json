@@ -1,0 +1,2933 @@
+{
+  "generated_at": "2026-03-01T16:03:20.367337",
+  "total_files": 10,
+  "files": [
+    {
+      "path": "memory/2026-03-01.md",
+      "type": "daily",
+      "date": "2026-03-01",
+      "lines": 1308,
+      "sections": 105,
+      "topics": {
+        "系統": 29,
+        "員工": 33,
+        "問題": 14,
+        "案場": 36,
+        "注意": 2,
+        "決策": 1
+      }
+    },
+    {
+      "path": "memory/2026-03-01-summary.md",
+      "type": "daily",
+      "date": "2026-03-01-summary",
+      "lines": 314,
+      "sections": 25,
+      "topics": {
+        "案場": 14,
+        "問題": 4,
+        "員工": 1,
+        "系統": 2
+      }
+    },
+    {
+      "path": "memory/2026-02-28-0730.md",
+      "type": "daily",
+      "date": "2026-02-28-0730",
+      "lines": 11,
+      "sections": 2,
+      "topics": {}
+    },
+    {
+      "path": "memory/2026-03-01-memory-continuity.md",
+      "type": "daily",
+      "date": "2026-03-01-memory-continuity",
+      "lines": 495,
+      "sections": 40,
+      "topics": {
+        "系統": 9,
+        "問題": 2,
+        "決策": 2,
+        "員工": 1
+      }
+    },
+    {
+      "path": "memory/2026-02-28.md",
+      "type": "daily",
+      "date": "2026-02-28",
+      "lines": 279,
+      "sections": 46,
+      "topics": {
+        "員工": 13,
+        "系統": 18,
+        "決定": 2,
+        "決策": 3,
+        "問題": 4,
+        "案場": 4
+      }
+    },
+    {
+      "path": "memory/2026-03-01-session-startup.md",
+      "type": "daily",
+      "date": "2026-03-01-session-startup",
+      "lines": 13,
+      "sections": 2,
+      "topics": {
+        "員工": 1,
+        "系統": 1
+      }
+    },
+    {
+      "path": "memory/2026-03-01-daily-report-status.md",
+      "type": "daily",
+      "date": "2026-03-01-daily-report-status",
+      "lines": 65,
+      "sections": 2,
+      "topics": {
+        "員工": 1,
+        "案場": 1,
+        "系統": 4,
+        "問題": 2
+      }
+    },
+    {
+      "path": "memory/2026-02-28-0729.md",
+      "type": "daily",
+      "date": "2026-02-28-0729",
+      "lines": 83,
+      "sections": 2,
+      "topics": {
+        "系統": 2,
+        "注意": 1,
+        "問題": 1
+      }
+    },
+    {
+      "path": "memory/knowledge_z_drive.md",
+      "type": "daily",
+      "date": "knowledge_z_drive",
+      "lines": 88,
+      "sections": 6,
+      "topics": {}
+    },
+    {
+      "path": "MEMORY.md",
+      "type": "strategy",
+      "date": "permanent",
+      "lines": 109,
+      "sections": 9,
+      "topics": {
+        "決策": 3,
+        "教訓": 1,
+        "員工": 3,
+        "系統": 3,
+        "案場": 3,
+        "決定": 4
+      }
+    }
+  ],
+  "topic_index": {
+    "系統": [
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 12,
+        "content": "| 編號 | 姓名 | 系統 ID | 角色 |",
+        "section": "管理部（5 人）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 21,
+        "content": "| 編號 | 姓名 | 系統 ID | 角色 |",
+        "section": "工程部（5 人）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 30,
+        "content": "| 編號 | 姓名 | 系統 ID | 角色 |",
+        "section": "維運部（1 人）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 35,
+        "content": "| 編號 | 姓名 | 系統 ID | 角色 |",
+        "section": "行政部（2 人）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 41,
+        "content": "| 編號 | 姓名 | 系統 ID | 角色 |",
+        "section": "設計部（2 人）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 53,
+        "content": "## 🚀 系統建置狀態（2026-03-01 完成）",
+        "section": "🚀 系統建置狀態（2026-03-01 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 56,
+        "content": "- ✅ 董事長報告系統 - `chairman_report.py`",
+        "section": "核心系統（100% 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 57,
+        "content": "- ✅ AI 即時反饋系統 - `ai_feedback_system.py`",
+        "section": "核心系統（100% 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 58,
+        "content": "- ✅ 郵件分析系統 - `email_analyzer.py`",
+        "section": "核心系統（100% 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 59,
+        "content": "- ✅ 績效管考系統 - `performance_tracker.py`",
+        "section": "核心系統（100% 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 60,
+        "content": "- ✅ 全域搜尋系統 - `global_search.py`",
+        "section": "核心系統（100% 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 61,
+        "content": "- ✅ 日曆連動系統 - `taiwan_calendar.py`",
+        "section": "核心系統（100% 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 63,
+        "content": "- ✅ 智慧通知系統 - `daily_reminder.py`",
+        "section": "核心系統（100% 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 64,
+        "content": "- ✅ 系統備份 - `backup.py`",
+        "section": "核心系統（100% 完成）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 110,
+        "content": "- 第 1 章：系統概論（架構表、6 大特色、效益對比表、15 人名單）",
+        "section": "最終版 PDF 手冊"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 141,
+        "content": "### [2026-03-01] 系統上線策略",
+        "section": "[2026-03-01] 系統上線策略"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 143,
+        "content": "- **原因**: 員工還不會操作，系統內無真實資料",
+        "section": "[2026-03-01] 系統上線策略"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 209,
+        "content": "- **2026-03-09 09:00**: 系統正式宣布上線",
+        "section": "📅 重要時程"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 213,
+        "content": "- **2026-03-31**: 系統穩定運行，精準建議",
+        "section": "📅 重要時程"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 263,
+        "content": "## 2026-03-01 04:31 日報系統優化（案場為核心）",
+        "section": "2026-03-01 04:31 日報系統優化（案場為核心）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 410,
+        "content": "## 2026-03-01 05:05 郵件解析系統成功上線",
+        "section": "2026-03-01 05:05 郵件解析系統成功上線"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 521,
+        "content": "## 2026-03-01 05:25 郵件完整解析系統完成",
+        "section": "2026-03-01 05:25 郵件完整解析系統完成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 570,
+        "content": "## 2026-03-01 05:25 董事長專屬報告系統完成",
+        "section": "2026-03-01 05:25 董事長專屬報告系統完成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 591,
+        "content": "## 2026-03-01 06:00 登入系統問題修正",
+        "section": "2026-03-01 06:00 登入系統問題修正"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 596,
+        "content": "- 但系統實際讀取的是 `server/data/users.json`",
+        "section": "2026-03-01 06:00 登入系統問題修正"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 750,
+        "content": "🧠 AI 記憶注入 - 郵件解析系統知識庫",
+        "section": "🌐 立即體驗"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1215,
+        "content": "4. 新 AI 會讀取 `SESSION_HANDOVER.md` 並檢查系統狀態",
+        "section": "🚨 上下文監控機制（2026-03-01 14:51 建立）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1250,
+        "content": "## 🚀 員工日報系統 ABC 三項優化完成（2026-03-01 15:26）",
+        "section": "🚀 員工日報系統 ABC 三項優化完成（2026-03-01 15:26）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1290,
+        "content": "3. 等待員工開始使用系統（累積真實日報）",
+        "section": "下一步建議"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 224,
+        "content": "系統現在已經達到「**安全、可控、可追溯**」的水準！",
+        "section": "📋 下一步建議"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 301,
+        "content": "今晚完成了 **A→B→C 三項關鍵改善**，系統現在已經具備：",
+        "section": "🎉 結語"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 19,
+        "content": "| 1 | `@reboot` | 自動啟動日報服務 | 系統重啟時 | ✅ |",
+        "section": "📋 完整排程表（7 項）"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 24,
+        "content": "| 6 | `15,45 * * * *` | 系統健康檢查 | 每 30 分鐘 | ✅ |",
+        "section": "📋 完整排程表（7 項）"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 201,
+        "content": "2. 執行 `continue_session.sh` 檢查系統狀態",
+        "section": "🎯 新 Session 接續流程"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 239,
+        "content": "assistant: 現在更新記憶系統，寫入這個重要機制：",
+        "section": "🚨 建立上下文監控機制"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 305,
+        "content": "2. **說**：「請接續日報管理系統進度」",
+        "section": "🎯 建議行動"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 352,
+        "content": "| **系統進度** | ✅ 會保留 — 因為都寫在 `SESSION_HANDOVER.md` |",
+        "section": "🔄 重啟後會發生什麼事"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 384,
+        "content": "1. 執行 `continue_session.sh` 檢查系統",
+        "section": "✅ 新 AI 會做的事"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 449,
+        "content": "1. 員工日報系統 - 15 位用戶（含員工代碼、部門）",
+        "section": "📋 請複製以下內容到新 Session"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 452,
+        "content": "4. 系統監控 - 每 5 分鐘 Watchdog、每 30 分鐘健康檢查",
+        "section": "📋 請複製以下內容到新 Session"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 24,
+        "content": "- reports/2026-02-26_員工日報表管理系統.xlsx",
+        "section": "未追蹤的檔案 (Untracked)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 49,
+        "content": "- **主題**: 自動化系統，Agent 團隊",
+        "section": "mem-2026-02-28-074458"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 54,
+        "content": "- **內容**: 決定採用 OpenClaw 內建記憶系統增強方案，不引入外部向量資料庫",
+        "section": "mem-2026-02-28-074458"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 72,
+        "content": "| monitor | Argus | 監控專員 | 系統監控、異常偵測 |",
+        "section": "6 人 Agent 團隊架構"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 79,
+        "content": "- 採用 OpenClaw 內建記憶系統增強方案",
+        "section": "決策記錄"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 85,
+        "content": "## 🧠 永久記憶系統規劃 (07:40 AM)",
+        "section": "🧠 永久記憶系統規劃 (07:40 AM)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 94,
+        "content": "- `memory-system.md` - 系統設計文件",
+        "section": "已建立檔案"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 107,
+        "content": "## 📊 任務看板系統 v2.0 (07:20 AM)",
+        "section": "📊 任務看板系統 v2.0 (07:20 AM)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 123,
+        "content": "## 🎨 專業 PDF 生成系統 (06:13 AM)",
+        "section": "🎨 專業 PDF 生成系統 (06:13 AM)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 158,
+        "content": "- `51f801f` chore: 更新記憶系統文件、AGENTS.md 及每日記錄 (2026-02-28)",
+        "section": "最新 commit"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 171,
+        "content": "## 🎯 指揮中心看板 + 三層記憶系統 (08:03 AM)",
+        "section": "🎯 指揮中心看板 + 三層記憶系統 (08:03 AM)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 175,
+        "content": "2. 「OpenClaw 太強了，幾個月前說的決定，它附日期附來源全找回來了｜三層記憶系統完整公開」",
+        "section": "參考影片"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 208,
+        "content": "## 🗂️ 員工日報系統（WSL / localhost:5000）",
+        "section": "🗂️ 員工日報系統（WSL / localhost:5000）"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 234,
+        "content": "- 完成三層記憶系統骨架（MEMORY.md + daily memory + 檢索/注入腳本規劃與落地）",
+        "section": "今日完成"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 237,
+        "content": "- 解決 WSL/Windows 無法開啟員工日報系統的 localhost 問題（服務重啟後可用）",
+        "section": "今日完成"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 238,
+        "content": "- 強化員工日報系統：帳密顯示移除、修改密碼/重設密碼、登入鎖定、稽核、health check",
+        "section": "今日完成"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 250,
+        "content": "4. 員工日報系統常駐化方案：systemd/supervisor 或 WSL 啟動腳本，避免再掉線",
+        "section": "明日優先待辦"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 254,
+        "content": "## 🏭 電廠自動化監控系統規劃 (03/01 AM)",
+        "section": "🏭 電廠自動化監控系統規劃 (03/01 AM)"
+      },
+      {
+        "file": "memory/2026-03-01-session-startup.md",
+        "line": 12,
+        "content": "我是 Jenny，您的主助理。已經就緒，準備處理今天的任務——是要檢查電廠監控系統、整理員工日報，還是繼續推進自動化專案？",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-03-01-daily-report-status.md",
+        "line": 21,
+        "content": "請接續昱金生能源日報管理系統的進度。 【系統已建立功能】 1. 員工日報系統 - 15 位用戶（含員工代碼、部門） 2. IMAP 郵件自動提取 - johnnys@yjsenergy.com (ma",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-03-01-daily-report-status.md",
+        "line": 44,
+        "content": "assistant: 收到！我已經掌握系統架構了。讓我快速檢查用戶資料和服務狀態：",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-03-01-daily-report-status.md",
+        "line": 47,
+        "content": "assistant: **✅ 系統狀態確認完成！**",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-03-01-daily-report-status.md",
+        "line": 64,
+        "content": "系統一切正常！需要我查看那 31 封新郵件的分析結果，還是有其他任務要優先處理？",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-02-28-0729.md",
+        "line": 28,
+        "content": "assistant: [[reply_to_current]] 系統目前正常（HTTP 200）。我注意到您已經發送了很多次「Continue」，可能是因為每次回覆都沒有解決問題。",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-02-28-0729.md",
+        "line": 34,
+        "content": "assistant: [[reply_to_current]] 系統已就緒。我停止做技術操作了。",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 41,
+        "content": "| monitor | Argus | 監控 | 系統監控、異常偵測 |",
+        "section": "🤖 Agent 團隊（2026-02-28 建立）"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 49,
+        "content": "- [2026-03-01] 完成 A→B→C 三項關鍵改善（案場字典/附件上傳/歷程追蹤），系統正式上線",
+        "section": "📌 重要決策記錄"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 52,
+        "content": "- [2026-02-28] 決定採用 OpenClaw 內建記憶系統增強，不引入外部向量資料庫",
+        "section": "📌 重要決策記錄"
+      }
+    ],
+    "員工": [
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 95,
+        "content": "- 3/9（一）14:00 員工教育訓練（30 分鐘）",
+        "section": "階段 2：宣布 + 試運行（下周 3/9-3/14）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 109,
+        "content": "1. **`EMPLOYEE_MANUAL.pdf`** (258KB) - 員工操作手冊（豐富詳細版）",
+        "section": "最終版 PDF 手冊"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 123,
+        "content": "- 情境 1：員工提交日報（楊宗衛 - 仁豐國小，極其詳細）",
+        "section": "最終版 PDF 手冊"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 143,
+        "content": "- **原因**: 員工還不會操作，系統內無真實資料",
+        "section": "[2026-03-01] 系統上線策略"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 154,
+        "content": "### [2026-03-01] 員工帳號管理",
+        "section": "[2026-03-01] 員工帳號管理"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 157,
+        "content": "- **離職員工**: 林坤誼、黃振豪、許惠玲已移除",
+        "section": "[2026-03-01] 員工帳號管理"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 170,
+        "content": "- 員工管理：2 小時/天 → 自動（100%↓）",
+        "section": "時間節省"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 210,
+        "content": "- **2026-03-09 14:00**: 員工教育訓練",
+        "section": "📅 重要時程"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 225,
+        "content": "7. **模擬情境**: 範例必須豐富詳細，避免員工誤導以為隨便寫寫就可以",
+        "section": "💡 教訓與注意事項"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 242,
+        "content": "- ✅ **EMPLOYEE_MANUAL.pdf** (258KB) - 員工操作手冊（豐富詳細版）",
+        "section": "📄 生成文件（PDF 版本）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 257,
+        "content": "- ✅ 內容豐富 - 情境 1 和 2 極為詳細，避免員工誤導",
+        "section": "🎯 董事長要求達成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 325,
+        "content": "- ✅ **聚焦案場** - 員工填寫時先思考「這是哪個案場的工作？」",
+        "section": "🎯 預期效益"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 332,
+        "content": "## 2026-03-01 04:41 員工名單修正完成",
+        "section": "2026-03-01 04:41 員工名單修正完成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 335,
+        "content": "董事長發現員工管理頁面只有 9 位員工，且包含 3 位已離職員工：",
+        "section": "🔍 問題發現"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 402,
+        "content": "✅ 離職員工：已移除（林坤誼、黃振豪、許惠玲）",
+        "section": "✅ 驗證結果"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 505,
+        "content": "└── employee_database.json                     # 10 位員工資料庫",
+        "section": "📊 郵件完整解析完成（2026-03-01 05:18）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 549,
+        "content": "├── employee_database.json                  # 10 位員工資料庫",
+        "section": "2026-03-01 05:25 郵件完整解析系統完成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 628,
+        "content": "1. **離職員工仍存在** - 帳號管理頁面顯示林坤誼、黃振豪、許惠玲",
+        "section": "🎨 董事長指示"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 638,
+        "content": "- 新增正確的 14 位員工（加上 admin 共 15 位）",
+        "section": "🔧 優化動作"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 676,
+        "content": "| 離職員工 | 仍存在 | **完全移除** ✅ |",
+        "section": "✅ 優化結果"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 730,
+        "content": "- ✅ **沒有**離職員工（林坤誼、黃振豪、許惠玲）",
+        "section": "🌐 立即體驗"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 799,
+        "content": "- 負責員工：高竹妤, 陳明德, 顏呈晞",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 809,
+        "content": "- 負責員工：高竹妤, 陳明德, 顏呈晞",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 814,
+        "content": "- 負責員工：高竹妤, 陳明德, 顏呈晞",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 833,
+        "content": "- 負責員工：高竹妤, 陳明德, 呂宜芹",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 838,
+        "content": "- 負責員工：高竹妤, 張億峖, 陳明德, 顏呈晞",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 852,
+        "content": "- 負責員工：呂宜芹, 陳明德, 高竹妤",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 862,
+        "content": "- 負責員工：高竹妤, 陳明德, 顏呈晞",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 896,
+        "content": "- 負責員工：呂宜芹, 張億峖, 陳明德, 高竹妤",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 901,
+        "content": "- 負責員工：高竹妤, 陳明德, 顏呈晞",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 925,
+        "content": "- 負責員工：高竹妤, 陳明德, 顏呈晞",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1250,
+        "content": "## 🚀 員工日報系統 ABC 三項優化完成（2026-03-01 15:26）",
+        "section": "🚀 員工日報系統 ABC 三項優化完成（2026-03-01 15:26）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1290,
+        "content": "3. 等待員工開始使用系統（累積真實日報）",
+        "section": "下一步建議"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 50,
+        "content": "│   │   ├── chen_ming_de/   ← 員工 ID",
+        "section": "2️⃣ B) 附件真上傳 + 留存 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 449,
+        "content": "1. 員工日報系統 - 15 位用戶（含員工代碼、部門）",
+        "section": "📋 請複製以下內容到新 Session"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 23,
+        "content": "- reports/2026-02-25_員工日報表分析_完整版.pdf",
+        "section": "未追蹤的檔案 (Untracked)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 24,
+        "content": "- reports/2026-02-26_員工日報表管理系統.xlsx",
+        "section": "未追蹤的檔案 (Untracked)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 31,
+        "content": "- 員工日報表-2026-02-28-v2.html",
+        "section": "未追蹤的檔案 (Untracked)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 32,
+        "content": "- 員工日報表-2026-02-28-v3.html",
+        "section": "未追蹤的檔案 (Untracked)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 33,
+        "content": "- 員工日報表-2026-02-28.html",
+        "section": "未追蹤的檔案 (Untracked)"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 131,
+        "content": "- 昱金生能源集團 - 員工日報-20260228-Final.pdf (159KB)",
+        "section": "成功生成"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 174,
+        "content": "1. 「OpenClaw 太強了，磨合兩週後我的 AI 員工開始半夜自己加班了｜14 個排程完整公開」",
+        "section": "參考影片"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 208,
+        "content": "## 🗂️ 員工日報系統（WSL / localhost:5000）",
+        "section": "🗂️ 員工日報系統（WSL / localhost:5000）"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 216,
+        "content": "- ✅ 新增「修改密碼」頁 `/change-password`，員工臨時密碼首次登入強制修改",
+        "section": "近期強化（安全 + 體驗）"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 217,
+        "content": "- ✅ 管理員可於「員工管理」頁重設員工密碼（產生臨時密碼並要求登入後修改）",
+        "section": "近期強化（安全 + 體驗）"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 237,
+        "content": "- 解決 WSL/Windows 無法開啟員工日報系統的 localhost 問題（服務重啟後可用）",
+        "section": "今日完成"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 238,
+        "content": "- 強化員工日報系統：帳密顯示移除、修改密碼/重設密碼、登入鎖定、稽核、health check",
+        "section": "今日完成"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 250,
+        "content": "4. 員工日報系統常駐化方案：systemd/supervisor 或 WSL 啟動腳本，避免再掉線",
+        "section": "明日優先待辦"
+      },
+      {
+        "file": "memory/2026-03-01-session-startup.md",
+        "line": 12,
+        "content": "我是 Jenny，您的主助理。已經就緒，準備處理今天的任務——是要檢查電廠監控系統、整理員工日報，還是繼續推進自動化專案？",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-03-01-daily-report-status.md",
+        "line": 21,
+        "content": "請接續昱金生能源日報管理系統的進度。 【系統已建立功能】 1. 員工日報系統 - 15 位用戶（含員工代碼、部門） 2. IMAP 郵件自動提取 - johnnys@yjsenergy.com (ma",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 32,
+        "content": "- /mnt/w = 員工家目錄、/mnt/q = 採購、/mnt/r = 專案管理、/mnt/s = 售電",
+        "section": "🖥️ 基礎設施"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 68,
+        "content": "- 員工日報腳本：`scripts/generate-daily-report.py`",
+        "section": "🔗 常用參考"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 106,
+        "content": "- employee_database.json（10 位員工）",
+        "section": "📧 郵件完整解析（2026-03-01）"
+      }
+    ],
+    "問題": [
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 114,
+        "content": "- 第 5 章：常見問題 Q&A（5 個核心問題）",
+        "section": "最終版 PDF 手冊"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 127,
+        "content": "- 問題與處理（水塔遮陰、MC4 接頭不足）",
+        "section": "最終版 PDF 手冊"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 222,
+        "content": "4. **備份路徑**: NAS 權限問題，改用本地備份",
+        "section": "💡 教訓與注意事項"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 560,
+        "content": "- 常見問題模式（電氣/施工/行政三大類）",
+        "section": "2026-03-01 05:25 AI 記憶注入完成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 591,
+        "content": "## 2026-03-01 06:00 登入系統問題修正",
+        "section": "2026-03-01 06:00 登入系統問題修正"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 629,
+        "content": "2. **空內容問題** - 經營大廳、部門管理等選項點進去沒有內容",
+        "section": "🎨 董事長指示"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 788,
+        "content": "- 常見問題：併審&同備&免雜 進度_更新日期：1/19(與1/16進度同)（以下送審進度不含18-1, 47-A, 58-B等三件學校取消案）",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 815,
+        "content": "- 常見問題：併審&同備&免雜 進度_更新日期：9/25",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 839,
+        "content": "- 常見問題：併審&同備&免雜 進度_更新日期：9/25",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 863,
+        "content": "- 常見問題：併審&同備&免雜 進度_更新日期：12/24 （以下送審進度不含18-1, 47-A, 58-B等三件學校取消案）",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 902,
+        "content": "- 常見問題：併審&同備&免雜 進度_更新日期：12/24 （以下送審進度不含18-1, 47-A, 58-B等三件學校取消案）",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 926,
+        "content": "- 常見問題：併審&同備&免雜 進度_更新日期：12/24 （以下送審進度不含18-1, 47-A, 58-B等三件學校取消案）",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 950,
+        "content": "- 常見問題：併審&同備&免雜 進度_更新日期：8/25",
+        "section": "前 20 大活躍案場（重點記憶）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1196,
+        "content": "**問題**：Session 上下文過長會導致 AI 遺忘、token 浪費、回應變慢",
+        "section": "🚨 上下文監控機制（2026-03-01 14:51 建立）"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 14,
+        "content": "**問題**：同一案場可能被填成不同名稱（仁豐國小 / 仁豐 / 仁豐國小 (二)），導致 AI 判斷錯誤",
+        "section": "1️⃣ A) 案場字典 / 命名一致化 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 35,
+        "content": "**問題**：附件只有假勾選，沒有真正上傳和驗證",
+        "section": "2️⃣ B) 附件真上傳 + 留存 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 77,
+        "content": "**問題**：無法追溯誰在何時修改了風險/任務的狀態、Owner、Due Date",
+        "section": "3️⃣ C) 風險/任務歷程追蹤 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 205,
+        "content": "| `server/ux_issues.md` | 使用者體驗問題清單 |",
+        "section": "📁 新增檔案清單"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 99,
+        "content": "您說得對！這是個非常重要的問題。讓我誠實回答：",
+        "section": "🎯 系統現在會自動："
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 327,
+        "content": "這樣就不會有上下文過長、遺忘、token 浪費的問題了！🚀",
+        "section": "💡 未來最佳實踐"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 88,
+        "content": "- 解決記憶斷裂問題，實現跨 Session 連續記憶",
+        "section": "核心需求"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 127,
+        "content": "- 解決 Linux 生成 PDF 中文亂碼問題",
+        "section": "解決方案"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 210,
+        "content": "- 問題：Windows 端一度無法開啟 `http://localhost:5000/login`，根因為伺服器未常駐 + WSL2 網路/portproxy 依賴。",
+        "section": "🗂️ 員工日報系統（WSL / localhost:5000）"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 237,
+        "content": "- 解決 WSL/Windows 無法開啟員工日報系統的 localhost 問題（服務重啟後可用）",
+        "section": "今日完成"
+      },
+      {
+        "file": "memory/2026-03-01-daily-report-status.md",
+        "line": 28,
+        "content": "- ⚠️ 健康檢查發現 1 個待處理問題（需查看詳細日誌）",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-03-01-daily-report-status.md",
+        "line": 35,
+        "content": "需要我查看那個待處理的問題細節，或是有其他任務要優先處理嗎？",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "memory/2026-02-28-0729.md",
+        "line": 28,
+        "content": "assistant: [[reply_to_current]] 系統目前正常（HTTP 200）。我注意到您已經發送了很多次「Continue」，可能是因為每次回覆都沒有解決問題。",
+        "section": "Conversation Summary"
+      }
+    ],
+    "案場": [
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 124,
+        "content": "- 完整工作記錄（案場全名、施工天數、人員、天氣）",
+        "section": "最終版 PDF 手冊"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 169,
+        "content": "- 掌握案場進度：30 分鐘/天 → 3 分鐘/天（90%↓）",
+        "section": "時間節省"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 232,
+        "content": "- 新增設計補正開關（offset）處理「設計即有遮陰」案場",
+        "section": "2026-03-01 04:07 董事長新增規則（電廠監控）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 263,
+        "content": "## 2026-03-01 04:31 日報系統優化（案場為核心）",
+        "section": "2026-03-01 04:31 日報系統優化（案場為核心）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 267,
+        "content": "- **案場名稱**是日報的核心，每個人填寫時必須選擇案場",
+        "section": "🎯 董事長指示"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 268,
+        "content": "- 無論規劃設計、物料採購、施工建置、維運管理、銀行融資、法律訴訟、開幕剪綵，都是圍繞特定案場",
+        "section": "🎯 董事長指示"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 269,
+        "content": "- 只有非案場事項（申請獎項、辦公室清潔等）才歸類到「其他」",
+        "section": "🎯 董事長指示"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 275,
+        "content": "- 增加藍色邊框和圖示（🏭 案場名稱 *）",
+        "section": "✅ 系統優化內容"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 276,
+        "content": "- 添加提示文字：「所有工作都應圍繞案場，除非是申請獎項、辦公室清潔等非案場事項才選擇『其他』」",
+        "section": "✅ 系統優化內容"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 308,
+        "content": "- 案場、類型、進度、工時排成一列，資訊完整",
+        "section": "✅ 系統優化內容"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 318,
+        "content": "1. **選擇案場（必填，最優先）** 🏭",
+        "section": "📊 填寫流程優化"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 325,
+        "content": "- ✅ **聚焦案場** - 員工填寫時先思考「這是哪個案場的工作？」",
+        "section": "🎯 預期效益"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 327,
+        "content": "- ✅ **數據分析** - 未來可按案場、工作類型統計分析",
+        "section": "🎯 預期效益"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 328,
+        "content": "- ✅ **減少誤解** - 明確區分案場工作 vs 非案場工作",
+        "section": "🎯 預期效益"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 464,
+        "content": "| 排名 | 姓名 | 部門 | 總郵件 | 日報 | 附件 | 負責案場 |",
+        "section": "📊 郵件完整解析完成（2026-03-01 05:18）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 504,
+        "content": "├── case_database.json                         # 401 個案場資料庫",
+        "section": "📊 郵件完整解析完成（2026-03-01 05:18）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 509,
+        "content": "- 陳明德：郵件冠軍（294 封）、案場冠軍（60 個）",
+        "section": "📊 郵件完整解析完成（2026-03-01 05:18）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 533,
+        "content": "1. 陳明德（工程部）- 294 封，負責 60 個案場",
+        "section": "2026-03-01 05:25 郵件完整解析系統完成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 548,
+        "content": "├── case_database.json                      # 401 個案場資料庫",
+        "section": "2026-03-01 05:25 郵件完整解析系統完成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 558,
+        "content": "- 401 個案場知識（前 20 大活躍案場詳細資料）",
+        "section": "2026-03-01 05:25 AI 記憶注入完成"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 972,
+        "content": "- 主要案場：05-11, 38-1, 49-1, 04-1, 45-1",
+        "section": "陳明德 (工程部)"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 974,
+        "content": "- 🏭 **工作模式**：跨多個案場，可能是管理職或設計支援",
+        "section": "陳明德 (工程部)"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 982,
+        "content": "- 主要案場：1-1, 4-3, 1-9, 3-1, 0900-11",
+        "section": "張億峖 (工程部)"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1010,
+        "content": "- 主要案場：04-720, 4-1500, 2-1, 14-2",
+        "section": "陳谷濱 (工程部)"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1029,
+        "content": "- 主要案場：38-1, 49-1, 49-19, 04-1, 45-1",
+        "section": "高竹妤 (設計部)"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1031,
+        "content": "- 🏭 **工作模式**：跨多個案場，可能是管理職或設計支援",
+        "section": "高竹妤 (設計部)"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1039,
+        "content": "- 主要案場：01-1, 04-1, 40-1, 27-1, 12-1",
+        "section": "呂宜芹 (行政部)"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1048,
+        "content": "- 主要案場：14-1, 15-1, 38-1, 49-1, 59-1",
+        "section": "顏呈晞 (設計部)"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1109,
+        "content": "- 陳明德負責最多案場（60 個），是工程部主力",
+        "section": "關鍵發現"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1113,
+        "content": "- 高竹妤設計支援 43 個案場，跨案場最多",
+        "section": "關鍵發現"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1117,
+        "content": "- 04-720 是最活躍案場（149 封郵件）",
+        "section": "案場分佈"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1118,
+        "content": "- 多數案場有 2-4 位負責人，顯示團隊協作",
+        "section": "案場分佈"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1230,
+        "content": "## 🏭 案場知識學習（2026-03-01 15:18）",
+        "section": "🏭 案場知識學習（2026-03-01 15:18）"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1256,
+        "content": "- ⚠️ 目前 24 個案場中 13 個有名稱（54%）",
+        "section": "A. 案場名稱提取優化"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1276,
+        "content": "| 有名稱案場 | 13 個 | ⚠️ |",
+        "section": "系統最終狀態"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 1288,
+        "content": "1. 擴大郵件掃描範圍至 90 天（提升案場名稱提取率）",
+        "section": "下一步建議"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 12,
+        "content": "### 1️⃣ A) 案場字典 / 命名一致化 ✅",
+        "section": "1️⃣ A) 案場字典 / 命名一致化 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 14,
+        "content": "**問題**：同一案場可能被填成不同名稱（仁豐國小 / 仁豐 / 仁豐國小 (二)），導致 AI 判斷錯誤",
+        "section": "1️⃣ A) 案場字典 / 命名一致化 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 17,
+        "content": "- ✅ 為 13 個案場產生標準代碼（如：`RF-GF`=仁豐國小屋頂型）",
+        "section": "1️⃣ A) 案場字典 / 命名一致化 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 18,
+        "content": "- ✅ 日報表單案場改為**下拉選單**，禁止自由輸入",
+        "section": "1️⃣ A) 案場字典 / 命名一致化 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 19,
+        "content": "- ✅ 顯示格式：`代碼 - 案場名稱`（例：`RF-GF - 仁豐國小`）",
+        "section": "1️⃣ A) 案場字典 / 命名一致化 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 29,
+        "content": "**測試結果**：✅ 通過（下拉選單正常顯示 13 個案場）",
+        "section": "1️⃣ A) 案場字典 / 命名一致化 ✅"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 143,
+        "content": "- [x] 案場管理（標準代碼 + 下拉選單）",
+        "section": "✅ 核心功能"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 168,
+        "content": "| 案場總覽 | ✅ | 13 個案件正常顯示 |",
+        "section": "🧪 測試結果（6/6 通過）"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 181,
+        "content": "| 案場總覽 | `http://localhost:5000/cases` | 13 個案場進度 |",
+        "section": "🌐 系統訪問"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 185,
+        "content": "| 案件明細 | `http://localhost:5000/cases/<案場 ID>` | 含風險/任務歷史 |",
+        "section": "🌐 系統訪問"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 195,
+        "content": "| `server/migrate_case_dict.py` | 案場代碼產生腳本 |",
+        "section": "📁 新增檔案清單"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 196,
+        "content": "| `server/optimize_case_codes.py` | 案場代碼優化腳本 |",
+        "section": "📁 新增檔案清單"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 213,
+        "content": "| A) 案場字典 | ✅ 完成 | 100% |",
+        "section": "🎯 系統狀態總結"
+      },
+      {
+        "file": "memory/2026-03-01-summary.md",
+        "line": 303,
+        "content": "1. **資料一致性**：案場字典確保 AI 判斷準確",
+        "section": "🎉 結語"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 224,
+        "content": "- ✅ 案場總覽頁：`/cases`（里程碑 + 百分比 + 未結案風險統計）",
+        "section": "進度管理（案件中心）"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 225,
+        "content": "- ✅ 案場明細頁：`/cases/<case_id>`（管理員可更新里程碑/百分比，並看工作/風險清單）",
+        "section": "進度管理（案件中心）"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 239,
+        "content": "- 擴充案件中心：SQLite 落地、案場總覽/明細、風險追蹤與分類",
+        "section": "今日完成"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 258,
+        "content": "- 昱金生共 88 座案場、23.29 MWp、累計 43.28 GWh",
+        "section": "核心決策"
+      },
+      {
+        "file": "memory/2026-03-01-daily-report-status.md",
+        "line": 21,
+        "content": "請接續昱金生能源日報管理系統的進度。 【系統已建立功能】 1. 員工日報系統 - 15 位用戶（含員工代碼、部門） 2. IMAP 郵件自動提取 - johnnys@yjsenergy.com (ma",
+        "section": "Conversation Summary"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 49,
+        "content": "- [2026-03-01] 完成 A→B→C 三項關鍵改善（案場字典/附件上傳/歷程追蹤），系統正式上線",
+        "section": "📌 重要決策記錄"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 86,
+        "content": "1. 陳明德（工程部）- 294 封，負責 60 個案場",
+        "section": "📧 郵件完整解析（2026-03-01）"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 105,
+        "content": "- case_database.json（401 個案場）",
+        "section": "📧 郵件完整解析（2026-03-01）"
+      }
+    ],
+    "注意": [
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 131,
+        "content": "- 注意事項（歷史郵件分析）、自動協助事項",
+        "section": "最終版 PDF 手冊"
+      },
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 230,
+        "content": "- 晴天條件下：發電落差超過 3% 即需注意（P3 起跳）",
+        "section": "2026-03-01 04:07 董事長新增規則（電廠監控）"
+      },
+      {
+        "file": "memory/2026-02-28-0729.md",
+        "line": 28,
+        "content": "assistant: [[reply_to_current]] 系統目前正常（HTTP 200）。我注意到您已經發送了很多次「Continue」，可能是因為每次回覆都沒有解決問題。",
+        "section": "Conversation Summary"
+      }
+    ],
+    "決策": [
+      {
+        "file": "memory/2026-03-01.md",
+        "line": 142,
+        "content": "- **決策**: 採用「靜默上線 → 資料累積 → 正式啟用」三階段策略",
+        "section": "[2026-03-01] 系統上線策略"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 209,
+        "content": "- 如果有重要決策或變更，告訴我「請更新 SESSION_HANDOVER.md」",
+        "section": "📝 最佳實踐建議"
+      },
+      {
+        "file": "memory/2026-03-01-memory-continuity.md",
+        "line": 403,
+        "content": "- ⚠️ 剛做的決策（除非寫入 SESSION_HANDOVER.md）",
+        "section": "🎯 我們可以持續討論的事"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 71,
+        "content": "| main | Jenny | 主助理 | 綜合任務處理、決策協調 |",
+        "section": "6 人 Agent 團隊架構"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 75,
+        "content": "| analyst | Athena | 分析師 | 數據分析、決策支援 |",
+        "section": "6 人 Agent 團隊架構"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 100,
+        "content": "2. 決策型記憶（Decisions）- 重要決策與原因",
+        "section": "記憶分類"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 4,
+        "content": "> 這是 Jenny 的策略記憶層。記錄重要決策、人物關係、偏好、教訓。",
+        "section": "🧠 MEMORY.md — Jenny 的長期記憶"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 40,
+        "content": "| main | Jenny | 主助理 | 綜合任務、決策協調 |",
+        "section": "🤖 Agent 團隊（2026-02-28 建立）"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 44,
+        "content": "| analyst | Athena | 分析 | 數據分析、決策支援 |",
+        "section": "🤖 Agent 團隊（2026-02-28 建立）"
+      }
+    ],
+    "決定": [
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 54,
+        "content": "- **內容**: 決定採用 OpenClaw 內建記憶系統增強方案，不引入外部向量資料庫",
+        "section": "mem-2026-02-28-074458"
+      },
+      {
+        "file": "memory/2026-02-28.md",
+        "line": 175,
+        "content": "2. 「OpenClaw 太強了，幾個月前說的決定，它附日期附來源全找回來了｜三層記憶系統完整公開」",
+        "section": "參考影片"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 50,
+        "content": "- [2026-03-01] 決定附件存放路徑為 `/mnt/c/Users/YJSClaw/Documents/Openclaw/daily_report_attachments/`（Windows",
+        "section": "📌 重要決策記錄"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 51,
+        "content": "- [2026-03-01] 決定附件備份策略：每日增量備份當年資料，每週完整備份去年資料",
+        "section": "📌 重要決策記錄"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 52,
+        "content": "- [2026-02-28] 決定採用 OpenClaw 內建記憶系統增強，不引入外部向量資料庫",
+        "section": "📌 重要決策記錄"
+      },
+      {
+        "file": "MEMORY.md",
+        "line": 53,
+        "content": "- [2026-02-28] 決定使用 NAS 網路共享（91TB），不掛載雲端硬碟",
+        "section": "📌 重要決策記錄"
+      }
+    ],
+    "教訓": [
+      {
+        "file": "MEMORY.md",
+        "line": 4,
+        "content": "> 這是 Jenny 的策略記憶層。記錄重要決策、人物關係、偏好、教訓。",
+        "section": "🧠 MEMORY.md — Jenny 的長期記憶"
+      }
+    ]
+  },
+  "section_index": [
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📝 2026-03-01 記憶記錄",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "👥 完整員工清單（15 人）",
+      "level": 2,
+      "line": 9
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "管理部（5 人）",
+      "level": 3,
+      "line": 11
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "工程部（5 人）",
+      "level": 3,
+      "line": 20
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "維運部（1 人）",
+      "level": 3,
+      "line": 29
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "行政部（2 人）",
+      "level": 3,
+      "line": 34
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "設計部（2 人）",
+      "level": 3,
+      "line": 40
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "已移除（非員工）",
+      "level": 3,
+      "line": 46
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🚀 系統建置狀態（2026-03-01 完成）",
+      "level": 2,
+      "line": 53
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "核心系統（100% 完成）",
+      "level": 3,
+      "line": 55
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "自動化任務（crontab 已啟用）",
+      "level": 3,
+      "line": 67
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "智慧通知設定",
+      "level": 3,
+      "line": 77
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📋 三階段上線計畫",
+      "level": 2,
+      "line": 84
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "階段 1：靜默準備期（本週）✅",
+      "level": 3,
+      "line": 86
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "階段 2：宣布 + 試運行（下周 3/9-3/14）",
+      "level": 3,
+      "line": 93
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "階段 3：正式啟用（第 2-4 週）",
+      "level": 3,
+      "line": 99
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📄 已準備文件（PDF 版本）",
+      "level": 2,
+      "line": 106
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "最終版 PDF 手冊",
+      "level": 3,
+      "line": 108
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🎯 重要決策記錄",
+      "level": 2,
+      "line": 139
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "[2026-03-01] 系統上線策略",
+      "level": 3,
+      "line": 141
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "[2026-03-01] 自動化設定",
+      "level": 3,
+      "line": 150
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "[2026-03-01] 員工帳號管理",
+      "level": 3,
+      "line": 154
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "[2026-03-01] 文件格式要求",
+      "level": 3,
+      "line": 159
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📊 預期效益",
+      "level": 2,
+      "line": 166
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "時間節省",
+      "level": 3,
+      "line": 168
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "管理品質提升",
+      "level": 3,
+      "line": 175
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🔑 系統特色",
+      "level": 2,
+      "line": 183
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📅 重要時程",
+      "level": 2,
+      "line": 206
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "💡 教訓與注意事項",
+      "level": 2,
+      "line": 217
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 04:07 董事長新增規則（電廠監控）",
+      "level": 2,
+      "line": 229
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 04:26 PDF 手冊完成",
+      "level": 2,
+      "line": 239
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📄 生成文件（PDF 版本）",
+      "level": 3,
+      "line": 241
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📁 檔案路徑",
+      "level": 3,
+      "line": 246
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🎯 董事長要求達成",
+      "level": 3,
+      "line": 254
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 04:31 日報系統優化（案場為核心）",
+      "level": 2,
+      "line": 263
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🎯 董事長指示",
+      "level": 3,
+      "line": 265
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "✅ 系統優化內容",
+      "level": 3,
+      "line": 271
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📊 填寫流程優化",
+      "level": 3,
+      "line": 310
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🎯 預期效益",
+      "level": 3,
+      "line": 323
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 04:41 員工名單修正完成",
+      "level": 2,
+      "line": 332
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🔍 問題發現",
+      "level": 3,
+      "line": 334
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🔧 修正動作",
+      "level": 3,
+      "line": 340
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🛡️ 服務監控建立",
+      "level": 3,
+      "line": 381
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "✅ 驗證結果",
+      "level": 3,
+      "line": 398
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 05:05 郵件解析系統成功上線",
+      "level": 2,
+      "line": 410
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "✅ 郵件解析完成",
+      "level": 3,
+      "line": 412
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📊 郵件完整解析完成（2026-03-01 05:18）",
+      "level": 3,
+      "line": 450
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📊 下一步行動",
+      "level": 3,
+      "line": 517
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 05:25 郵件完整解析系統完成",
+      "level": 2,
+      "line": 521
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 05:25 AI 記憶注入完成",
+      "level": 2,
+      "line": 555
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 05:25 董事長專屬報告系統完成",
+      "level": 2,
+      "line": 570
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 06:00 登入系統問題修正",
+      "level": 2,
+      "line": 591
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "2026-03-01 04:52 全面 UI/UX 優化完成",
+      "level": 2,
+      "line": 624
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🎨 董事長指示",
+      "level": 3,
+      "line": 626
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🔧 優化動作",
+      "level": 3,
+      "line": 633
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "✅ 優化結果",
+      "level": 3,
+      "line": 666
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📊 視覺對比",
+      "level": 3,
+      "line": 678
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🎯 色彩配置",
+      "level": 3,
+      "line": 696
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "✅ 驗證結果",
+      "level": 3,
+      "line": 710
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🌐 立即體驗",
+      "level": 3,
+      "line": 720
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🏭 案場知識庫（401 個案場）",
+      "level": 2,
+      "line": 755
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "前 20 大活躍案場（重點記憶）",
+      "level": 3,
+      "line": 758
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "👥 員工知識庫（10 位活躍員工）",
+      "level": 2,
+      "line": 961
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "員工專長與工作模式",
+      "level": 3,
+      "line": 964
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "陳明德 (工程部)",
+      "level": 3,
+      "line": 966
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "張億峖 (工程部)",
+      "level": 3,
+      "line": 976
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "陳靜儒 (維運部)",
+      "level": 3,
+      "line": 986
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "林天睛 (行政部)",
+      "level": 3,
+      "line": 995
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "陳谷濱 (工程部)",
+      "level": 3,
+      "line": 1004
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "楊宗衛 (工程部)",
+      "level": 3,
+      "line": 1014
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "高竹妤 (設計部)",
+      "level": 3,
+      "line": 1023
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "呂宜芹 (行政部)",
+      "level": 3,
+      "line": 1033
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "顏呈晞 (設計部)",
+      "level": 3,
+      "line": 1042
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "林玉凰 (未知)",
+      "level": 3,
+      "line": 1050
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "⚠️ 常見問題模式",
+      "level": 2,
+      "line": 1059
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "💡 解決方案建議",
+      "level": 2,
+      "line": 1080
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "📊 數據洞察",
+      "level": 2,
+      "line": 1098
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "整體統計",
+      "level": 3,
+      "line": 1101
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "關鍵發現",
+      "level": 3,
+      "line": 1108
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "案場分佈",
+      "level": 3,
+      "line": 1115
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🧠 案場知識深度學習報告",
+      "level": 2,
+      "line": 1125
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "總覽",
+      "level": 3,
+      "line": 1128
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "13:07 案場知識更新",
+      "level": 2,
+      "line": 1136
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🧠 案場知識深度學習報告",
+      "level": 2,
+      "line": 1142
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "總覽",
+      "level": 3,
+      "line": 1145
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "13:36 案場知識更新",
+      "level": 2,
+      "line": 1153
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🧠 案場知識深度學習報告",
+      "level": 2,
+      "line": 1159
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "總覽",
+      "level": 3,
+      "line": 1162
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "14:07 案場知識更新",
+      "level": 2,
+      "line": 1170
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🧠 案場知識深度學習報告",
+      "level": 2,
+      "line": 1176
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "總覽",
+      "level": 3,
+      "line": 1179
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "14:37 案場知識更新",
+      "level": 2,
+      "line": 1187
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🚨 上下文監控機制（2026-03-01 14:51 建立）",
+      "level": 2,
+      "line": 1194
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "15:10 案場知識更新",
+      "level": 2,
+      "line": 1224
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🏭 案場知識學習（2026-03-01 15:18）",
+      "level": 2,
+      "line": 1230
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🚀 員工日報系統 ABC 三項優化完成（2026-03-01 15:26）",
+      "level": 2,
+      "line": 1250
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "A. 案場名稱提取優化",
+      "level": 3,
+      "line": 1252
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "B. 案場學習自動排程",
+      "level": 3,
+      "line": 1259
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "C. 第二階段架構優化",
+      "level": 3,
+      "line": 1265
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "系統最終狀態",
+      "level": 3,
+      "line": 1271
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "已更新檔案",
+      "level": 3,
+      "line": 1281
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "下一步建議",
+      "level": 3,
+      "line": 1287
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "🧠 案場知識深度學習報告",
+      "level": 2,
+      "line": 1293
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "總覽",
+      "level": 3,
+      "line": 1296
+    },
+    {
+      "file": "memory/2026-03-01.md",
+      "title": "15:38 案場知識更新",
+      "level": 2,
+      "line": 1304
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "📊 昱金生能源集團 - 員工日報系統",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "今日進度總結報告",
+      "level": 2,
+      "line": 2
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "✅ 今晚完成項目（A→B→C 三項改善）",
+      "level": 2,
+      "line": 10
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "1️⃣ A) 案場字典 / 命名一致化 ✅",
+      "level": 3,
+      "line": 12
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "2️⃣ B) 附件真上傳 + 留存 ✅",
+      "level": 3,
+      "line": 33
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "3️⃣ C) 風險/任務歷程追蹤 ✅",
+      "level": 3,
+      "line": 75
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "📊 系統完整功能清單（更新後）",
+      "level": 2,
+      "line": 139
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "✅ 核心功能",
+      "level": 3,
+      "line": 141
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "✅ 安全機制",
+      "level": 3,
+      "line": 151
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "🧪 測試結果（6/6 通過）",
+      "level": 2,
+      "line": 162
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "🌐 系統訪問",
+      "level": 2,
+      "line": 175
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "📁 新增檔案清單",
+      "level": 2,
+      "line": 191
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "🎯 系統狀態總結",
+      "level": 2,
+      "line": 209
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "📋 下一步建議",
+      "level": 2,
+      "line": 222
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "P0 - 高優先級（建議本週完成）",
+      "level": 3,
+      "line": 228
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "P1 - 中優先級（下週完成）",
+      "level": 3,
+      "line": 244
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "💡 重要提醒",
+      "level": 2,
+      "line": 261
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "附件備份路徑",
+      "level": 3,
+      "line": 263
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "掛載 NAS（範例）",
+      "level": 1,
+      "line": 277
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "執行備份",
+      "level": 1,
+      "line": 280
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "監控腳本使用",
+      "level": 3,
+      "line": 284
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "查看完整報表",
+      "level": 1,
+      "line": 287
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "僅在需要警告時輸出（適合 cron）",
+      "level": 1,
+      "line": 290
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "輸出 JSON 格式",
+      "level": 1,
+      "line": 293
+    },
+    {
+      "file": "memory/2026-03-01-summary.md",
+      "title": "🎉 結語",
+      "level": 2,
+      "line": 299
+    },
+    {
+      "file": "memory/2026-02-28-0730.md",
+      "title": "Session: 2026-02-28 07:30:01 UTC",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/2026-02-28-0730.md",
+      "title": "Conversation Summary",
+      "level": 2,
+      "line": 7
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "Session: 2026-03-01 07:00:58 UTC",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "Conversation Summary",
+      "level": 2,
+      "line": 7
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "✅ 排程已完整設定！",
+      "level": 2,
+      "line": 11
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📋 完整排程表（7 項）",
+      "level": 3,
+      "line": 15
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📁 所有腳本已就緒",
+      "level": 3,
+      "line": 29
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "⏰ 每日執行時程表",
+      "level": 3,
+      "line": 42
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🔍 您說「只看到一項」的可能原因",
+      "level": 3,
+      "line": 65
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🎯 系統現在會自動：",
+      "level": 3,
+      "line": 79
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🧠 記憶現況分析",
+      "level": 2,
+      "line": 101
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "⚠️ 記憶限制真相",
+      "level": 2,
+      "line": 106
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "會遺忘的：",
+      "level": 3,
+      "line": 108
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "不會遺忘的（已寫入檔案的）：",
+      "level": 3,
+      "line": 114
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "💡 解決方案：三層接續策略",
+      "level": 2,
+      "line": 122
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "方法 1：記憶檔案接續（推薦）⭐",
+      "level": 3,
+      "line": 124
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "方法 3：我幫您寫一個「接續指令」腳本",
+      "level": 3,
+      "line": 144
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "✅ 記憶接續方案已完成！",
+      "level": 2,
+      "line": 149
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📋 我建立了兩個接續工具",
+      "level": 3,
+      "line": 153
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🎯 新 Session 接續流程",
+      "level": 3,
+      "line": 189
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📝 最佳實踐建議",
+      "level": 3,
+      "line": 206
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🔍 測試接續腳本",
+      "level": 3,
+      "line": 218
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🚨 建立上下文監控機制",
+      "level": 2,
+      "line": 233
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "✅ 上下文監控機制已完成！",
+      "level": 2,
+      "line": 244
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📊 建立的監控工具",
+      "level": 3,
+      "line": 248
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "⏰ 已加入的排程（第 8 項）",
+      "level": 3,
+      "line": 258
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "每 2 小時檢查上下文長度",
+      "level": 1,
+      "line": 261
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🚨 監控指標",
+      "level": 3,
+      "line": 277
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📋 目前的狀態",
+      "level": 3,
+      "line": 287
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🎯 建議行動",
+      "level": 3,
+      "line": 300
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "💡 未來最佳實踐",
+      "level": 3,
+      "line": 319
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "✅ 可以重啟了！但請注意以下事項",
+      "level": 2,
+      "line": 340
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🔄 重啟後會發生什麼事",
+      "level": 3,
+      "line": 344
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📋 重啟後請這樣做",
+      "level": 3,
+      "line": 358
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "✅ 新 AI 會做的事",
+      "level": 3,
+      "line": 382
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🎯 我們可以持續討論的事",
+      "level": 3,
+      "line": 391
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "💡 建議流程",
+      "level": 3,
+      "line": 407
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🚨 如果新 AI 「失憶」了",
+      "level": 3,
+      "line": 416
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "✅ 準備好了！",
+      "level": 2,
+      "line": 439
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📋 請複製以下內容到新 Session",
+      "level": 3,
+      "line": 443
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "🎯 到新 Session 後",
+      "level": 3,
+      "line": 472
+    },
+    {
+      "file": "memory/2026-03-01-memory-continuity.md",
+      "title": "📁 重要檔案位置（萬一新 AI 找不到）",
+      "level": 3,
+      "line": 482
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "2026-02-28",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "Git 狀態檢查 (07:37 AM)",
+      "level": 2,
+      "line": 3
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "已暫存的變更 (Staged)",
+      "level": 3,
+      "line": 5
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "未追蹤的檔案 (Untracked)",
+      "level": 3,
+      "line": 9
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "摘要",
+      "level": 3,
+      "line": 37
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "mem-2026-02-28-074458",
+      "level": 3,
+      "line": 46
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "mem-2026-02-28-074458",
+      "level": 3,
+      "line": 52
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "mem-2026-02-28-074458",
+      "level": 3,
+      "line": 58
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "🤖 Agent 團隊建立 (07:20 AM)",
+      "level": 2,
+      "line": 66
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "6 人 Agent 團隊架構",
+      "level": 3,
+      "line": 68
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "決策記錄",
+      "level": 3,
+      "line": 78
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "🧠 永久記憶系統規劃 (07:40 AM)",
+      "level": 2,
+      "line": 85
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "核心需求",
+      "level": 3,
+      "line": 87
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "已建立檔案",
+      "level": 3,
+      "line": 93
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "記憶分類",
+      "level": 3,
+      "line": 98
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "📊 任務看板系統 v2.0 (07:20 AM)",
+      "level": 2,
+      "line": 107
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "已實作功能",
+      "level": 3,
+      "line": 109
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "開發中功能",
+      "level": 3,
+      "line": 115
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "🎨 專業 PDF 生成系統 (06:13 AM)",
+      "level": 2,
+      "line": 123
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "解決方案",
+      "level": 3,
+      "line": 125
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "成功生成",
+      "level": 3,
+      "line": 130
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "📋 待處理事項",
+      "level": 2,
+      "line": 136
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "💡 洞察與學習",
+      "level": 2,
+      "line": 146
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "📦 Git 狀態檢查 (14:07 PM)",
+      "level": 2,
+      "line": 155
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "最新 commit",
+      "level": 3,
+      "line": 157
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "未追蹤的新增檔案（相較 07:37 AM 的差異）",
+      "level": 3,
+      "line": 160
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "建議",
+      "level": 3,
+      "line": 166
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "🎯 指揮中心看板 + 三層記憶系統 (08:03 AM)",
+      "level": 2,
+      "line": 171
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "參考影片",
+      "level": 3,
+      "line": 173
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "董事長核心需求",
+      "level": 3,
+      "line": 177
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "已完成",
+      "level": 3,
+      "line": 183
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "模型切換",
+      "level": 3,
+      "line": 196
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "現有 Cron 排程",
+      "level": 3,
+      "line": 200
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "🗂️ 員工日報系統（WSL / localhost:5000）",
+      "level": 2,
+      "line": 208
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "近期強化（安全 + 體驗）",
+      "level": 3,
+      "line": 213
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "進度管理（案件中心）",
+      "level": 3,
+      "line": 222
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "🌙 晚間總結（22:00）",
+      "level": 2,
+      "line": 231
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "今日完成",
+      "level": 3,
+      "line": 233
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "今日學習/洞察",
+      "level": 3,
+      "line": 241
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "明日優先待辦",
+      "level": 3,
+      "line": 246
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "🏭 電廠自動化監控系統規劃 (03/01 AM)",
+      "level": 2,
+      "line": 254
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "核心決策",
+      "level": 3,
+      "line": 256
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "已交付文件",
+      "level": 3,
+      "line": 263
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "分級規則",
+      "level": 3,
+      "line": 267
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "場站健康分數（0~100）",
+      "level": 3,
+      "line": 272
+    },
+    {
+      "file": "memory/2026-02-28.md",
+      "title": "下一步",
+      "level": 3,
+      "line": 275
+    },
+    {
+      "file": "memory/2026-03-01-session-startup.md",
+      "title": "Session: 2026-03-01 07:02:36 UTC",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/2026-03-01-session-startup.md",
+      "title": "Conversation Summary",
+      "level": 2,
+      "line": 7
+    },
+    {
+      "file": "memory/2026-03-01-daily-report-status.md",
+      "title": "Session: 2026-03-01 07:02:09 UTC",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/2026-03-01-daily-report-status.md",
+      "title": "Conversation Summary",
+      "level": 2,
+      "line": 7
+    },
+    {
+      "file": "memory/2026-02-28-0729.md",
+      "title": "Session: 2026-02-28 07:29:35 UTC",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/2026-02-28-0729.md",
+      "title": "Conversation Summary",
+      "level": 2,
+      "line": 7
+    },
+    {
+      "file": "memory/knowledge_z_drive.md",
+      "title": "昱金生 Z Drive 知識索引",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "memory/knowledge_z_drive.md",
+      "title": "總覽",
+      "level": 2,
+      "line": 6
+    },
+    {
+      "file": "memory/knowledge_z_drive.md",
+      "title": "案場清單（26 個，依時間排序）",
+      "level": 2,
+      "line": 13
+    },
+    {
+      "file": "memory/knowledge_z_drive.md",
+      "title": "部門專區（25 個）",
+      "level": 2,
+      "line": 42
+    },
+    {
+      "file": "memory/knowledge_z_drive.md",
+      "title": "公司管理",
+      "level": 2,
+      "line": 69
+    },
+    {
+      "file": "memory/knowledge_z_drive.md",
+      "title": "其他",
+      "level": 2,
+      "line": 77
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "🧠 MEMORY.md — Jenny 的長期記憶",
+      "level": 1,
+      "line": 1
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "👤 關於宋董事長（宋啓綸）",
+      "level": 2,
+      "line": 9
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "🏢 集團架構",
+      "level": 2,
+      "line": 18
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "🖥️ 基礎設施",
+      "level": 2,
+      "line": 28
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "🤖 Agent 團隊（2026-02-28 建立）",
+      "level": 2,
+      "line": 36
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "📌 重要決策記錄",
+      "level": 2,
+      "line": 47
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "💡 教訓與注意事項",
+      "level": 2,
+      "line": 58
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "🔗 常用參考",
+      "level": 2,
+      "line": 66
+    },
+    {
+      "file": "MEMORY.md",
+      "title": "📧 郵件完整解析（2026-03-01）",
+      "level": 2,
+      "line": 77
+    }
+  ]
+}

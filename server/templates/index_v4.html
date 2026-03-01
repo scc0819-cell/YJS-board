@@ -1,0 +1,130 @@
+{# 首頁模板 - 使用統一導航 #}
+{% extends "base.html" %}
+
+{% block title %}昱金生能源 - 員工日報系統{% endblock %}
+
+{% block body %}
+<!-- 統一導航 -->
+{% from 'components/nav_top.html' import render_nav_top %}
+{{ render_nav_top(current_user, 'employee') }}
+
+<div class="wrap">
+  <!-- 提示訊息 -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <!-- 統計卡片 -->
+  <div class="grid grid-4">
+    <div class="card" style="text-align:center;border-top:4px solid #667eea">
+      <div style="font-size:42px;font-weight:800;color:#333">{{ stats.today_submitted }}</div>
+      <div class="muted">今日提交</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:4px solid #28a745">
+      <div style="font-size:42px;font-weight:800;color:#333">{{ stats.submitted_count }}</div>
+      <div class="muted">已提交</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:4px solid #fd7e14">
+      <div style="font-size:42px;font-weight:800;color:#333">{{ stats.missing_count }}</div>
+      <div class="muted">未提交</div>
+    </div>
+    <div class="card" style="text-align:center;border-top:4px solid #764ba2">
+      <div style="font-size:42px;font-weight:800;color:#333">{{ stats.submit_rate }}%</div>
+      <div class="muted">提交率</div>
+    </div>
+  </div>
+
+  <!-- 高風險摘要 -->
+  {% if current_user.role == 'admin' and risk_top5 %}
+  <div class="card" style="margin-top:20px">
+    <h2 style="font-size:18px;font-weight:900;margin-bottom:16px">🚨 高風險 Top 5</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>案件</th>
+          <th>類別</th>
+          <th>描述</th>
+          <th>Owner</th>
+          <th>Due Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in risk_top5 %}
+        <tr>
+          <td><span class="pill p-blue">{{ r.case_code or 'N/A' }}</span></td>
+          <td><span class="pill p-red">{{ r.category }}</span></td>
+          <td>{{ r.description[:50] }}...</td>
+          <td>{{ r.owner_name or '未指派' }}</td>
+          <td>{{ r.due_date or '未設定' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- 逾期任務摘要 -->
+  {% if current_user.role == 'admin' and overdue_tasks_top5 %}
+  <div class="card" style="margin-top:20px">
+    <h2 style="font-size:18px;font-weight:900;margin-bottom:16px">⏰ 逾期任務 Top 5</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>案件</th>
+          <th>描述</th>
+          <th>優先級</th>
+          <th>Owner</th>
+          <th>逾期天數</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in overdue_tasks_top5 %}
+        <tr>
+          <td><span class="pill p-blue">{{ t.case_code or 'N/A' }}</span></td>
+          <td>{{ t.description[:50] }}...</td>
+          <td><span class="pill p-{{ 'red' if t.priority == 'high' else 'yellow' }}">{{ t.priority }}</span></td>
+          <td>{{ t.owner_name or '未指派' }}</td>
+          <td style="color:#ef4444;font-weight:900">{{ t.days_overdue }}天</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- 員工提交狀況 -->
+  <div class="card" style="margin-top:20px">
+    <h2 style="font-size:18px;font-weight:900;margin-bottom:16px">📊 員工提交狀況</h2>
+    <div class="grid grid-2">
+      <div>
+        <h3 style="font-size:14px;margin-bottom:12px">✅ 已提交 ({{ submitted|length }})</h3>
+        {% for emp in submitted %}
+        <div style="padding:8px 12px;background:#dcfce7;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:900">{{ emp.name }}</div>
+            <div class="muted" style="font-size:12px">{{ emp.department or '未分類' }}</div>
+          </div>
+          <span class="pill p-green">已提交</span>
+        </div>
+        {% endfor %}
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:12px">❌ 未提交 ({{ missing|length }})</h3>
+        {% for emp in missing %}
+        <div style="padding:8px 12px;background:#fee2e2;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:900">{{ emp.name }}</div>
+            <div class="muted" style="font-size:12px">{{ emp.department or '未分類' }}</div>
+          </div>
+          <span class="pill p-red">未提交</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -37,10 +37,9 @@
   <div class="wrap">
     <div class="card">
       <form method="GET" action="/history" class="row">
-        {% if is_admin %}
+        {% if is_admin or is_manager %}
         <label class="muted">員工：</label>
         <select name="emp_id">
-          <option value="">-- 請選擇 --</option>
           {% for e in employees %}
           <option value="{{ e.id }}" {% if emp_id==e.id %}selected{% endif %}>{{ e.name }} ({{ e.id }})</option>
           {% endfor %}

@@ -26,9 +26,10 @@
             text-align: center;
             margin-bottom: 35px;
         }
-        .logo-icon {
-            font-size: 56px;
-            margin-bottom: 10px;
+        .logo-img {
+            width: 180px;
+            height: auto;
+            margin-bottom: 15px;
         }
         .logo h1 {
             font-size: 22px;
@@ -102,7 +103,7 @@
 <body>
     <div class="login-box">
         <div class="logo">
-            <div class="logo-icon">☀️</div>
+            <img src="{{ url_for('static', filename='logo.jpg') }}" alt="昱金生能源集團" class="logo-img">
             <h1>昱金生能源集團</h1>
             <p>員工日報管理系統</p>
         </div>

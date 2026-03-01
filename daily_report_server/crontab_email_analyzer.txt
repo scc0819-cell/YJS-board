@@ -1,0 +1,16 @@
+# 昱金生能源 - 郵件解析與案場知識學習系統
+# 每 30 分鐘執行一次
+
+# 環境設定
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+LANG=zh_TW.UTF-8
+
+# 每 30 分鐘執行郵件解析與學習（每小時的 0 分和 30 分）
+0,30 * * * * /usr/bin/python3 /home/yjsclaw/.openclaw/workspace/daily_report_server/email_analyzer_scheduler.py >> /tmp/email_analyzer_cron.log 2>&1
+
+# 每日凌晨 2 點生成完整學習報告
+0 2 * * * /usr/bin/python3 /home/yjsclaw/.openclaw/workspace/server/full_email_analysis.py >> /tmp/full_analysis.log 2>&1
+
+# 每日凌晨 3 點備份學習成果
+0 3 * * * /bin/bash /home/yjsclaw/.openclaw/workspace/daily_report_server/backup_attachments.sh >> /tmp/backup_cron.log 2>&1

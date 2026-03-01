@@ -1,0 +1,66 @@
+version: "1.1"
+timezone: "Asia/Taipei"
+schedule:
+  scan: "0 * * * *"   # 每小時整點
+
+thresholds:
+  weather:
+    sunny_icons: ["sunny", "partly_sunny"]
+    rainy_icons: ["cloudy", "rainy"]
+    irr_drop_pct_for_rainy: -15
+
+  sunny_mode:
+    p3_gap_pct: -3
+    p2_gap_pct: -5
+    p1_gap_pct: -8
+    consecutive_hits: 2
+
+  rainy_mode:
+    normalized_eff_drop_pct_p2: -5
+    normalized_eff_drop_pct_p3: -3
+
+  strict_mode:
+    enabled_default: false
+    threshold_gap_pct: -2
+
+  availability:
+    p2_lt_pct: 85
+    p1_lt_pct: 50
+    consecutive_hits: 2
+
+  data_gap:
+    p3_min: 10
+    p2_min: 30
+    p1_multi_site_min: 60
+
+sla:
+  p1:
+    dispatch_minutes: 5
+    initial_recover_minutes: 60
+  p2:
+    dispatch_minutes: 30
+    resolve_minutes: 240
+  p3:
+    review_hours: 24
+
+decision_flow:
+  - step: "判斷天氣"
+    rule: "weather_icon + irr_delta_pct"
+  - step: "計算調整後預估"
+    rule: "forecast * design_offset_factor * weather_factor"
+  - step: "計算 gen_gap_pct"
+  - step: "套用晴天/陰雨門檻"
+  - step: "再疊加可用率/資料斷流規則"
+  - step: "輸出事件等級 P1/P2/P3"
+
+notifications:
+  p1: "immediate"
+  p2_p3: "hourly_digest"
+  channel: "telegram"
+
+output_kpi:
+  - "gen_achievement_rate_pct"
+  - "sunny_gap_over_3_count"
+  - "strict_mode_trigger_count"
+  - "p1_p2_p3_counts"
+  - "top5_gap_plants"
